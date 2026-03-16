@@ -9,7 +9,7 @@ const firebaseConfig = {
   messagingSenderId: "79234215816",
   appId: "1:79234215816:web:ce3e506182eac193a8143d",
   measurementId: "G-R5XR211LY8",
-  databaseURL: "https://casino-34809-default-rtdb.firebaseio.com"
+  databaseURL: "https://casino-34809-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
 
 // We will use the Firebase Compat SDK to make it easier to inject via script tags
