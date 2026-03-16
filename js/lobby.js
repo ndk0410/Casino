@@ -5,6 +5,7 @@ let isHost = false;
 
 // Redirect if not logged in
 if (!Account.username) {
+    console.warn("Lobby: No username found, redirecting to index.html");
     window.location.href = 'index.html';
 }
 
@@ -132,9 +133,6 @@ function enterRoom(roomId, host) {
             document.getElementById('guest-waiting').style.display = 'block';
         }
     });
-
-    // Handle tab/window close - now primarily for host cleanup or explicit leave
-    window.addEventListener('beforeunload', leaveRoom);
 }
 
 function updatePlayerList(players, hostUid) {
@@ -165,6 +163,7 @@ async function leaveRoom() {
     }
     
     currentRoomId = null;
+    console.log("Leaving room, redirecting to index.html");
     window.location.href = 'index.html';
 }
 
