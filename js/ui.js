@@ -147,15 +147,30 @@ class UI {
             } else {
                 cardEl.classList.add('disabled');
             }
+            
+            // In MP, if not your turn, cards should look unselectable
+            if (game.isMultiplayer && game.currentPlayer !== window.MP_TienLen.getMyPlayerIndex()) {
+                cardEl.classList.add('disabled');
+            }
 
             this.playerHand.appendChild(cardEl);
         });
     }
 
     renderAIHands() {
-        this.renderAIHand(this.westHand, game.hands[1], 'west');
-        this.renderAIHand(this.northHand, game.hands[2], 'north');
-        this.renderAIHand(this.eastHand, game.hands[3], 'east');
+        if (!game.hands[0]) return; // Not initialized
+
+        if (game.isMultiplayer) {
+            const myIdx = window.MP_TienLen.getMyPlayerIndex();
+            // Seats are 1: West, 2: North, 3: East
+            this.renderAIHand(this.westHand, game.hands[(myIdx + 1) % 4], 'west');
+            this.renderAIHand(this.northHand, game.hands[(myIdx + 2) % 4], 'north');
+            this.renderAIHand(this.eastHand, game.hands[(myIdx + 3) % 4], 'east');
+        } else {
+            this.renderAIHand(this.westHand, game.hands[1], 'west');
+            this.renderAIHand(this.northHand, game.hands[2], 'north');
+            this.renderAIHand(this.eastHand, game.hands[3], 'east');
+        }
     }
 
     renderAIHand(container, hand, position) {
@@ -254,10 +269,18 @@ class UI {
     }
 
     updateCardCounts() {
-        if (game.hands[0]) this.playerCount.textContent = game.hands[0].length;
-        if (game.hands[1]) this.westCount.textContent = game.hands[1].length;
-        if (game.hands[2]) this.northCount.textContent = game.hands[2].length;
-        if (game.hands[3]) this.eastCount.textContent = game.hands[3].length;
+        if (game.isMultiplayer) {
+            const myIdx = window.MP_TienLen.getMyPlayerIndex();
+            if (game.hands[myIdx]) this.playerCount.textContent = game.hands[myIdx].length;
+            if (game.hands[(myIdx + 1) % 4]) this.westCount.textContent = game.hands[(myIdx + 1) % 4].length;
+            if (game.hands[(myIdx + 2) % 4]) this.northCount.textContent = game.hands[(myIdx + 2) % 4].length;
+            if (game.hands[(myIdx + 3) % 4]) this.eastCount.textContent = game.hands[(myIdx + 3) % 4].length;
+        } else {
+            if (game.hands[0]) this.playerCount.textContent = game.hands[0].length;
+            if (game.hands[1]) this.westCount.textContent = game.hands[1].length;
+            if (game.hands[2]) this.northCount.textContent = game.hands[2].length;
+            if (game.hands[3]) this.eastCount.textContent = game.hands[3].length;
+        }
     }
 
     updateScores() {
@@ -342,6 +365,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ui.init();
     ui.updateChipDisplay();
     
+    // Skip auto-start if multiplayer
+    if (new URLSearchParams(window.location.search).get('room')) return;
+
     // Auto-start first game
     setTimeout(() => {
         game.newGame();

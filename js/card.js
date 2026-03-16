@@ -24,6 +24,13 @@ class Card {
         this.imagePath = `52 playing card/${rank}${suit}.png`;
     }
 
+    static fromId(id) {
+        if (!id) return null;
+        const rank = id.length === 3 ? id.substring(0, 2) : id.charAt(0);
+        const suit = id.charAt(id.length - 1);
+        return new Card(rank, suit);
+    }
+
     // Overall card value for comparison (rank is primary, suit is tiebreaker)
     get value() {
         return this.rankValue * 4 + this.suitValue;

@@ -20,9 +20,11 @@ class Game {
         this.turnHistory = [];     // Record of all plays
         this.isAnimating = false;
         this.aiChips = [0, 1000, 1000, 1000]; // Track AI chips
+        this.isMultiplayer = false;
     }
 
     newGame() {
+        if (this.isMultiplayer) return; // Managed by mp-tienlen.js
         this.hands = this.deck.deal(4);
         this.currentPlayer = findFirstPlayer(this.hands);
         this.lastPlayedCards = null;
@@ -84,6 +86,12 @@ class Game {
             ui.showMessage(result.reason);
             audioManager.invalidMove();
             return false;
+        }
+
+        // Multiplayer hook
+        if (this.isMultiplayer) {
+            window.MP_TienLen.playCards(sorted);
+            return true;
         }
 
         // Play the cards
@@ -224,7 +232,10 @@ class Game {
             audioManager.invalidMove();
             return;
         }
-        this.selectedCards = [];
+        if (this.isMultiplayer) {
+            window.MP_TienLen.passTurn();
+            return;
+        }
         ui.showMessage('Bạn bỏ lượt.');
         this.executePass(0);
     }
@@ -240,6 +251,7 @@ class Game {
         }
 
         ui.render();
+        if (this.isMultiplayer) return; // MP handles turns
 
         // If it's an AI's turn, execute after delay
         if (this.currentPlayer !== 0 && !this.gameOver) {
