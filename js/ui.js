@@ -181,6 +181,11 @@ class UI {
         container.innerHTML = '';
         if (!hand) return;
 
+        // Adjust overlap based on screen size
+        const isMobileLandscape = window.innerHeight < 480;
+        const northOverlap = isMobileLandscape ? '-20px' : '-40px';
+        const sideOverlap  = isMobileLandscape ? '-32px' : '-55px';
+
         hand.forEach((card, index) => {
             const cardEl = document.createElement('div');
             cardEl.className = `card ai-card ai-card-${position}`;
@@ -189,14 +194,12 @@ class UI {
             img.src = '52 playing card/back.png';
             img.alt = 'Card';
             img.draggable = false;
-
             cardEl.appendChild(img);
 
-            // Overlap cards
             if (position === 'north') {
-                cardEl.style.marginLeft = index === 0 ? '0' : '-40px';
+                cardEl.style.marginLeft = index === 0 ? '0' : northOverlap;
             } else {
-                cardEl.style.marginTop = index === 0 ? '0' : '-55px';
+                cardEl.style.marginTop = index === 0 ? '0' : sideOverlap;
             }
 
             container.appendChild(cardEl);

@@ -55,10 +55,11 @@ body {
     align-items: center;
 }
 
-/* ---- Game Container ---- */
 .game-container {
     width: 100vw;
+    /* Use dynamic viewport height so mobile browser chrome is excluded */
     height: 100vh;
+    height: 100dvh;
     position: relative;
     display: grid;
     grid-template-areas:
@@ -68,6 +69,7 @@ body {
     grid-template-columns: 120px 1fr 120px;
     grid-template-rows: 140px 1fr 200px;
     gap: 0;
+    overflow: hidden;
 }
 
 /* ---- Table Felt Pattern ---- */
@@ -187,11 +189,12 @@ body {
     overflow: hidden;
 }
 
-/* ---- South Area (Human Player) ---- */
 #south-area {
     grid-area: south;
     flex-direction: column;
     padding-bottom: 10px;
+    overflow: visible; /* let selected cards rise above the south row */
+    z-index: 5; /* ensure south area is above center */
 }
 
 #player-hand {
@@ -300,14 +303,16 @@ body {
 }
 
 .player-card.selected {
-    transform: translateY(calc(var(--translate-y, 0px) - 30px)) rotate(var(--rotation, 0deg)) scale(1.05);
+    /* Raise UP by 16px instead of 30px so it stays visible in the south area row */
+    transform: translateY(calc(var(--translate-y, 0px) - 16px)) rotate(var(--rotation, 0deg)) scale(1.05);
     box-shadow: 0 8px 30px rgba(78, 205, 196, 0.4), 0 0 20px rgba(78, 205, 196, 0.3);
     outline: 2px solid var(--accent);
     border-radius: 8px;
+    z-index: 200 !important;
 }
 
 .player-card.selected:hover {
-    transform: translateY(calc(var(--translate-y, 0px) - 34px)) rotate(var(--rotation, 0deg)) scale(1.1);
+    transform: translateY(calc(var(--translate-y, 0px) - 20px)) rotate(var(--rotation, 0deg)) scale(1.1);
 }
 
 .player-card.disabled {
@@ -742,7 +747,7 @@ body {
    ============================================================ */
 @media (max-height: 480px) {
     .game-container {
-        grid-template-columns: 75px 1fr 75px;
+        grid-template-columns: 90px 1fr 90px; /* wider side columns to show dealer cards */
         grid-template-rows: 65px 1fr 145px;
     }
 
@@ -762,10 +767,12 @@ body {
         transform-origin: bottom center;
     }
     .player-card.selected {
-        transform: translateY(-20px) rotate(0deg) !important;
+        /* Only lift 10px on mobile landscape - keeps card visible */
+        transform: translateY(-10px) rotate(0deg) !important;
+        z-index: 200 !important;
     }
     .player-card.interactive:hover {
-        transform: translateY(-14px) rotate(0deg) !important;
+        transform: translateY(-8px) rotate(0deg) !important;
     }
 
     .ai-card-north { margin-left: -18px; }
