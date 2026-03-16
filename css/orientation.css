@@ -1,0 +1,73 @@
+/* ============================================================
+   orientation.css - Landscape Mode Enforcement Styles
+   ============================================================ */
+
+#orientation-overlay {
+    position: fixed;
+    inset: 0;
+    background: #0d0718;
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Show only on small screens in portrait mode */
+@media (max-width: 1024px) and (orientation: portrait) {
+    #orientation-overlay {
+        display: flex;
+    }
+    
+    /* Hide game content when overlay is shown to prevent interaction */
+    body > *:not(#orientation-overlay) {
+        display: none !important;
+    }
+}
+
+.rotate-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+    border: 3px solid #f0c040;
+    border-radius: 12px;
+    position: relative;
+    animation: rotateDevice 2s ease-in-out infinite;
+}
+
+.rotate-icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #f0c040;
+    border-radius: 50%;
+}
+
+@keyframes rotateDevice {
+    0% { transform: rotate(0deg); }
+    30% { transform: rotate(90deg); }
+    70% { transform: rotate(90deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.orientation-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #f0c040;
+    margin-bottom: 12px;
+}
+
+.orientation-msg {
+    font-size: 16px;
+    color: #9080b0;
+    line-height: 1.5;
+    max-width: 250px;
+}

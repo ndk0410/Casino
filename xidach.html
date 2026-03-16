@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Xì Dách - Blackjack phong cách Việt Nam">
+    <title>Xì Dách</title>
+    <link rel="stylesheet" href="css/xidach.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎰</text></svg>">
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Menu</a>
+    <link rel="stylesheet" href="css/orientation.css">
+    <script src="js/orientation.js" defer></script>
+
+    <div id="xd-message"></div>
+
+    <div class="xd-table">
+
+        <!-- Dealer -->
+        <div class="xd-dealer-area">
+            <div class="xd-label">
+                🎩 Cái (Dealer)
+                <span id="dealer-score" class="score-badge">-</span>
+            </div>
+            <div id="dealer-hand"></div>
+        </div>
+
+        <!-- Center info + chips -->
+        <div class="xd-center">
+            <div class="xd-divider"></div>
+
+            <div class="xd-chips-row">
+                <div class="info-item">
+                    <span class="info-label">💰 Chip</span>
+                    <span class="info-value" id="chips-display">1000</span>
+                </div>
+                <div class="xd-sep"></div>
+                <div class="info-item">
+                    <span class="info-label">🎯 Cược</span>
+                    <span class="info-value" id="bet-display">0</span>
+                </div>
+            </div>
+
+            <!-- Chip buttons -->
+            <div class="chip-btns">
+                <button class="chip-btn chip-50" data-amount="50">50</button>
+                <button class="chip-btn chip-100" data-amount="100">100</button>
+                <button class="chip-btn chip-200" data-amount="200">200</button>
+                <button class="chip-btn chip-500" data-amount="500">500</button>
+            </div>
+
+            <div class="xd-divider"></div>
+
+            <!-- Action buttons -->
+            <div class="xd-controls">
+                <button id="btn-deal" class="xd-btn xd-btn-primary">🃏 Phát bài</button>
+                <button id="btn-clear-bet" class="xd-btn xd-btn-secondary">✖ Xoá cược</button>
+                <button id="btn-hit" class="xd-btn xd-btn-primary" style="display:none">➕ Rút bài</button>
+                <button id="btn-stand" class="xd-btn xd-btn-primary" style="display:none">✋ Dừng</button>
+                <button id="btn-double" class="xd-btn xd-btn-primary" style="display:none">✖2 Nhân đôi</button>
+            </div>
+        </div>
+
+        <!-- Player -->
+        <div class="xd-dealer-area">
+            <div id="player-hand-xd"></div>
+            <div class="xd-label">
+                🙋 Bạn
+                <span id="player-score" class="score-badge">-</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Result overlay -->
+    <div id="result-overlay" class="result-overlay">
+        <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;">
+            <div id="result-msg"></div>
+            <button id="btn-new-round" class="xd-btn xd-btn-primary" style="display:none">🔄 Ván mới</button>
+        </div>
+    </div>
+
+
+
+    <script src="js/card.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/xidach.js"></script>
+</body>
+</html>

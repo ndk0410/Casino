@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Game đánh bài Tiến Lên Miền Nam - Chơi ngay trên trình duyệt!">
+    <title>Tiến Lên Miền Nam</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/orientation.css">
+    <script src="js/orientation.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
+</head>
+<body>
+
+
+
+    <!-- Back to Menu -->
+    <a href="index.html" class="back-btn">← Menu</a>
+
+    <!-- Turn Indicator -->
+    <div id="turn-indicator" class="turn-indicator">🃏 Đang chia bài...</div>
+
+    <!-- Scoreboard (Chip Balances) -->
+    <div class="scoreboard">
+        <h3>💰 Chip</h3>
+        <div class="score-row"><span>Bạn</span><span class="score-value" id="score-0">1,000</span></div>
+        <div class="score-row"><span>Dealer 1</span><span class="score-value" id="score-1">1,000</span></div>
+        <div class="score-row"><span>Dealer 2</span><span class="score-value" id="score-2">1,000</span></div>
+        <div class="score-row"><span>Dealer 3</span><span class="score-value" id="score-3">1,000</span></div>
+    </div>
+
+    <!-- Message -->
+    <div id="message"></div>
+
+    <!-- Game Table -->
+    <div class="game-container">
+
+        <!-- North (AI 2) -->
+        <div id="north-area" class="player-area">
+            <div class="player-label">🤖 Dealer 2 <span class="card-count" id="north-count">13</span></div>
+            <div id="north-hand"></div>
+        </div>
+
+        <!-- West (AI 1) -->
+        <div id="west-area" class="player-area">
+            <div class="player-label">🤖 Dealer 1 <span class="card-count" id="west-count">13</span></div>
+            <div id="west-hand"></div>
+        </div>
+
+        <!-- Center Play Area -->
+        <div id="center-area">
+            <div id="play-area">
+                <div id="play-area-cards"></div>
+            </div>
+        </div>
+
+        <!-- East (AI 3) -->
+        <div id="east-area" class="player-area">
+            <div class="player-label">🤖 Dealer 3 <span class="card-count" id="east-count">13</span></div>
+            <div id="east-hand"></div>
+        </div>
+
+        <!-- South (Human Player) -->
+        <div id="south-area" class="player-area">
+            <div id="player-hand"></div>
+            <div class="controls">
+                <button id="btn-play" class="btn btn-play" title="Đánh bài (Enter)">🃏 Đánh</button>
+                <button id="btn-pass" class="btn btn-pass" title="Bỏ lượt (Esc)">⏭ Bỏ lượt</button>
+                <button id="btn-hint" class="btn btn-secondary" title="Gợi ý (H)">💡 Gợi ý</button>
+                <button id="btn-new-game" class="btn btn-secondary" title="Ván mới">🔄 Ván mới</button>
+                <button id="btn-sound" class="btn btn-icon" title="Âm thanh">🔊</button>
+            </div>
+            <div class="player-label" style="bottom: 2px;">
+                🙋 Bạn <span class="card-count" id="player-count">13</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay" class="game-over-overlay">
+        <div class="game-over-content">
+            <div id="game-over-message"></div>
+            <button id="btn-play-again" class="btn btn-play-again">🔄 Chơi lại</button>
+        </div>
+    </div>
+
+    <!-- Scripts (order matters) -->
+    <script src="js/card.js"></script>
+    <script src="js/rules.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+
+</body>
+</html>

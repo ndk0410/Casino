@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nổ Hũ - Slot Machine">
+    <title>Nổ Hũ (Slots)</title>
+    <link rel="stylesheet" href="css/slots.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎰</text></svg>">
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Menu</a>
+    <link rel="stylesheet" href="css/orientation.css">
+    <script src="js/orientation.js" defer></script>
+    
+    <div class="slots-container">
+        <!-- Title & Jackpot -->
+        <div class="slots-header">
+
+            <div class="jackpot-display">
+                <span class="jackpot-label">JACKPOT O-W-O</span>
+                <span class="jackpot-amount" id="jackpot-amount">50,000</span>
+            </div>
+        </div>
+
+        <!-- Slot Machine Wrapper -->
+        <div class="machine-wrapper">
+            <div class="payline"></div>
+            
+            <div class="reels-container">
+                <!-- Reel 1 -->
+                <div class="reel" id="reel-0">
+                    <div class="reel-strip" id="strip-0"></div>
+                    <div class="reel-overlay"></div>
+                </div>
+                <!-- Reel 2 -->
+                <div class="reel" id="reel-1">
+                    <div class="reel-strip" id="strip-1"></div>
+                    <div class="reel-overlay"></div>
+                </div>
+                <!-- Reel 3 -->
+                <div class="reel" id="reel-2">
+                    <div class="reel-strip" id="strip-2"></div>
+                    <div class="reel-overlay"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Display -->
+        <div class="result-display" id="result-display">
+            CHÀO MỪNG ĐẾN VỚI MÁY ĐÁNH BẠC!
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-panel">
+            <div class="info-group">
+                <div class="info-box">
+                    <span class="info-label">Tài khoản</span>
+                    <span class="info-value text-gold" id="chips-display">1,000</span>
+                </div>
+                <div class="info-box">
+                    <span class="info-label">Cược (Mỗi vòng)</span>
+                    <span class="info-value text-accent" id="bet-display">50</span>
+                </div>
+            </div>
+
+            <div class="bet-controls">
+                <button class="btn-bet" onclick="slotsGame.changeBet(-50)">-50</button>
+                <button class="btn-bet" onclick="slotsGame.changeBet(50)">+50</button>
+                <button class="btn-bet btn-max" onclick="slotsGame.setMaxBet()">MAX</button>
+            </div>
+
+            <button class="btn-spin" id="btn-spin" onclick="slotsGame.spin()">
+                <div class="spin-text">QUAY</div>
+                <div class="spin-subtext">ENTER</div>
+            </button>
+        </div>
+        
+    </div>
+
+    <!-- Big Win Overlay -->
+    <div id="big-win-overlay" class="big-win-overlay">
+        <div class="big-win-text" id="big-win-text">BIG WIN!</div>
+        <div class="big-win-amount" id="big-win-amount">+5000</div>
+    </div>
+
+    <script src="js/audio.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/slots.js"></script>
+</body>
+</html>
