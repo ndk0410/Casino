@@ -111,6 +111,7 @@ function enterRoom(roomId, host) {
 
         // Check if game started
         if (room.status === 'playing') {
+            currentRoomId = null; // Prevent leaveRoom from firing on navigate
             window.location.href = `${room.gameType}.html?room=${roomId}`;
             return;
         }
@@ -132,7 +133,7 @@ function enterRoom(roomId, host) {
         }
     });
 
-    // Handle tab/window close
+    // Handle tab/window close - now primarily for host cleanup or explicit leave
     window.addEventListener('beforeunload', leaveRoom);
 }
 
@@ -163,7 +164,8 @@ async function leaveRoom() {
         await roomRef.child('players/' + Account.uid).remove();
     }
     
-    window.location.reload();
+    currentRoomId = null;
+    window.location.href = 'index.html';
 }
 
 async function startGame() {

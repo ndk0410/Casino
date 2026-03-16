@@ -30,8 +30,8 @@ const MP_TienLen = {
         this.listenToState();
         
         if (Account.uid === roomData.host) {
-            // Wait a bit to ensure all players joined listeners
-            setTimeout(() => this.initGame(), 1000);
+            // Wait for other players to be ready and listener to attach
+            setTimeout(() => this.initGame(), 500);
         }
     },
 
