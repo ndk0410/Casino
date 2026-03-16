@@ -108,29 +108,33 @@ class UI {
         if (!hand) return;
 
         const totalCards = hand.length;
-        // Detect mobile-size viewport (landscape phone ~ height < 500px)
         const isMobile = window.innerHeight < 520 || window.innerWidth < 600;
+
+        // Determine if it's the local player's turn
+        const isMyTurn = game.isMultiplayer
+            ? game.currentPlayer === (window.MP_TienLen?.getMyPlayerIndex() ?? 0)
+            : game.currentPlayer === 0;
 
         hand.forEach((card, index) => {
             const cardEl = document.createElement('div');
             cardEl.className = 'card player-card';
+            cardEl.dataset.cardId = card.id; // store for in-place toggling
 
             const isSelected = game.selectedCards.some(c => c.id === card.id);
             if (isSelected) cardEl.classList.add('selected');
 
             if (isMobile) {
-                // Flat horizontal layout — no rotation or arc, uniform overlap
+                // Flat layout, reduced overlap so each card is easy to tap
                 cardEl.style.setProperty('--rotation', '0deg');
                 cardEl.style.setProperty('--translate-y', '0px');
+                cardEl.style.margin = '0 -6px'; // less overlap than default
                 cardEl.style.zIndex = index;
             } else {
                 // Desktop fan layout
                 const centerIndex = (totalCards - 1) / 2;
                 const offset = index - centerIndex;
-                const rotation = offset * 2.5;
-                const translateY = Math.abs(offset) * 2;
-                cardEl.style.setProperty('--rotation', `${rotation}deg`);
-                cardEl.style.setProperty('--translate-y', `${translateY}px`);
+                cardEl.style.setProperty('--rotation', `${offset * 2.5}deg`);
+                cardEl.style.setProperty('--translate-y', `${Math.abs(offset) * 2}px`);
                 cardEl.style.zIndex = index;
             }
 
@@ -140,16 +144,13 @@ class UI {
             img.draggable = false;
             cardEl.appendChild(img);
 
-            // Determine if it's the local player's turn
-            const isMyTurn = game.isMultiplayer
-                ? game.currentPlayer === (window.MP_TienLen?.getMyPlayerIndex() ?? 0)
-                : game.currentPlayer === 0;
-
             if (isMyTurn && !game.isAnimating) {
                 cardEl.classList.add('interactive');
                 cardEl.addEventListener('click', () => {
+                    // Toggle selection IN PLACE — no re-render, no jumping
                     game.toggleCardSelection(card);
-                    this.renderPlayerHand();
+                    const nowSelected = game.selectedCards.some(c => c.id === card.id);
+                    cardEl.classList.toggle('selected', nowSelected);
                     this.updateButtons();
                 });
             } else {
@@ -159,7 +160,6 @@ class UI {
             this.playerHand.appendChild(cardEl);
         });
     }
-
 
     renderAIHands() {
         if (!game.hands[0]) return; // Not initialized
