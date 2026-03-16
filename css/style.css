@@ -199,9 +199,13 @@ body {
     justify-content: center;
     align-items: flex-end;
     min-height: 140px;
-    padding: 0 20px;
+    padding: 0 8px;
     perspective: 800px;
+    overflow-x: auto; /* allow horizontal scroll if too many cards */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* hide scrollbar on mobile */
 }
+#player-hand::-webkit-scrollbar { display: none; }
 
 /* ---- Center Area (Play Area) ---- */
 #center-area {
@@ -678,114 +682,162 @@ body {
         --card-width-play: 75px;
         --card-height-play: 105px;
     }
+}
 
-    .player-card {
-        margin: 0 -12px;
+/* ============================================================
+   TABLET — 768px–1024px
+   ============================================================ */
+@media (max-width: 768px) {
+    .game-container {
+        grid-template-columns: 90px 1fr 90px;
+        grid-template-rows: 115px 1fr 190px;
     }
-
+    :root {
+        --card-width: 70px;
+        --card-height: 98px;
+        --card-width-sm: 42px;
+        --card-height-sm: 59px;
+        --card-width-play: 78px;
+        --card-height-play: 109px;
+    }
+    .player-card { margin: 0 -12px; }
     .ai-card-north { margin-left: -30px; }
     .ai-card-west, .ai-card-east { margin-top: -45px; }
-
     .win-text { font-size: 32px; }
     .lose-text { font-size: 24px; }
 }
 
-@media (max-width: 600px) {
+/* ============================================================
+   SMALL PHONE PORTRAIT — width ≤ 480px
+   ============================================================ */
+@media (max-width: 480px) {
     .game-container {
-        grid-template-columns: 70px 1fr 70px;
-        grid-template-rows: 110px 1fr 180px;
+        grid-template-columns: 60px 1fr 60px;
+        grid-template-rows: 90px 1fr 160px;
     }
-
     :root {
-        --card-width: 52px;
-        --card-height: 73px;
-        --card-width-sm: 32px;
-        --card-height-sm: 45px;
-        --card-width-play: 60px;
-        --card-height-play: 84px;
+        --card-width: 56px;
+        --card-height: 79px;
+        --card-width-sm: 34px;
+        --card-height-sm: 48px;
+        --card-width-play: 62px;
+        --card-height-play: 87px;
     }
-
-    .player-card { margin: 0 -15px; }
+    .player-card { margin: 0 -14px; }
     .ai-card-north { margin-left: -22px; }
     .ai-card-west, .ai-card-east { margin-top: -36px; }
     .controls { gap: 4px; flex-wrap: wrap; justify-content: center; }
     .btn { padding: 6px 12px; font-size: 11px; }
     .scoreboard { display: none; }
-    .turn-indicator { bottom: 170px; padding: 6px 14px; font-size: 12px; }
-    #message { bottom: 190px; font-size: 11px; }
-    #player-hand { min-height: 90px; padding: 0 5px; }
+    .turn-indicator { bottom: 155px; padding: 6px 14px; font-size: 12px; }
+    #message { bottom: 175px; font-size: 11px; }
+    #player-hand { min-height: 100px; }
     .back-btn { top: 8px; left: 8px; font-size: 11px; padding: 4px 10px; }
-}
-
-@media (max-width: 480px) {
-    .game-container {
-        grid-template-columns: 60px 1fr 60px;
-        grid-template-rows: 90px 1fr 150px;
-    }
     .player-label { font-size: 9px; padding: 2px 8px; }
     .card-count { font-size: 11px; }
-    .controls { flex-wrap: wrap; justify-content: center; transform: scale(0.9); }
 }
 
 /* ============================================================
-   LANDSCAPE MOBILE — max-height ≤ 500px (phone turned sideways)
+   LANDSCAPE PHONE — height ≤ 480px
    ============================================================ */
-@media (max-height: 500px) {
+@media (max-height: 480px) {
     .game-container {
-        grid-template-columns: 80px 1fr 80px;
-        grid-template-rows: 70px 1fr 130px;
+        grid-template-columns: 75px 1fr 75px;
+        grid-template-rows: 65px 1fr 145px;
     }
 
     :root {
-        --card-width: 40px;
-        --card-height: 56px;
-        --card-width-sm: 24px;
-        --card-height-sm: 34px;
-        --card-width-play: 48px;
-        --card-height-play: 67px;
+        --card-width: 44px;
+        --card-height: 62px;
+        --card-width-sm: 26px;
+        --card-height-sm: 37px;
+        --card-width-play: 50px;
+        --card-height-play: 70px;
     }
 
-    .player-card { margin: 0 -14px; }
+    /* Flat-hand: remove rotation, tighter overlap */
+    .player-card {
+        margin: 0 -11px;
+        transform: translateY(0) rotate(0deg) !important;
+        transform-origin: bottom center;
+    }
+    .player-card.selected {
+        transform: translateY(-20px) rotate(0deg) !important;
+    }
+    .player-card.interactive:hover {
+        transform: translateY(-14px) rotate(0deg) !important;
+    }
+
     .ai-card-north { margin-left: -18px; }
     .ai-card-west, .ai-card-east { margin-top: -28px; }
 
-    .controls { gap: 3px; flex-wrap: wrap; justify-content: center; }
-    .btn { padding: 4px 10px; font-size: 10px; }
+    #player-hand {
+        min-height: 70px;
+        align-items: center; /* vertically center in the south row */
+        justify-content: flex-start; /* allow left-align for scroll */
+        padding: 4px 8px;
+    }
 
+    .controls { gap: 3px; flex-wrap: wrap; justify-content: center; }
+    .btn { padding: 5px 10px; font-size: 10px; }
     .player-label { font-size: 8px; padding: 2px 6px; }
     .card-count { font-size: 9px; }
     .scoreboard { top: 5px; right: 5px; padding: 6px 10px; }
     .scoreboard h3 { font-size: 10px; }
     .score-row { font-size: 9px; }
     .back-btn { top: 5px; left: 5px; font-size: 10px; padding: 3px 8px; }
-    .turn-indicator { bottom: 120px; padding: 4px 12px; font-size: 11px; }
-    #message { bottom: 138px; font-size: 10px; }
-    #player-hand { min-height: 60px; padding: 0 3px; }
+    .turn-indicator { bottom: 135px; padding: 4px 12px; font-size: 11px; }
+    #message { bottom: 155px; font-size: 10px; }
 
-    #north-area { padding-top: 5px; }
-    #south-area { padding-bottom: 5px; }
-
+    #north-area { padding-top: 4px; }
+    #south-area { padding-bottom: 4px; }
     .game-over-content { transform: scale(0.8); }
     .win-text { font-size: 24px; }
     .lose-text { font-size: 18px; }
 }
 
-/* Extra short phones (height ≤ 400px) */
-@media (max-height: 400px) {
+/* ============================================================
+   VERY SHORT LANDSCAPE — height ≤ 360px (iPhone SE landscape, Galaxy S)
+   ============================================================ */
+@media (max-height: 360px) {
     .game-container {
-        grid-template-columns: 65px 1fr 65px;
-        grid-template-rows: 55px 1fr 110px;
+        grid-template-columns: 60px 1fr 60px;
+        grid-template-rows: 50px 1fr 125px;
     }
     :root {
-        --card-width: 34px;
-        --card-height: 48px;
-        --card-width-sm: 20px;
-        --card-height-sm: 28px;
-        --card-width-play: 40px;
-        --card-height-play: 56px;
+        --card-width: 36px;
+        --card-height: 51px;
+        --card-width-sm: 22px;
+        --card-height-sm: 31px;
+        --card-width-play: 42px;
+        --card-height-play: 59px;
     }
     .scoreboard { display: none; }
-    .controls { transform: scale(0.85); }
-    .turn-indicator { bottom: 100px; }
-    #message { bottom: 115px; }
+    .controls { transform: scale(0.88); transform-origin: center bottom; }
+    .turn-indicator { bottom: 118px; font-size: 10px; }
+    #message { bottom: 135px; font-size: 9px; }
+    #player-hand { min-height: 55px; }
+    .player-card { margin: 0 -9px; }
+}
+
+/* ============================================================
+   ULTRA SHORT — height ≤ 280px
+   ============================================================ */
+@media (max-height: 280px) {
+    .game-container {
+        grid-template-columns: 50px 1fr 50px;
+        grid-template-rows: 40px 1fr 110px;
+    }
+    :root {
+        --card-width: 30px;
+        --card-height: 42px;
+        --card-width-sm: 18px;
+        --card-height-sm: 25px;
+        --card-width-play: 34px;
+        --card-height-play: 48px;
+    }
+    .scoreboard { display: none; }
+    .controls { transform: scale(0.78); transform-origin: center bottom; }
+    .player-card { margin: 0 -7px; }
+    #player-hand { min-height: 45px; }
 }

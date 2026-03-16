@@ -104,40 +104,48 @@ class UI {
 
     renderPlayerHand() {
         this.playerHand.innerHTML = '';
-        const hand = game.hands[0];
+        const hand = game.isMultiplayer ? game.hands[window.MP_TienLen?.getMyPlayerIndex() ?? 0] : game.hands[0];
         if (!hand) return;
 
         const totalCards = hand.length;
+        // Detect mobile-size viewport (landscape phone ~ height < 500px)
+        const isMobile = window.innerHeight < 520 || window.innerWidth < 600;
 
         hand.forEach((card, index) => {
             const cardEl = document.createElement('div');
             cardEl.className = 'card player-card';
 
             const isSelected = game.selectedCards.some(c => c.id === card.id);
-            if (isSelected) {
-                cardEl.classList.add('selected');
+            if (isSelected) cardEl.classList.add('selected');
+
+            if (isMobile) {
+                // Flat horizontal layout — no rotation or arc, uniform overlap
+                cardEl.style.setProperty('--rotation', '0deg');
+                cardEl.style.setProperty('--translate-y', '0px');
+                cardEl.style.zIndex = index;
+            } else {
+                // Desktop fan layout
+                const centerIndex = (totalCards - 1) / 2;
+                const offset = index - centerIndex;
+                const rotation = offset * 2.5;
+                const translateY = Math.abs(offset) * 2;
+                cardEl.style.setProperty('--rotation', `${rotation}deg`);
+                cardEl.style.setProperty('--translate-y', `${translateY}px`);
+                cardEl.style.zIndex = index;
             }
-
-            // Fan layout calculation
-            const centerIndex = (totalCards - 1) / 2;
-            const offset = index - centerIndex;
-            const rotation = offset * 2.5;
-            const translateY = Math.abs(offset) * 2;
-            const translateX = offset * 0;
-
-            cardEl.style.setProperty('--rotation', `${rotation}deg`);
-            cardEl.style.setProperty('--translate-y', `${translateY}px`);
-            cardEl.style.zIndex = index;
 
             const img = document.createElement('img');
             img.src = card.imagePath;
             img.alt = card.displayName;
             img.draggable = false;
-
             cardEl.appendChild(img);
 
-            // Highlight playable cards
-            if (game.currentPlayer === 0 && !game.isAnimating) {
+            // Determine if it's the local player's turn
+            const isMyTurn = game.isMultiplayer
+                ? game.currentPlayer === (window.MP_TienLen?.getMyPlayerIndex() ?? 0)
+                : game.currentPlayer === 0;
+
+            if (isMyTurn && !game.isAnimating) {
                 cardEl.classList.add('interactive');
                 cardEl.addEventListener('click', () => {
                     game.toggleCardSelection(card);
@@ -147,15 +155,11 @@ class UI {
             } else {
                 cardEl.classList.add('disabled');
             }
-            
-            // In MP, if not your turn, cards should look unselectable
-            if (game.isMultiplayer && game.currentPlayer !== window.MP_TienLen.getMyPlayerIndex()) {
-                cardEl.classList.add('disabled');
-            }
 
             this.playerHand.appendChild(cardEl);
         });
     }
+
 
     renderAIHands() {
         if (!game.hands[0]) return; // Not initialized
