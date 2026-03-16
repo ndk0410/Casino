@@ -81,10 +81,11 @@ class Deck {
         }
     }
 
-    deal(numPlayers = 4) {
+    deal(numPlayers = 4, cardsPerPlayer = 13) {
         this.shuffle();
         const hands = Array.from({ length: numPlayers }, () => []);
-        for (let i = 0; i < this.cards.length; i++) {
+        for (let i = 0; i < numPlayers * cardsPerPlayer; i++) {
+            if (i >= this.cards.length) break;
             hands[i % numPlayers].push(this.cards[i]);
         }
         // Sort each hand by value
