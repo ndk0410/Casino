@@ -6,7 +6,7 @@
     <meta name="description" content="Coca Casino">
     <title>Game Bài Việt Nam 🃏</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,7 +14,8 @@
         body {
             min-height: 100vh;
             background: radial-gradient(ellipse at 30% 20%, #1a0a3d 0%, #0a0518 50%, #000 100%);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
             color: #f0f0f0;
             display: flex;
             flex-direction: column;
@@ -154,7 +155,7 @@
             padding: 30px 40px; border-radius: 20px; border: 2px solid #FFD700;
             text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-width: 380px; width: 90%;
         }
-        .login-box h2 { font-family: 'Playfair Display', serif; color: #FFD700; margin-bottom: 20px; font-size: 32px; }
+        .login-box h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; color: #FFD700; margin-bottom: 20px; font-size: 32px; }
         
         .auth-tabs {
             display: flex; margin-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.1);
@@ -188,7 +189,7 @@
         }
 
         .header h1 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: clamp(32px, 6vw, 60px);
             font-weight: 900;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 40%, #FF6B35 80%, #FFD700 100%);
@@ -222,12 +223,12 @@
             opacity: 0.6;
         }
 
-        /* Cards Grid */
         .games-grid {
             display: flex;
             gap: 24px;
             flex-wrap: wrap;
             justify-content: center;
+            align-items: stretch; /* Make all cards same height */
             position: relative;
             z-index: 10;
             padding: 0 20px;
@@ -235,6 +236,8 @@
 
         .game-card {
             width: 220px;
+            display: flex;
+            flex-direction: column;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
@@ -343,10 +346,13 @@
         /* Card Body */
         .card-body {
             padding: 18px 18px 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Pushes content down to align play button */
         }
 
         .card-body h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 22px;
             font-weight: 900;
             margin-bottom: 6px;
@@ -358,7 +364,8 @@
 
         .card-body p {
             font-size: 12px;
-            color: rgba(255,255,255,0.5);
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
             line-height: 1.6;
             margin-bottom: 14px;
         }
@@ -368,13 +375,17 @@
             align-items: center;
             gap: 4px;
             font-size: 10px;
-            font-weight: 700;
+            font-weight: 800;
             letter-spacing: 0.5px;
             text-transform: uppercase;
             padding: 4px 10px;
             border-radius: 6px;
             margin-right: 4px;
             margin-bottom: 4px;
+        }
+
+        .tags-container {
+            margin-bottom: 14px;
         }
 
         .tag-multiplayer { background: rgba(78,205,196,0.15); color: #4ECDC4; }
@@ -462,12 +473,12 @@
             padding: 12px;
             border-radius: 12px;
             font-size: 14px;
-            font-weight: 800;
+            font-weight: 900;
             letter-spacing: 0.5px;
             border: none;
             cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            margin-top: 14px;
+            font-family: 'Montserrat', sans-serif;
+            margin-top: auto; /* Aligns to bottom */
             transition: all 0.2s;
         }
 
@@ -599,7 +610,7 @@
             <div class="card-body">
                 <h2>Tiến Lên</h2>
                 <p>Miền Nam</p>
-                <div>
+                <div class="tags-container">
                     <span class="card-tag tag-multiplayer">👥 4 người</span>
                     <span class="card-tag tag-ai">🤖 vs AI</span>
                 </div>
@@ -615,7 +626,7 @@
             <div class="card-body">
                 <h2>Xì Dách</h2>
                 <p>Blackjack</p>
-                <div>
+                <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
                     <span class="card-tag tag-ai">🎩 vs Dealer</span>
                 </div>
@@ -633,7 +644,7 @@
             <div class="card-body">
                 <h2>Slots</h2>
                 <p>Quay xèng đổi thưởng. Jackpot siêu khủng O-W-O!</p>
-                <div>
+                <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
                     <span class="card-tag tag-easy">🎈 Thư giãn</span>
                 </div>
@@ -649,7 +660,7 @@
             <div class="card-body">
                 <h2 style="color: #3498db;">Poker</h2>
                 <p>Texas Hold'em vs 3 Bot. Call, Raise, Fold!</p>
-                <div>
+                <div class="tags-container">
                     <span class="card-tag tag-multiplayer">👥 4 người</span>
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
                 </div>
@@ -665,7 +676,7 @@
             <div class="card-body">
                 <h2 style="color: #e74c3c;">Mậu Binh</h2>
                 <p>13 lá xếp 3 chi. Chinese Poker cổ điển!</p>
-                <div>
+                <div class="tags-container">
                     <span class="card-tag tag-multiplayer">👥 4 người</span>
                     <span class="card-tag tag-ai">🤖 vs AI</span>
                 </div>
@@ -681,7 +692,7 @@
             <div class="card-body">
                 <h2 style="color: #2ecc71;">Ba Lá</h2>
                 <p>Three Card Poker — 3 lá so với Dealer!</p>
-                <div>
+                <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Ante + Pair Plus</span>
                     <span class="card-tag tag-easy">⚡ Nhanh gọn</span>
                 </div>
@@ -697,7 +708,7 @@
             <div class="card-body">
                 <h2 style="color: #e74c3c;">Roulette</h2>
                 <p>Quay bánh xe, đặt số, đỏ đen, chẵn lẻ!</p>
-                <div>
+                <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
                     <span class="card-tag tag-classic">🎰 Casino</span>
                 </div>
