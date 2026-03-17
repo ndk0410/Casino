@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Coca Casino">
-    <title>Game Bài Việt Nam 🃏</title>
+    <title>Coca's Casino 🃏</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
@@ -267,24 +267,27 @@
         .game-card:hover::before { opacity: 1; }
         .game-card:active { transform: translateY(-4px) scale(0.99); }
 
-        /* Individual game card accents */
-        .card-tienlen { box-shadow: 0 0 0 0 rgba(78,205,196,0); }
-        .card-tienlen:hover {
-            box-shadow: 0 20px 60px rgba(78,205,196,0.25), 0 0 0 1px rgba(78,205,196,0.3);
-            border-color: rgba(78,205,196,0.4);
-        }
+        /* Individual game card accents & hovers */
+        .card-tienlen     { box-shadow: 0 0 0 0 rgba(78,205,196,0); }
+        .card-tienlen:hover { box-shadow: 0 20px 60px rgba(78,205,196,0.25), 0 0 0 1px rgba(78,205,196,0.5); border-color: rgba(78,205,196,0.8); }
 
-        .card-xidach { box-shadow: 0 0 0 0 rgba(240,192,64,0); }
-        .card-xidach:hover {
-            box-shadow: 0 20px 60px rgba(240,192,64,0.25), 0 0 0 1px rgba(240,192,64,0.3);
-            border-color: rgba(240,192,64,0.4);
-        }
+        .card-xidach      { box-shadow: 0 0 0 0 rgba(240,192,64,0); }
+        .card-xidach:hover  { box-shadow: 0 20px 60px rgba(240,192,64,0.25), 0 0 0 1px rgba(240,192,64,0.5); border-color: rgba(240,192,64,0.8); }
 
-        .card-3cao { box-shadow: 0 0 0 0 rgba(192,96,240,0); }
-        .card-3cao:hover {
-            box-shadow: 0 20px 60px rgba(192,96,240,0.25), 0 0 0 1px rgba(192,96,240,0.3);
-            border-color: rgba(192,96,240,0.4);
-        }
+        .card-slots       { box-shadow: 0 0 0 0 rgba(255,107,107,0); }
+        .card-slots:hover   { box-shadow: 0 20px 60px rgba(255,107,107,0.25), 0 0 0 1px rgba(255,107,107,0.5); border-color: rgba(255,107,107,0.8); }
+
+        .card-poker       { box-shadow: 0 0 0 0 rgba(52,152,219,0); }
+        .card-poker:hover   { box-shadow: 0 20px 60px rgba(52,152,219,0.25), 0 0 0 1px rgba(52,152,219,0.5); border-color: rgba(52,152,219,0.8); }
+
+        .card-maubinh     { box-shadow: 0 0 0 0 rgba(231,76,60,0); }
+        .card-maubinh:hover { box-shadow: 0 20px 60px rgba(231,76,60,0.25), 0 0 0 1px rgba(231,76,60,0.5); border-color: rgba(231,76,60,0.8); }
+
+        .card-bala        { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
+        .card-bala:hover    { box-shadow: 0 20px 60px rgba(46,204,113,0.25), 0 0 0 1px rgba(46,204,113,0.5); border-color: rgba(46,204,113,0.8); }
+
+        .card-roulette    { box-shadow: 0 0 0 0 rgba(155,89,182,0); }
+        .card-roulette:hover{ box-shadow: 0 20px 60px rgba(155,89,182,0.25), 0 0 0 1px rgba(155,89,182,0.5); border-color: rgba(155,89,182,0.8); }
 
         /* Card Preview Banner */
         .card-banner {
@@ -296,17 +299,13 @@
             overflow: hidden;
         }
 
-        .card-tienlen .card-banner {
-            background: linear-gradient(135deg, #0d3d0d, #1a5c1a);
-        }
-
-        .card-xidach .card-banner {
-            background: linear-gradient(135deg, #1a1200, #4d3800);
-        }
-
-        .card-3cao .card-banner {
-            background: linear-gradient(135deg, #1a0033, #4d0099);
-        }
+        .card-tienlen .card-banner  { background: linear-gradient(135deg, #0d3d0d, #1a5c1a); }
+        .card-xidach .card-banner   { background: linear-gradient(135deg, #2c1e00, #5c3f00); }
+        .card-slots .card-banner    { background: linear-gradient(135deg, #2c0a1a, #5c1437); }
+        .card-poker .card-banner    { background: linear-gradient(135deg, #0a1a3d, #1a3a7d); }
+        .card-maubinh .card-banner  { background: linear-gradient(135deg, #3d0a0a, #7d1a1a); }
+        .card-bala .card-banner     { background: linear-gradient(135deg, #0a3d1a, #1a7d3a); }
+        .card-roulette .card-banner { background: linear-gradient(135deg, #2a0a3d, #5a1a7d); }
 
         .banner-emoji {
             font-size: 64px;
@@ -358,9 +357,13 @@
             margin-bottom: 6px;
         }
 
-        .card-tienlen .card-body h2 { color: #4ECDC4; }
-        .card-xidach .card-body h2 { color: #f0c040; }
-        .card-3cao .card-body h2 { color: #c060f0; }
+        .card-tienlen .card-body h2  { color: #4ECDC4; }
+        .card-xidach .card-body h2   { color: #f0c040; }
+        .card-slots .card-body h2    { color: #ff6b6b; }
+        .card-poker .card-body h2    { color: #3498db; }
+        .card-maubinh .card-body h2  { color: #e74c3c; }
+        .card-bala .card-body h2     { color: #2ecc71; }
+        .card-roulette .card-body h2 { color: #9b59b6; }
 
         .card-body p {
             font-size: 12px;
@@ -482,9 +485,13 @@
             transition: all 0.2s;
         }
 
-        .card-tienlen .play-btn { background: linear-gradient(135deg, #4ECDC4, #44a89e); color: #fff; }
-        .card-xidach  .play-btn { background: linear-gradient(135deg, #f0c040, #e67e22); color: #1a0a00; }
-        .card-3cao    .play-btn { background: linear-gradient(135deg, #c060f0, #8040c0); color: #fff; }
+        .card-tienlen .play-btn  { background: linear-gradient(135deg, #4ECDC4, #44a89e); color: #fff; }
+        .card-xidach  .play-btn  { background: linear-gradient(135deg, #f0c040, #e67e22); color: #1a0a00; }
+        .card-slots   .play-btn  { background: linear-gradient(135deg, #ff6b6b, #c0392b); color: #fff; }
+        .card-poker   .play-btn  { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
+        .card-maubinh .play-btn  { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; }
+        .card-bala    .play-btn  { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #1a0a00; }
+        .card-roulette .play-btn { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; }
 
         .play-btn:hover { filter: brightness(1.1); }
 
@@ -589,7 +596,7 @@
     <div class="bg-decoration" id="bg-cards"></div>
 
     <div class="header">
-        <h1>GAME BÀI</h1>
+        <h1>Casino</h1>
         <p>Coca Casino Hub</p>
         <div class="suit-icons">♠ ♣ ♦ ♥</div>
     </div>
@@ -601,15 +608,9 @@
         <a href="pages/tienlen.html" class="game-card card-tienlen">
             <div class="card-banner">
                 <span class="banner-emoji">🃏</span>
-                <div class="banner-cards-preview">
-                    <div class="preview-card" style="transform: rotate(-15deg);"><img src="assets/cards/3_of_spades.png" alt="3S"></div>
-                    <div class="preview-card" style="transform: rotate(0deg); margin-top: -10px;"><img src="assets/cards/10_of_hearts.png" alt="10H"></div>
-                    <div class="preview-card" style="transform: rotate(15deg);"><img src="assets/cards/king_of_diamonds.png" alt="KD"></div>
-                </div>
             </div>
             <div class="card-body">
                 <h2>Tiến Lên</h2>
-                <p>Miền Nam</p>
                 <div class="tags-container">
                     <span class="card-tag tag-multiplayer">👥 4 người</span>
                     <span class="card-tag tag-ai">🤖 vs AI</span>
@@ -625,7 +626,6 @@
             </div>
             <div class="card-body">
                 <h2>Xì Dách</h2>
-                <p>Blackjack</p>
                 <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
                     <span class="card-tag tag-ai">🎩 vs Dealer</span>
@@ -638,12 +638,11 @@
 
         <!-- Nổ Hũ (Slots) -->
         <a href="pages/slots.html" class="game-card card-slots">
-            <div class="card-banner" style="background: linear-gradient(135deg, #1f1c2c, #928DAB);">
+            <div class="card-banner">
                 <span class="banner-emoji">🎰</span>
             </div>
             <div class="card-body">
                 <h2>Slots</h2>
-                <p>Quay xèng đổi thưởng. Jackpot siêu khủng O-W-O!</p>
                 <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
                     <span class="card-tag tag-easy">🎈 Thư giãn</span>
@@ -654,12 +653,11 @@
 
         <!-- Poker -->
         <a href="pages/poker.html" class="game-card card-poker">
-            <div class="card-banner" style="background: linear-gradient(135deg, #0a1a3d, #1a3a7d);">
+            <div class="card-banner">
                 <span class="banner-emoji">♠</span>
             </div>
             <div class="card-body">
-                <h2 style="color: #3498db;">Poker</h2>
-                <p>Texas Hold'em vs 3 Bot. Call, Raise, Fold!</p>
+                <h2>Poker</h2>
                 <div class="tags-container">
                     <span class="card-tag tag-multiplayer">👥 4 người</span>
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
@@ -670,12 +668,11 @@
 
         <!-- Mậu Binh -->
         <a href="pages/maubinh.html" class="game-card card-maubinh">
-            <div class="card-banner" style="background: linear-gradient(135deg, #3d0a0a, #7d1a1a);">
+            <div class="card-banner">
                 <span class="banner-emoji">🀄</span>
             </div>
             <div class="card-body">
-                <h2 style="color: #e74c3c;">Mậu Binh</h2>
-                <p>13 lá xếp 3 chi. Chinese Poker cổ điển!</p>
+                <h2>Mậu Binh</h2>
                 <div class="tags-container">
                     <span class="card-tag tag-multiplayer">👥 4 người</span>
                     <span class="card-tag tag-ai">🤖 vs AI</span>
@@ -686,12 +683,11 @@
 
         <!-- Ba Lá -->
         <a href="pages/bala.html" class="game-card card-bala">
-            <div class="card-banner" style="background: linear-gradient(135deg, #0a3d1a, #1a7d3a);">
+            <div class="card-banner">
                 <span class="banner-emoji">🃏</span>
             </div>
             <div class="card-body">
-                <h2 style="color: #2ecc71;">Ba Lá</h2>
-                <p>Three Card Poker — 3 lá so với Dealer!</p>
+                <h2>Ba Lá</h2>
                 <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Ante + Pair Plus</span>
                     <span class="card-tag tag-easy">⚡ Nhanh gọn</span>
@@ -702,12 +698,11 @@
 
         <!-- Roulette -->
         <a href="pages/roulette.html" class="game-card card-roulette">
-            <div class="card-banner" style="background: linear-gradient(135deg, #3d0a0a, #1a0a0a);">
+            <div class="card-banner">
                 <span class="banner-emoji">🎡</span>
             </div>
             <div class="card-body">
-                <h2 style="color: #e74c3c;">Roulette</h2>
-                <p>Quay bánh xe, đặt số, đỏ đen, chẵn lẻ!</p>
+                <h2>Roulette</h2>
                 <div class="tags-container">
                     <span class="card-tag tag-betting">💰 Đặt cược</span>
                     <span class="card-tag tag-classic">🎰 Casino</span>
