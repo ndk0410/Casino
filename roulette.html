@@ -7,6 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/roulette.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
     <div class="rl-topbar">
@@ -39,7 +43,7 @@
 
         <!-- Controls -->
         <div class="rl-controls">
-            <button class="rl-btn rl-btn-spin" onclick="RouletteUI.spin()">🎡 QUAY</button>
+            <button class="rl-btn rl-btn-spin" id="btn-spin" onclick="RouletteUI.spin()">🎡 QUAY</button>
             <button class="rl-btn rl-btn-clear" onclick="RouletteUI.clearBets()">🗑️ XÓA CƯỢC</button>
         </div>
 
@@ -48,6 +52,8 @@
     </div>
 
     <script src="js/account.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/mp-roulette.js"></script>
     <script src="js/roulette.js"></script>
 </body>
 </html>

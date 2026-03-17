@@ -231,18 +231,40 @@ const RouletteUI = {
 
     async spin() {
         if (Roulette.spinning) return;
-        if (Roulette.bets.length === 0) {
+        if (Roulette.bets.length === 0 && !window.MP_Roulette?.isMultiplayer) {
             this.messageEl.textContent = '⚠️ Chưa đặt cược!';
             return;
         }
 
+        // Multiplayer intervention
+        if (window.MP_Roulette && window.MP_Roulette.isMultiplayer) {
+            if (!MP_Roulette.isHost) {
+                this.messageEl.textContent = 'Chỉ chủ phòng mới được quay!';
+                return;
+            }
+            // Host generates result and sends to Firebase
+            const idx = Math.floor(Math.random() * ROULETTE_NUMBERS.length);
+            const number = ROULETTE_NUMBERS[idx];
+            MP_Roulette.broadcastSpin(number, idx);
+            return; // Exit normal flow, wait for Firebase callback
+        }
+
+        // Offline flow
+        const { number, index } = Roulette.spin();
+        await this.executeSpin(number, index);
+    },
+
+    async executeSpin(number, index) {
+        if (Roulette.spinning) return;
+        
+        // In multiplayer, players might have 0 bets, that's fine, they just watch.
         const totalBet = Roulette.totalBets();
-        Account.deductChips(totalBet);
+        if (totalBet > 0) {
+            Account.deductChips(totalBet);
+        }
 
         Roulette.spinning = true;
         this.messageEl.textContent = '🎡 Quay...';
-
-        const { number, index } = Roulette.spin();
 
         // Animate wheel
         const degreesPerSlot = 360 / ROULETTE_NUMBERS.length;
@@ -253,15 +275,28 @@ const RouletteUI = {
 
         await this.delay(4200);
 
+        // Update Roulette outcome manually for multiplayer sync
+        Roulette.result = number;
+        if (window.MP_Roulette && window.MP_Roulette.isMultiplayer) {
+            Roulette.history.unshift(number);
+            if (Roulette.history.length > 20) Roulette.history.pop();
+        }
+
         // Calculate winnings
         const win = Roulette.calculateWinnings();
-        Account.addChips(win);
+        if (win > 0) {
+            Account.addChips(win);
+        }
 
         const color = number === 0 ? '🟢' : isRed(number) ? '🔴' : '⚫';
-        if (win > 0) {
-            this.messageEl.textContent = `${color} Số ${number}! Thắng +${win.toLocaleString()} chip! 🎉`;
+        if (totalBet > 0) {
+            if (win > 0) {
+                this.messageEl.textContent = `${color} Số ${number}! Thắng +${win.toLocaleString()} chip! 🎉`;
+            } else {
+                this.messageEl.textContent = `${color} Số ${number}! Thua ${totalBet.toLocaleString()} chip 😞`;
+            }
         } else {
-            this.messageEl.textContent = `${color} Số ${number}! Thua ${totalBet.toLocaleString()} chip 😞`;
+            this.messageEl.textContent = `${color} Số ${number}!`;
         }
 
         // Update history

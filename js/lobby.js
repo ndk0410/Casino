@@ -73,7 +73,11 @@ async function joinRoom() {
     }
 
     const playersCount = Object.keys(room.players || {}).length;
-    if (playersCount >= 4) { // Max 4 for Tien Len
+    let maxPlayers = 4;
+    if (room.gameType === 'roulette') maxPlayers = 15;
+    else if (room.gameType === 'xidach') maxPlayers = 5;
+    
+    if (playersCount >= maxPlayers) {
         alert("Phòng đã đầy!");
         return;
     }
