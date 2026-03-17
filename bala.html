@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ba Lá - Three Card Poker 🃏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bala.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="bl-topbar">
+        <a href="index.html" class="back-btn">← Menu</a>
+        <div class="chips-display">💰 <span id="bl-chips">0</span></div>
+    </div>
+
+    <!-- Game Area -->
+    <div class="bl-game">
+        <!-- Dealer Hand -->
+        <div class="bl-hand-area">
+            <div class="bl-hand-label" id="bl-dealer-label">DEALER</div>
+            <div class="bl-cards" id="bl-dealer-hand"></div>
+        </div>
+
+        <div class="bl-vs">VS</div>
+
+        <!-- Player Hand -->
+        <div class="bl-hand-area">
+            <div class="bl-hand-label" id="bl-player-label">BẠN</div>
+            <div class="bl-cards" id="bl-player-hand"></div>
+        </div>
+
+        <!-- Message -->
+        <div class="bl-message" id="bl-message">💰 Đặt cược để bắt đầu!</div>
+
+        <!-- Bet Panel -->
+        <div class="bl-panel" id="bl-bet-panel">
+            <div class="bl-bet-group">
+                <label>Ante</label>
+                <input type="number" id="bl-ante-input" value="50" min="10" step="10">
+            </div>
+            <div class="bl-bet-group">
+                <label>Pair Plus</label>
+                <input type="number" id="bl-pp-input" value="0" min="0" step="10">
+            </div>
+            <button class="bl-btn bl-btn-primary" onclick="BaLaUI.doDeal()">🃏 CHIA BÀI</button>
+        </div>
+
+        <!-- Action Panel -->
+        <div class="bl-panel" id="bl-action-panel" style="display:none;">
+            <button class="bl-btn bl-btn-primary" onclick="BaLaUI.doPlay()">✅ ĐÁNH (Play)</button>
+            <button class="bl-btn bl-btn-danger" onclick="BaLaUI.doFold()">❌ BỎ (Fold)</button>
+        </div>
+
+        <!-- Result Panel -->
+        <div class="bl-panel" id="bl-result-panel" style="display:none;">
+            <button class="bl-btn bl-btn-primary" onclick="BaLaUI.newRound()">🔄 VÁN MỚI</button>
+        </div>
+    </div>
+
+    <script src="js/card.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/bala.js"></script>
+</body>
+</html>

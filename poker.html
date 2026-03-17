@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Poker - Texas Hold'em ♠</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/poker.css">
+</head>
+<body>
+    <div class="pk-topbar">
+        <a href="index.html" class="back-btn">← Menu</a>
+        <div class="chips-display">💰 <span id="pk-chips">0</span></div>
+    </div>
+
+    <div class="pk-game">
+        <div class="pk-table">
+            <!-- Bot 2 (top) -->
+            <div class="pk-slot pk-slot-2" id="pk-slot-2">
+                <div class="pk-name">Bot 2</div>
+                <div class="pk-player-chips">1,000</div>
+                <div class="pk-player-cards"></div>
+                <div class="pk-player-bet"></div>
+            </div>
+
+            <!-- Bot 1 (left) -->
+            <div class="pk-slot pk-slot-1" id="pk-slot-1">
+                <div class="pk-name">Bot 1</div>
+                <div class="pk-player-chips">1,000</div>
+                <div class="pk-player-cards"></div>
+                <div class="pk-player-bet"></div>
+            </div>
+
+            <!-- Center -->
+            <div class="pk-center">
+                <div class="pk-pot" id="pk-pot">💰 Pot: 0</div>
+                <div class="pk-community" id="pk-community"></div>
+                <div class="pk-message" id="pk-message">Nhấn BẮT ĐẦU để chơi!</div>
+            </div>
+
+            <!-- Bot 3 (right) -->
+            <div class="pk-slot pk-slot-3" id="pk-slot-3">
+                <div class="pk-name">Bot 3</div>
+                <div class="pk-player-chips">1,000</div>
+                <div class="pk-player-cards"></div>
+                <div class="pk-player-bet"></div>
+            </div>
+
+            <!-- Player (bottom) -->
+            <div class="pk-slot pk-slot-0" id="pk-slot-0">
+                <div class="pk-name">Bạn</div>
+                <div class="pk-player-chips">0</div>
+                <div class="pk-player-cards"></div>
+                <div class="pk-player-bet"></div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="pk-actions" id="pk-actions" style="display:none;">
+            <button class="pk-btn pk-btn-danger" onclick="PokerUI.humanAction('fold')">❌ Fold</button>
+            <button class="pk-btn pk-btn-primary" id="pk-call-btn" onclick="PokerUI.humanAction('call')">📞 Call</button>
+            <button class="pk-btn pk-btn-secondary" id="pk-check-btn" onclick="PokerUI.humanAction('check')" style="display:none;">✋ Check</button>
+            <div class="pk-raise-group">
+                <input type="number" id="pk-raise-input" value="100" min="50" step="50">
+                <button class="pk-btn pk-btn-success" onclick="PokerUI.humanAction('raise')">⬆ Raise</button>
+            </div>
+        </div>
+
+        <button class="pk-btn pk-btn-primary" id="pk-start-btn" onclick="PokerUI.startGame()" style="font-size:16px; padding:12px 32px;">🃏 BẮT ĐẦU</button>
+    </div>
+
+    <script src="js/card.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/poker.js"></script>
+</body>
+</html>

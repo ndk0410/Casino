@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Roulette 🎡</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/roulette.css">
+</head>
+<body>
+    <div class="rl-topbar">
+        <a href="index.html" class="back-btn">← Menu</a>
+        <div class="chips-display">💰 <span id="rl-chips">0</span></div>
+    </div>
+
+    <div class="rl-game">
+        <!-- Wheel -->
+        <div class="rl-wheel-container">
+            <div class="rl-pointer"></div>
+            <div class="rl-wheel" id="rl-wheel"></div>
+        </div>
+
+        <div class="rl-message" id="rl-message">🎡 Chọn chip, đặt cược lên bảng, rồi QUAY!</div>
+
+        <!-- Chip selector -->
+        <div class="rl-chips-selector">
+            <button class="rl-chip-btn rl-chip-10 active" data-value="10">10</button>
+            <button class="rl-chip-btn rl-chip-25" data-value="25">25</button>
+            <button class="rl-chip-btn rl-chip-50" data-value="50">50</button>
+            <button class="rl-chip-btn rl-chip-100" data-value="100">100</button>
+            <button class="rl-chip-btn rl-chip-500" data-value="500">500</button>
+        </div>
+
+        <div class="rl-bet-info">Tổng cược: <span id="rl-total-bet">0</span></div>
+
+        <!-- Board -->
+        <div class="rl-board" id="rl-board"></div>
+
+        <!-- Controls -->
+        <div class="rl-controls">
+            <button class="rl-btn rl-btn-spin" onclick="RouletteUI.spin()">🎡 QUAY</button>
+            <button class="rl-btn rl-btn-clear" onclick="RouletteUI.clearBets()">🗑️ XÓA CƯỢC</button>
+        </div>
+
+        <!-- History -->
+        <div class="rl-history" id="rl-history"></div>
+    </div>
+
+    <script src="js/account.js"></script>
+    <script src="js/roulette.js"></script>
+</body>
+</html>

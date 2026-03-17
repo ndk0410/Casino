@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mậu Binh - Chinese Poker 🀄</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/maubinh.css">
+</head>
+<body>
+    <div class="mb-topbar">
+        <a href="index.html" class="back-btn">← Menu</a>
+        <div class="chips-display">💰 <span id="mb-chips">0</span></div>
+    </div>
+
+    <div class="mb-game">
+        <div class="mb-message" id="mb-message">💰 Đặt cược và bắt đầu!</div>
+
+        <!-- Bet Panel -->
+        <div class="mb-panel" id="mb-bet-panel">
+            <input type="number" id="mb-bet-input" value="100" min="10" step="10">
+            <button class="mb-btn mb-btn-primary" onclick="MauBinhUI.startGame()">🀄 BẮT ĐẦU</button>
+        </div>
+
+        <!-- Chi rows -->
+        <div class="mb-chi-row" id="mb-front"></div>
+        <div class="mb-chi-row" id="mb-middle"></div>
+        <div class="mb-chi-row" id="mb-back"></div>
+
+        <!-- Chi add buttons -->
+        <div class="mb-chi-btns" id="mb-arrange-panel" style="display:none;">
+            <button class="mb-btn mb-btn-secondary" onclick="MauBinhUI.addToChi('front')">↑ Front</button>
+            <button class="mb-btn mb-btn-secondary" onclick="MauBinhUI.addToChi('middle')">→ Middle</button>
+            <button class="mb-btn mb-btn-secondary" onclick="MauBinhUI.addToChi('back')">↓ Back</button>
+            <button class="mb-btn mb-btn-success" onclick="MauBinhUI.autoArrange()">🤖 Tự Xếp</button>
+            <button class="mb-btn mb-btn-primary" onclick="MauBinhUI.confirm()">✅ XÁC NHẬN</button>
+        </div>
+
+        <!-- Hand -->
+        <div class="mb-hand" id="mb-hand"></div>
+
+        <!-- Result Panel -->
+        <div class="mb-panel" id="mb-result-panel" style="display:none;">
+            <button class="mb-btn mb-btn-primary" onclick="MauBinhUI.newRound()">🔄 VÁN MỚI</button>
+        </div>
+        <div id="mb-result-detail"></div>
+    </div>
+
+    <script src="js/card.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/maubinh.js"></script>
+</body>
+</html>
