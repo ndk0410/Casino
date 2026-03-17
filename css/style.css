@@ -68,7 +68,7 @@ body {
     grid-template-columns: 110px 1fr 110px;
     grid-template-rows: 130px 1fr 200px;
     gap: 0;
-    overflow: hidden;
+    /* No overflow:hidden here — south-area cards (and rotated west/east) must not be clipped */
 }
 
 /* ---- Table Felt Pattern ---- */
@@ -308,7 +308,8 @@ body {
     cursor: default;
     margin: 0 -8px;
     transform: translateY(var(--translate-y, 0)) rotate(var(--rotation, 0deg));
-    transform-origin: bottom center;
+    /* center origin: no arc effect even when rotation=0 */
+    transform-origin: center center;
     border-radius: 8px;
     box-shadow: var(--shadow-card);
 }
