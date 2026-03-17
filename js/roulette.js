@@ -137,36 +137,34 @@ const RouletteUI = {
         const numSlots = ROULETTE_NUMBERS.length;
         const sliceDeg = 360 / numSlots;
 
-        ROULETTE_NUMBERS.forEach((num, i) => {
-            const rot = i * sliceDeg;
-            // The clip-path needs to create a wedge
-            // A 360/37 degree wedge is about 9.73 degrees.
-            // basic math to get the top-right corner height
-            // tan(9.73deg) = 0.171
-            const wedgeY = 100 - (Math.tan(sliceDeg * Math.PI / 180) * 100);
-            
-            const slot = document.createElement('div');
-            slot.className = 'rl-slot';
-            slot.style.transform = `rotate(${rot}deg)`;
-            
-            const inner = document.createElement('div');
-            inner.className = 'rl-slot-inner';
-            // clip-path creates the slice shape
-            inner.style.clipPath = `polygon(0 100%, 100% 100%, 100% ${wedgeY}%)`;
-            
-            // Assign colors based on number
-            if (num === 0) inner.style.background = '#27ae60';
-            else if (isRed(num)) inner.style.background = '#c0392b';
-            else inner.style.background = '#2c3e50';
+        let gradientStops = [];
 
-            const numEl = document.createElement('div');
-            numEl.className = 'rl-slot-num';
-            numEl.textContent = num;
+        ROULETTE_NUMBERS.forEach((num, i) => {
+            // Colors
+            let color = '#2c3e50'; // black
+            if (num === 0) color = '#27ae60'; // green
+            else if (isRed(num)) color = '#c0392b'; // red
+
+            const start = i * sliceDeg;
+            const end = (i + 1) * sliceDeg;
+            gradientStops.push(`${color} ${start}deg ${end}deg`);
+
+            // Numbers
+            const numWrap = document.createElement('div');
+            numWrap.className = 'rl-number-wrap';
+            numWrap.style.transform = `rotate(${i * sliceDeg}deg)`;
             
-            inner.appendChild(numEl);
-            slot.appendChild(inner);
-            this.wheelEl.appendChild(slot);
+            const numEl = document.createElement('div');
+            numEl.className = 'rl-number';
+            numEl.textContent = num;
+
+            numWrap.appendChild(numEl);
+            this.wheelEl.appendChild(numWrap);
         });
+
+        // Apply conic gradient with offset so slices center on 12 o'clock
+        const offset = - (sliceDeg / 2);
+        this.wheelEl.style.background = `conic-gradient(from ${offset}deg, ${gradientStops.join(', ')})`;
     },
 
     buildBoard() {
@@ -248,10 +246,7 @@ const RouletteUI = {
 
         // Animate wheel
         const degreesPerSlot = 360 / ROULETTE_NUMBERS.length;
-        // Adjust for the slice offset (since slots are drawn from edge to middle)
-        // The pointer is at 12 o'clock (-90deg relative to our slots origin at 3 o'clock)
-        const offset = 90 - (degreesPerSlot / 2);
-        const targetDeg = 360 * 5 - (index * degreesPerSlot) - offset; 
+        const targetDeg = 360 * 5 - (index * degreesPerSlot); 
 
         this.wheelEl.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
         this.wheelEl.style.transform = `rotate(${targetDeg}deg)`;
