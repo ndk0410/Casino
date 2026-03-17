@@ -115,22 +115,43 @@ class UI {
             ? game.currentPlayer === (window.MP_TienLen?.getMyPlayerIndex() ?? 0)
             : game.currentPlayer === 0;
 
+        // Auto-compute overlap on mobile so all cards fit the available width
+        let mobileMargin = 0;
+        if (isMobile && totalCards > 1) {
+            const containerW = this.playerHand.clientWidth || window.innerWidth;
+            // Get actual card width from CSS variable
+            const style = getComputedStyle(document.documentElement);
+            const cardW = parseInt(style.getPropertyValue('--card-width')) || 80;
+            // Total width needed with zero overlap = totalCards * cardW
+            // Available = containerW - some padding
+            const available = containerW - 16; // 8px padding each side
+            if (totalCards * cardW > available) {
+                // Need overlap: each card except last shows `visiblePx` pixels
+                // totalWidth = visiblePx * (n-1) + cardW = available
+                // visiblePx = (available - cardW) / (n-1)
+                const visiblePx = (available - cardW) / (totalCards - 1);
+                // Minimum 18px visible per card for tap target
+                const clampedVisible = Math.max(28, visiblePx);
+                mobileMargin = -(cardW - clampedVisible);
+            }
+        }
+
         hand.forEach((card, index) => {
             const cardEl = document.createElement('div');
             cardEl.className = 'card player-card';
-            cardEl.dataset.cardId = card.id; // store for in-place toggling
+            cardEl.dataset.cardId = card.id;
 
             const isSelected = game.selectedCards.some(c => c.id === card.id);
             if (isSelected) cardEl.classList.add('selected');
 
             if (isMobile) {
-                // Flat layout, reduced overlap so each card is easy to tap
                 cardEl.style.setProperty('--rotation', '0deg');
                 cardEl.style.setProperty('--translate-y', '0px');
-                cardEl.style.margin = '0 -6px'; // less overlap than default
+                if (mobileMargin < 0) {
+                    cardEl.style.margin = `0 ${mobileMargin / 2}px`; // split left+right
+                }
                 cardEl.style.zIndex = index;
             } else {
-                // Desktop fan layout
                 const centerIndex = (totalCards - 1) / 2;
                 const offset = index - centerIndex;
                 cardEl.style.setProperty('--rotation', `${offset * 2.5}deg`);
@@ -147,7 +168,6 @@ class UI {
             if (isMyTurn && !game.isAnimating) {
                 cardEl.classList.add('interactive');
                 cardEl.addEventListener('click', () => {
-                    // Toggle selection IN PLACE — no re-render, no jumping
                     game.toggleCardSelection(card);
                     const nowSelected = game.selectedCards.some(c => c.id === card.id);
                     cardEl.classList.toggle('selected', nowSelected);
@@ -160,6 +180,7 @@ class UI {
             this.playerHand.appendChild(cardEl);
         });
     }
+
 
     renderAIHands() {
         if (!game.hands[0]) return; // Not initialized
@@ -181,9 +202,7 @@ class UI {
         container.innerHTML = '';
         if (!hand) return;
 
-        // All hands are now horizontal rows — overlap via margin-left
         const isMobileLandscape = window.innerHeight < 480;
-        const overlap = isMobileLandscape ? '-20px' : '-36px';
 
         hand.forEach((card, index) => {
             const cardEl = document.createElement('div');
@@ -195,14 +214,20 @@ class UI {
             img.draggable = false;
             cardEl.appendChild(img);
 
-            // Horizontal overlap for all positions
             if (index > 0) {
-                cardEl.style.marginLeft = overlap;
+                if (position === 'north') {
+                    // North = horizontal row
+                    cardEl.style.marginLeft = isMobileLandscape ? '-20px' : '-36px';
+                } else {
+                    // West/East = vertical column
+                    cardEl.style.marginTop = isMobileLandscape ? '-32px' : '-50px';
+                }
             }
 
             container.appendChild(cardEl);
         });
     }
+
 
     renderPlayArea() {
         this.playAreaCards.innerHTML = '';
