@@ -57,7 +57,6 @@ body {
 
 .game-container {
     width: 100vw;
-    /* Use dynamic viewport height so mobile browser chrome is excluded */
     height: 100vh;
     height: 100dvh;
     position: relative;
@@ -66,8 +65,8 @@ body {
         ".     north  .    "
         "west  center east "
         ".     south  .    ";
-    grid-template-columns: 120px 1fr 120px;
-    grid-template-rows: 140px 1fr 200px;
+    grid-template-columns: 110px 1fr 110px;
+    grid-template-rows: 130px 1fr 200px;
     gap: 0;
     overflow: hidden;
 }
@@ -153,40 +152,52 @@ body {
 #west-area {
     grid-area: west;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
 }
 
 #west-area .player-label {
-    top: 0px;
-    left: 10px;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #west-hand {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    margin-top: 30px;
-    max-height: 100%;
-    overflow: hidden;
+    justify-content: center;
+    transform: rotate(90deg);
+    transform-origin: center center;
+    /* Let the rotated strip overflow its column */
+    white-space: nowrap;
+    position: relative;
 }
 
 /* ---- East Area ---- */
 #east-area {
     grid-area: east;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
 }
 
 #east-area .player-label {
-    top: 0px;
+    top: 8px;
     right: 10px;
 }
 
 #east-hand {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    margin-top: 35px;
-    max-height: 100%;
-    overflow: hidden;
+    justify-content: center;
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    white-space: nowrap;
+    position: relative;
 }
 
 #south-area {
@@ -200,10 +211,9 @@ body {
 #player-hand {
     display: flex;
     justify-content: center;
-    align-items: flex-end;
-    min-height: 140px;
-    padding: 0 8px;
-    /* No perspective — prevents 3D arc on mobile flat layout */
+    align-items: center; /* vertically centered, no arc */
+    min-height: 100px;
+    padding: 4px 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -337,19 +347,23 @@ body {
     height: var(--card-height-sm);
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
     border-radius: 6px;
+    flex-shrink: 0;
 }
 
 .ai-card img {
     border-radius: 6px;
 }
 
+/* horizontal fan for all AI positions */
 .ai-card-north {
     margin-left: -40px;
 }
 
 .ai-card-west,
 .ai-card-east {
-    margin-top: -55px;
+    /* Horizontal row: overlap horizontally */
+    margin-left: -36px;
+    margin-top: 0;
 }
 
 /* --- Play Area Cards --- */

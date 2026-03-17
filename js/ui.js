@@ -181,10 +181,9 @@ class UI {
         container.innerHTML = '';
         if (!hand) return;
 
-        // Adjust overlap based on screen size
+        // All hands are now horizontal rows — overlap via margin-left
         const isMobileLandscape = window.innerHeight < 480;
-        const northOverlap = isMobileLandscape ? '-20px' : '-40px';
-        const sideOverlap  = isMobileLandscape ? '-32px' : '-55px';
+        const overlap = isMobileLandscape ? '-20px' : '-36px';
 
         hand.forEach((card, index) => {
             const cardEl = document.createElement('div');
@@ -196,10 +195,9 @@ class UI {
             img.draggable = false;
             cardEl.appendChild(img);
 
-            if (position === 'north') {
-                cardEl.style.marginLeft = index === 0 ? '0' : northOverlap;
-            } else {
-                cardEl.style.marginTop = index === 0 ? '0' : sideOverlap;
+            // Horizontal overlap for all positions
+            if (index > 0) {
+                cardEl.style.marginLeft = overlap;
             }
 
             container.appendChild(cardEl);
