@@ -322,8 +322,8 @@ const MauBinhUI = {
         const totalScore = MauBinh.calculateScores();
         const chipWin = totalScore * MauBinh.bet;
 
-        Account.chips += chipWin;
-        Account.save();
+        if (chipWin > 0) Account.addChips(chipWin);
+        else if (chipWin < 0) Account.deductChips(-chipWin);
 
         this.arrangePanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';

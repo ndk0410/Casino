@@ -347,8 +347,8 @@ const PokerUI = {
             return;
         }
         Poker.startHand();
-        Account.chips = Poker.players[0].chips;
-        Account.save();
+        const deducted = Account.chips - Poker.players[0].chips;
+        if (deducted > 0) Account.deductChips(deducted);
         this.startBtn.style.display = 'none';
         this.render();
         this.runTurn();
@@ -486,13 +486,14 @@ const PokerUI = {
     },
 
     humanAction(action) {
+        const oldChips = Poker.players[0].chips;
         const raiseAmt = parseInt(this.raiseInput?.value) || Poker.bigBlind;
         Poker.playerAction(action, raiseAmt);
 
         if (action === 'fold') Poker.players[0].folded = true;
 
-        Account.chips = Poker.players[0].chips;
-        Account.save();
+        const deducted = oldChips - Poker.players[0].chips;
+        if (deducted > 0) Account.deductChips(deducted);
 
         this.hideActions();
         Poker.currentPlayerIdx = Poker.nextActivePlayer(Poker.currentPlayerIdx);
@@ -511,9 +512,10 @@ const PokerUI = {
             Poker.players[w.idx].chips += share;
         });
 
-        Poker.players[0].chips = Poker.players[0].chips;
-        Account.chips = Poker.players[0].chips;
-        Account.save();
+        const isPlayerWinner = winners.some(w => w.idx === 0);
+        if (isPlayerWinner) {
+            Account.addChips(share);
+        }
 
         const winnerNames = winners.map(w => {
             const ev = evaluatePokerHand([...Poker.players[w.idx].hand, ...Poker.community]);

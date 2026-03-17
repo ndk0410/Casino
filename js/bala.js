@@ -277,8 +277,8 @@ const BaLaUI = {
             return;
         }
         const win = BaLa.play();
-        Account.chips += win;
-        Account.save();
+        if (win > 0) Account.addChips(win);
+        else if (win < 0) Account.deductChips(-win);
         this.actionPanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';
         this.renderHands(true); // reveal dealer
@@ -294,8 +294,8 @@ const BaLaUI = {
 
     doFold() {
         const win = BaLa.fold();
-        Account.chips += win;
-        Account.save();
+        if (win > 0) Account.addChips(win);
+        else if (win < 0) Account.deductChips(-win);
         this.actionPanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';
         this.renderHands(true);

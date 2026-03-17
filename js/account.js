@@ -158,11 +158,13 @@ const Account = {
     },
 
     addChips(amount) {
+        this.loadData();
         this.chips += parseInt(amount);
         this.saveData();
     },
 
     deductChips(amount) {
+        this.loadData();
         if (this.chips >= amount) {
             this.chips -= parseInt(amount);
             this.saveData();
@@ -224,3 +226,22 @@ const Account = {
 
 // Auto-initialize when file loads
 Account.init();
+
+// Cross-tab synchronization
+window.addEventListener('storage', (e) => {
+    if (e.key === 'coca_users' || e.key === 'coca_currentUser') {
+        const oldChips = Account.chips;
+        Account.loadData();
+        if (Account.chips !== oldChips) {
+            window.dispatchEvent(new CustomEvent('accountUpdated', { 
+                detail: { chips: Account.chips, username: Account.username, uid: Account.uid } 
+            }));
+            
+            // Auto update generic chip displays if they exist
+            const chipDisplays = document.querySelectorAll('#chips-display, #display-chips, #bl-chips, #pk-chips, #mb-chips, #rl-chips');
+            chipDisplays.forEach(el => {
+                el.textContent = Account.chips.toLocaleString();
+            });
+        }
+    }
+});

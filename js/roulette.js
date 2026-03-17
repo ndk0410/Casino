@@ -200,8 +200,7 @@ const RouletteUI = {
         }
 
         const totalBet = Roulette.totalBets();
-        Account.chips -= totalBet;
-        Account.save();
+        Account.deductChips(totalBet);
 
         Roulette.spinning = true;
         this.messageEl.textContent = '🎡 Quay...';
@@ -218,8 +217,7 @@ const RouletteUI = {
 
         // Calculate winnings
         const win = Roulette.calculateWinnings();
-        Account.chips += win;
-        Account.save();
+        Account.addChips(win);
 
         const color = number === 0 ? '🟢' : isRed(number) ? '🔴' : '⚫';
         if (win > 0) {
