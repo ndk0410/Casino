@@ -64,11 +64,10 @@ body {
     grid-template-areas:
         ".     north  .    "
         "west  center east "
-        ".     south  .    ";
+        "south south  south";
     grid-template-columns: 110px 1fr 110px;
     grid-template-rows: 130px 1fr 200px;
     gap: 0;
-    /* No overflow:hidden here — south-area cards (and rotated west/east) must not be clipped */
 }
 
 /* ---- Table Felt Pattern ---- */
