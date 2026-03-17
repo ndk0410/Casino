@@ -247,24 +247,33 @@ class UI {
         const names = game.playerNames;
         const current = game.currentPlayer;
 
+        // In multiplayer, determine if it's MY turn
+        const isMyTurn = game.isMultiplayer
+            ? current === (window.MP_TienLen?.getMyPlayerIndex() ?? 0)
+            : current === 0;
+
         if (game.gameOver) {
-            this.turnIndicator.textContent = `🏆 ${names[game.winner]} thắng!`;
+            this.turnIndicator.textContent = `🏆 ${names[game.winner] ?? 'Ai đó'} thắng!`;
             this.turnIndicator.className = 'turn-indicator winner';
         } else if (game.isAnimating) {
-            this.turnIndicator.textContent = `⏳ ${names[current]} đang suy nghĩ...`;
+            this.turnIndicator.textContent = `⏳ ${names[current] ?? 'Dealer'} đang suy nghĩ...`;
             this.turnIndicator.className = 'turn-indicator thinking';
-        } else if (current === 0) {
+        } else if (isMyTurn) {
             this.turnIndicator.textContent = '🃏 Lượt của bạn!';
             this.turnIndicator.className = 'turn-indicator your-turn';
         } else {
-            this.turnIndicator.textContent = `🎴 Lượt của ${names[current]}`;
+            this.turnIndicator.textContent = `🂴 Lượt của ${names[current] ?? 'Dealer'}`;
             this.turnIndicator.className = 'turn-indicator ai-turn';
         }
 
         // Highlight active player position
         document.querySelectorAll('.player-area').forEach(el => el.classList.remove('active-player'));
-        const positionMap = { 0: 'south', 1: 'west', 2: 'north', 3: 'east' };
-        const activeEl = document.getElementById(`${positionMap[current]}-area`);
+        const myIdx = game.isMultiplayer ? (window.MP_TienLen?.getMyPlayerIndex() ?? 0) : 0;
+        const positionMap = ['south', 'west', 'north', 'east'];
+        // Relative seat of the current player from my perspective
+        const numPlayers = game.isMultiplayer ? (window.MP_TienLen ? playersOrder?.length ?? 4 : 4) : 4;
+        const relativeSeat = (current - myIdx + numPlayers) % numPlayers;
+        const activeEl = document.getElementById(`${positionMap[relativeSeat]}-area`);
         if (activeEl) activeEl.classList.add('active-player');
     }
 

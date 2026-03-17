@@ -203,12 +203,23 @@ body {
     align-items: flex-end;
     min-height: 140px;
     padding: 0 8px;
-    perspective: 800px;
-    overflow-x: auto; /* allow horizontal scroll if too many cards */
+    /* No perspective — prevents 3D arc on mobile flat layout */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* hide scrollbar on mobile */
+    scrollbar-width: none;
 }
 #player-hand::-webkit-scrollbar { display: none; }
+
+/* South area label, shown above the hand */
+.south-label {
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    margin-bottom: 4px;
+    align-self: center;
+}
 
 /* ---- Center Area (Play Area) ---- */
 #center-area {
@@ -460,7 +471,7 @@ body {
 /* ---- Turn Indicator ---- */
 .turn-indicator {
     position: fixed;
-    bottom: 210px;
+    bottom: 185px;
     top: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -506,7 +517,7 @@ body {
 /* ---- Message Bar ---- */
 #message {
     position: fixed;
-    bottom: 235px;
+    bottom: 220px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
     font-size: 13px;
@@ -516,7 +527,7 @@ body {
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(12px);
     color: #fff;
-    z-index: 100;
+    z-index: 99; /* just below turn indicator */
     opacity: 0;
     transition: all 0.3s ease;
     pointer-events: none;

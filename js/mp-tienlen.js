@@ -36,22 +36,31 @@ const MP_TienLen = {
     },
 
     setupSittingOrder() {
-        // Simple sitting order: sorted by joinedAt
         const players = Object.values(roomData.players).sort((a, b) => a.joinedAt - b.joinedAt);
         playersOrder = players.map(p => p.uid);
         myPlayerIndex = playersOrder.indexOf(Account.uid);
         
-        // Patch UI sit names
+        const seatIds = ['south-area', 'west-area', 'north-area', 'east-area'];
+        const labelIds = ['player-name', 'west-name', 'north-name', 'east-name'];
+
+        // Hide all non-player seats first
+        for (let seat = 1; seat < 4; seat++) {
+            const relativePos = seat;
+            const seatEl = document.getElementById(seatIds[relativePos]);
+            if (seatEl) seatEl.style.display = 'none';
+        }
+
+        // Show and label each real player
         playersOrder.forEach((uid, idx) => {
             const relativePos = (idx - myPlayerIndex + 4) % 4;
-            const elementId = ['player-name', 'west-name', 'north-name', 'east-name'][relativePos];
-            const labelEl = document.getElementById(elementId);
+            const seatEl = document.getElementById(seatIds[relativePos]);
+            const labelEl = document.getElementById(labelIds[relativePos]);
+            if (seatEl) seatEl.style.display = '';
             if (labelEl) {
-                labelEl.textContent = uid === Account.uid ? "Bạn" : roomData.players[uid].name;
+                labelEl.textContent = uid === Account.uid ? 'Bạn' : roomData.players[uid].name;
             }
         });
 
-        // Add sitting identifiers to game object
         game.playerNames = playersOrder.map(uid => roomData.players[uid].name);
     },
 

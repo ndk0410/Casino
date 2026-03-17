@@ -66,6 +66,10 @@
 
         <!-- South (Human Player) -->
         <div id="south-area" class="player-area">
+            <!-- Label above hand, not below buttons -->
+            <div class="player-label south-label" id="player-name">
+                🙋 Bạn <span class="card-count" id="player-count">13</span>
+            </div>
             <div id="player-hand"></div>
             <div class="controls">
                 <button id="btn-play" class="btn btn-play" title="Đánh bài (Enter)">🃏 Đánh</button>
@@ -73,9 +77,6 @@
                 <button id="btn-hint" class="btn btn-secondary" title="Gợi ý (H)">💡 Gợi ý</button>
                 <button id="btn-new-game" class="btn btn-secondary" title="Ván mới">🔄 Ván mới</button>
                 <button id="btn-sound" class="btn btn-icon" title="Âm thanh">🔊</button>
-            </div>
-            <div class="player-label" style="bottom: 2px;">
-                🙋 Bạn <span class="card-count" id="player-count">13</span>
             </div>
         </div>
     </div>
