@@ -21,7 +21,7 @@ class Card {
         this.rankValue = RANKS.indexOf(rank);   // 0 (3) → 12 (2)
         this.suitValue = SUITS.indexOf(suit);    // 0 (♠) → 3 (♥)
         this.id = `${rank}${suit}`;
-        this.imagePath = `52 playing card/${rank}${suit}.png`;
+        this.imagePath = `../assets/cards/${rank}${suit}.png`;
     }
 
     static fromId(id) {

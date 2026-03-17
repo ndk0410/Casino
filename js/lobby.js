@@ -6,7 +6,7 @@ let isHost = false;
 // Redirect if not logged in
 if (!Account.username) {
     console.warn("Lobby: No username found, redirecting to index.html");
-    window.location.href = 'index.html';
+    window.location.href = '../index.html';
 }
 
 function switchTab(tab) {
@@ -168,7 +168,7 @@ async function leaveRoom() {
     
     currentRoomId = null;
     console.log("Leaving room, redirecting to index.html");
-    window.location.href = 'index.html';
+    window.location.href = '../index.html';
 }
 
 async function startGame() {

@@ -393,7 +393,7 @@ const PokerUI = {
                 if (i === 0 || Poker.phase === 'showdown') {
                     el.innerHTML = `<img src="${card.imagePath}" alt="card">`;
                 } else if (!p.folded) {
-                    el.innerHTML = `<img src="52 playing card/back.png" alt="card">`;
+                    el.innerHTML = `<img src="../assets/cards/back.png" alt="card">`;
                 }
                 cardsEl.appendChild(el);
             });

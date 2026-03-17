@@ -388,7 +388,7 @@ window.MP_XiDach = {
              const div = document.createElement('div');
              div.className = 'xd-card';
              if (idx > 0 && state.phase === 'playing' && !this.isHost) {
-                  div.innerHTML = `<img src="52 playing card/back.png">`;
+                  div.innerHTML = `<img src="../assets/cards/back.png">`;
              } else {
                   div.innerHTML = `<img src="${c.imagePath}">`;
              }

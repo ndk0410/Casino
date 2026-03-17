@@ -309,7 +309,7 @@ const xidachUI = {
 
             const img = document.createElement('img');
             if (hideSecond && i === 1) {
-                img.src = '52 playing card/back.png';
+                img.src = '../assets/cards/back.png';
                 img.alt = '?';
             } else {
                 img.src = card.imagePath;

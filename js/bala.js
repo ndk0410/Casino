@@ -320,7 +320,7 @@ const BaLaUI = {
             if (revealDealer) {
                 el.innerHTML = `<img src="${card.imagePath}" alt="${card.displayName}" draggable="false">`;
             } else {
-                el.innerHTML = `<img src="52 playing card/back.png" alt="Card" draggable="false">`;
+                el.innerHTML = `<img src="../assets/cards/back.png" alt="Card" draggable="false">`;
             }
             this.dealerArea.appendChild(el);
         });

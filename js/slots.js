@@ -5,12 +5,12 @@
 // Symbol Definitions
 // The payout order is: Eggplant < Heart < Cherry < Cash < O/W (Jackpot)
 const SYMBOLS = [
-    { id: 'eggplant', img: 'Slots/SlotsEggplant.png', name: 'Cà Tím', type: 'normal' },
-    { id: 'heart', img: 'Slots/SlotsHeart.png', name: 'Trái Tim', type: 'normal' },
-    { id: 'cherry', img: 'Slots/SlotsCherry.png', name: 'Cherry', type: 'normal' },
-    { id: 'cash', img: 'Slots/SlotsCash.png', name: 'Tiền', type: 'normal' },
-    { id: 'o', img: 'Slots/SlotsO.png', name: 'Chữ O', type: 'special' },
-    { id: 'w', img: 'Slots/SlotsW.png', name: 'Chữ W', type: 'special' }
+    { id: 'eggplant', img: '../assets/slots/SlotsEggplant.png', name: 'Cà Tím', type: 'normal' },
+    { id: 'heart', img: '../assets/slots/SlotsHeart.png', name: 'Trái Tim', type: 'normal' },
+    { id: 'cherry', img: '../assets/slots/SlotsCherry.png', name: 'Cherry', type: 'normal' },
+    { id: 'cash', img: '../assets/slots/SlotsCash.png', name: 'Tiền', type: 'normal' },
+    { id: 'o', img: '../assets/slots/SlotsO.png', name: 'Chữ O', type: 'special' },
+    { id: 'w', img: '../assets/slots/SlotsW.png', name: 'Chữ W', type: 'special' }
 ];
 
 // Configuration for reel strips to make them look infinite when spinning

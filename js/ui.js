@@ -209,7 +209,7 @@ class UI {
             cardEl.className = `card ai-card ai-card-${position}`;
 
             const img = document.createElement('img');
-            img.src = '52 playing card/back.png';
+            img.src = '../assets/cards/back.png';
             img.alt = 'Card';
             img.draggable = false;
             cardEl.appendChild(img);
