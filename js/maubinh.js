@@ -372,6 +372,6 @@ const MauBinhUI = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    Account.load();
+    Account.loadData();
     MauBinhUI.init();
 });

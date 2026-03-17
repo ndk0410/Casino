@@ -261,6 +261,6 @@ const RouletteUI = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    Account.load();
+    Account.loadData();
     RouletteUI.init();
 });

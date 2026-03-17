@@ -537,6 +537,6 @@ const PokerUI = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    Account.load();
+    Account.loadData();
     PokerUI.init();
 });

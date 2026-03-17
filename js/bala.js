@@ -333,6 +333,6 @@ const BaLaUI = {
 
 // Init when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    Account.load();
+    Account.loadData();
     BaLaUI.init();
 });
