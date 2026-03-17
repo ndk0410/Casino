@@ -21,20 +21,9 @@
     <!-- Back to Menu -->
     <a href="index.html" class="back-btn">← Menu</a>
 
-    <!-- Turn Indicator -->
-    <div id="turn-indicator" class="turn-indicator">🃏 Đang chia bài...</div>
 
-    <!-- Scoreboard (Chip Balances) -->
-    <div class="scoreboard">
-        <h3>💰 Chip</h3>
-        <div class="score-row"><span>Bạn</span><span class="score-value" id="score-0">1,000</span></div>
-        <div class="score-row"><span>Dealer 1</span><span class="score-value" id="score-1">1,000</span></div>
-        <div class="score-row"><span>Dealer 2</span><span class="score-value" id="score-2">1,000</span></div>
-        <div class="score-row"><span>Dealer 3</span><span class="score-value" id="score-3">1,000</span></div>
-    </div>
+    <!-- Message toast (now inside center-area below) -->
 
-    <!-- Message -->
-    <div id="message"></div>
 
     <!-- Game Table -->
     <div class="game-container">
@@ -53,6 +42,21 @@
 
         <!-- Center Play Area -->
         <div id="center-area">
+            <!-- Turn Indicator inside the center field -->
+            <div id="turn-indicator" class="turn-indicator">🃏 Đang chia bài...</div>
+
+            <!-- Message toast -->
+            <div id="message"></div>
+
+            <!-- Scoreboard -->
+            <div class="scoreboard">
+                <h3>💰 Chip</h3>
+                <div class="score-row"><span>Bạn</span><span class="score-value" id="score-0">1,000</span></div>
+                <div class="score-row"><span>Dealer 1</span><span class="score-value" id="score-1">1,000</span></div>
+                <div class="score-row"><span>Dealer 2</span><span class="score-value" id="score-2">1,000</span></div>
+                <div class="score-row"><span>Dealer 3</span><span class="score-value" id="score-3">1,000</span></div>
+            </div>
+
             <div id="play-area">
                 <div id="play-area-cards"></div>
             </div>

@@ -484,11 +484,10 @@ body {
 
 /* ---- Turn Indicator ---- */
 .turn-indicator {
-    position: fixed;
-    bottom: 185px;
-    top: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
     font-size: 14px;
     font-weight: 700;
     padding: 8px 24px;
@@ -496,9 +495,11 @@ body {
     background: var(--bg-panel);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.1);
-    z-index: 100;
+    z-index: 10;
     transition: all var(--transition-normal);
     white-space: nowrap;
+    align-self: center; /* center horizontally in flex column */
+    margin-bottom: 8px;
 }
 
 .turn-indicator.your-turn {
@@ -530,10 +531,10 @@ body {
 
 /* ---- Message Bar ---- */
 #message {
-    position: fixed;
-    bottom: 220px;
+    position: absolute;
+    top: -40px;
     left: 50%;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(10px);
     font-size: 13px;
     font-weight: 600;
     padding: 8px 24px;
@@ -541,7 +542,7 @@ body {
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(12px);
     color: #fff;
-    z-index: 99; /* just below turn indicator */
+    z-index: 50;
     opacity: 0;
     transition: all 0.3s ease;
     pointer-events: none;
