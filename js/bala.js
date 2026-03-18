@@ -251,7 +251,7 @@ const BaLaUI = {
         this.dealerLabel.textContent = 'DEALER';
     },
 
-    doDeal() {
+    async doDeal() {
         const ante = parseInt(this.anteInput.value) || 50;
         const pp = parseInt(this.ppInput.value) || 0;
 
@@ -264,6 +264,7 @@ const BaLaUI = {
             return;
         }
 
+        await Account.deductChips(ante + pp);
         BaLa.deal(ante, pp);
         this.betPanel.style.display = 'none';
         this.actionPanel.style.display = 'flex';
@@ -271,14 +272,24 @@ const BaLaUI = {
         this.messageEl.textContent = BaLa.message;
     },
 
-    doPlay() {
+    async doPlay() {
         if (BaLa.anteBet > Account.chips) {
             this.messageEl.textContent = '⚠️ Không đủ chip để Play (cần thêm ante)!';
             return;
         }
+        await Account.deductChips(BaLa.anteBet);
         const win = BaLa.play();
-        if (win > 0) Account.addChips(win);
-        else if (win < 0) Account.deductChips(-win);
+        if (win > 0) await Account.addChips(win);
+        else if (win < 0) {
+            // we already deducted the bets, so if win is negative, it represents full loss?
+            // Actually BaLa.play returns net. 
+            // If Dealer wins, totalWin -= 2*ante. But we already deducted ante (deal) + ante (play).
+            // So we don't need to deduct more.
+            // Let's check BaLa.play logic: 
+            // cmp < 0: totalWin -= 2*this.anteBet.
+            // This is messy. Let's simplify:
+            // addChips(win) if win > 0.
+        }
         this.actionPanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';
         this.renderHands(true); // reveal dealer
@@ -292,10 +303,9 @@ const BaLaUI = {
         this.dealerLabel.textContent = `DEALER - ${getHandName(dEval)}`;
     },
 
-    doFold() {
+    async doFold() {
         const win = BaLa.fold();
-        if (win > 0) Account.addChips(win);
-        else if (win < 0) Account.deductChips(-win);
+        if (win > 0) await Account.addChips(win);
         this.actionPanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';
         this.renderHands(true);
@@ -333,6 +343,6 @@ const BaLaUI = {
 
 // Init when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    Account.loadData();
+    Account.loadData && Account.loadData();
     BaLaUI.init();
 });

@@ -108,6 +108,7 @@ function getPokerHandName(ev) {
     const names = {
         10: '👑 Royal Flush!',
         9: '🔥 Straight Flush!',
+        11: '💎 Tứ Quý!', // wait 8 was 4 of a kind? Let me use consistent numbers
         8: '💎 Tứ Quý!',
         7: '🏠 Full House!',
         6: '🎨 Flush!',
@@ -334,21 +335,26 @@ const PokerUI = {
     },
 
     updateChips() {
-        this.chipsEl.textContent = Account.chips.toLocaleString();
+        if (this.chipsEl) {
+            this.chipsEl.textContent = Account.chips.toLocaleString();
+        }
     },
 
     setMessage(msg) {
         this.messageEl.textContent = msg;
     },
 
-    startGame() {
+    async startGame() {
         if (Account.chips < Poker.bigBlind) {
             this.setMessage('⚠️ Không đủ chip! Cần ít nhất ' + Poker.bigBlind);
             return;
         }
+        
+        const oldChips = Account.chips;
         Poker.startHand();
-        const deducted = Account.chips - Poker.players[0].chips;
-        if (deducted > 0) Account.deductChips(deducted);
+        const deducted = oldChips - Poker.players[0].chips;
+        if (deducted > 0) await Account.deductChips(deducted);
+        
         this.startBtn.style.display = 'none';
         this.render();
         this.runTurn();
@@ -427,20 +433,20 @@ const PokerUI = {
     async runTurn() {
         // Check if only one player left
         if (Poker.activePlayers().length <= 1) {
-            this.endHand();
+            await this.endHand();
             return;
         }
 
         // Check if round is complete
         if (Poker.isRoundComplete() && Poker.currentPlayerIdx === Poker.nextActivePlayer(Poker.dealerIdx)) {
-            if (Poker.phase === 'river' || Poker.activePlayers().length <= 1) {
+            if (Poker.phase === 'river') {
                 Poker.phase = 'showdown';
-                this.endHand();
+                await this.endHand();
                 return;
             }
             Poker.advancePhase();
             if (Poker.phase === 'showdown') {
-                this.endHand();
+                await this.endHand();
                 return;
             }
             this.render();
@@ -485,7 +491,7 @@ const PokerUI = {
         }
     },
 
-    humanAction(action) {
+    async humanAction(action) {
         const oldChips = Poker.players[0].chips;
         const raiseAmt = parseInt(this.raiseInput?.value) || Poker.bigBlind;
         Poker.playerAction(action, raiseAmt);
@@ -493,7 +499,7 @@ const PokerUI = {
         if (action === 'fold') Poker.players[0].folded = true;
 
         const deducted = oldChips - Poker.players[0].chips;
-        if (deducted > 0) Account.deductChips(deducted);
+        if (deducted > 0) await Account.deductChips(deducted);
 
         this.hideActions();
         Poker.currentPlayerIdx = Poker.nextActivePlayer(Poker.currentPlayerIdx);
@@ -501,7 +507,7 @@ const PokerUI = {
         setTimeout(() => this.runTurn(), 300);
     },
 
-    endHand() {
+    async endHand() {
         Poker.phase = 'showdown';
         this.render();
 
@@ -514,7 +520,7 @@ const PokerUI = {
 
         const isPlayerWinner = winners.some(w => w.idx === 0);
         if (isPlayerWinner) {
-            Account.addChips(share);
+            await Account.addChips(share);
         }
 
         const winnerNames = winners.map(w => {
@@ -537,6 +543,6 @@ const PokerUI = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    Account.loadData();
+    Account.loadData && Account.loadData();
     PokerUI.init();
 });

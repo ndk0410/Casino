@@ -725,6 +725,10 @@
 
     <div class="footer">♠ ♣ ♦ ♥ &nbsp;&nbsp;Coca Casino &nbsp;&nbsp;♥ ♦ ♣ ♠</div>
 
+    <!-- Firebase SDKs (Compat versions) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/account.js"></script>
     <script>
         // ---- Account UI Logic ----
@@ -786,10 +790,10 @@
             }
         }
 
-        function handleLogin() {
+        async function handleLogin() {
             const name = loginUsernameInput.value;
             const pass = loginPasswordInput.value;
-            const res = Account.login(name, pass);
+            const res = await Account.login(name, pass);
             if (res.success) {
                 updateAccountUI();
             } else {
@@ -797,7 +801,7 @@
             }
         }
 
-        function handleRegister() {
+        async function handleRegister() {
             const name = regUsernameInput.value;
             const pass = regPasswordInput.value;
             const passConfirm = regPasswordConfirm.value;
@@ -807,10 +811,10 @@
                 return;
             }
 
-            const res = Account.register(name, pass);
+            const res = await Account.register(name, pass);
             if (res.success) {
                 alert(`Đăng ký thành công!\nUID của bạn: ${res.uid}\nHãy ghi nhớ UID này để nạp chip!`);
-                Account.login(name, pass);
+                await Account.login(name, pass);
                 updateAccountUI();
             } else {
                 alert(res.msg);
@@ -825,8 +829,8 @@
             if (e.key === 'Enter') handleRegister();
         });
 
-        function claimDaily() {
-            if (Account.claimDaily()) {
+        async function claimDaily() {
+            if (await Account.claimDaily()) {
                 alert(`Chúc mừng! Bạn đã nhận được ${Account.DAILY_AMOUNT.toLocaleString()} chip điểm danh hàng ngày!`);
             }
         }
@@ -839,20 +843,21 @@
             adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
         }
 
-        function adminAddChips() {
+        async function adminAddChips() {
             const uid = document.getElementById('admin-uid').value.trim();
             const amount = document.getElementById('admin-amount').value;
             const resultEl = document.getElementById('admin-result');
 
-            const res = Account.adminAddChips(uid, amount);
+            if (!uid) { alert("Vui lòng nhập UID!"); return; }
+            
+            const res = await Account.adminAddChips(uid, amount);
             resultEl.style.display = 'block';
             resultEl.textContent = res.msg;
             resultEl.className = 'admin-result' + (res.success ? '' : ' error');
             if (res.success) updateAccountUI();
         }
-
-        function adminLoadUsers() {
-            const users = Account.adminGetAllUsers();
+        async function adminLoadUsers() {
+            const users = await Account.adminGetAllUsers();
             const listEl = document.getElementById('admin-user-list');
             if (!users.length) { listEl.innerHTML = '<p style="color:#888;font-size:12px;">Không có dữ liệu.</p>'; return; }
 

@@ -76,7 +76,6 @@ class Game {
         if (this.mustPlay3Spade) {
             const has3S = sorted.some(c => c.rank === '3' && c.suit === 's');
             if (!has3S) {
-                ui.showMessage('Lượt đầu phải đánh bài có 3♠!');
                 audioManager.invalidMove();
                 return false;
             }
@@ -101,7 +100,7 @@ class Game {
         return true;
     }
 
-    executePlay(playerIndex, cards, specialMessage = '') {
+    async executePlay(playerIndex, cards, specialMessage = '') {
         // Remove cards from hand
         for (const card of cards) {
             const idx = this.hands[playerIndex].findIndex(c => c.id === card.id);
@@ -146,7 +145,10 @@ class Game {
                     this.aiChips[i] -= aiLoss;
                     totalWon += aiLoss;
                 }
-                Account.addChips(totalWon);
+                if (totalWon > 0) {
+                    await Account.addChips(totalWon);
+                    ui.showMessage(`Bạn thắng ${totalWon.toLocaleString()} chip!`, "success");
+                }
                 specialMessage = `Thắng! +${totalWon} Chip`;
                 audioManager.win();
             } else {
@@ -155,9 +157,10 @@ class Game {
                 // Human loses
                 const humanLoss = this.hands[0].length * 10;
                 if (humanLoss > 0) {
-                    Account.deductChips(humanLoss);
+                    await Account.deductChips(humanLoss);
                     totalAIWon += humanLoss;
                     specialMessage = `Thua mất ${humanLoss} Chip!`;
+                    ui.showMessage(`Bạn thua ${humanLoss.toLocaleString()} chip!`, "error");
                 }
                 
                 // Other AIs lose

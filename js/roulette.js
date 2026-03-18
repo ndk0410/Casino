@@ -21,7 +21,6 @@ const Roulette = {
     history: [],
 
     addBet(type, value, amount) {
-        // type: 'straight','red','black','odd','even','1-18','19-36','dozen1','dozen2','dozen3','col1','col2','col3'
         const existing = this.bets.find(b => b.type === type && b.value === value);
         if (existing) {
             existing.amount += amount;
@@ -93,7 +92,7 @@ const Roulette = {
                     if (n > 0 && n % 3 === 0) payout = bet.amount * 2;
                     break;
             }
-            totalWin += payout;
+            totalWin += (payout > 0) ? (payout + bet.amount) : 0; // Return original bet on win
         });
 
         return totalWin;
@@ -128,11 +127,16 @@ const RouletteUI = {
     },
 
     updateChips() {
-        this.chipsEl.textContent = Account.chips.toLocaleString();
-        this.totalBetEl.textContent = Roulette.totalBets().toLocaleString();
+        if (this.chipsEl) {
+            this.chipsEl.textContent = Account.chips.toLocaleString();
+        }
+        if (this.totalBetEl) {
+            this.totalBetEl.textContent = Roulette.totalBets().toLocaleString();
+        }
     },
 
     buildWheel() {
+        if (!this.wheelEl) return;
         this.wheelEl.innerHTML = '';
         const numSlots = ROULETTE_NUMBERS.length;
         const sliceDeg = 360 / numSlots;
@@ -140,7 +144,6 @@ const RouletteUI = {
         let gradientStops = [];
 
         ROULETTE_NUMBERS.forEach((num, i) => {
-            // Colors
             let color = '#2c3e50'; // black
             if (num === 0) color = '#27ae60'; // green
             else if (isRed(num)) color = '#c0392b'; // red
@@ -149,7 +152,6 @@ const RouletteUI = {
             const end = (i + 1) * sliceDeg;
             gradientStops.push(`${color} ${start}deg ${end}deg`);
 
-            // Numbers
             const numWrap = document.createElement('div');
             numWrap.className = 'rl-number-wrap';
             numWrap.style.transform = `rotate(${i * sliceDeg}deg)`;
@@ -162,23 +164,21 @@ const RouletteUI = {
             this.wheelEl.appendChild(numWrap);
         });
 
-        // Apply conic gradient with offset so slices center on 12 o'clock
         const offset = - (sliceDeg / 2);
         this.wheelEl.style.background = `conic-gradient(from ${offset}deg, ${gradientStops.join(', ')})`;
     },
 
     buildBoard() {
         const board = document.getElementById('rl-board');
+        if (!board) return;
         board.innerHTML = '';
 
-        // Zero
         const zero = document.createElement('div');
         zero.className = 'rl-cell rl-zero';
         zero.textContent = '0';
         zero.addEventListener('click', () => this.placeBet('straight', 0));
         board.appendChild(zero);
 
-        // Numbers 1-36
         for (let row = 0; row < 12; row++) {
             for (let col = 2; col >= 0; col--) {
                 const n = row * 3 + col + 1;
@@ -190,7 +190,6 @@ const RouletteUI = {
             }
         }
 
-        // Bottom bets
         const bottomBets = [
             { label: '1st 12', type: 'dozen1' },
             { label: '2nd 12', type: 'dozen2' },
@@ -225,31 +224,15 @@ const RouletteUI = {
         }
         Roulette.addBet(type, value, this.chipSize);
         this.updateChips();
-        const label = type === 'straight' ? `Số ${value}` : type.toUpperCase();
-        this.messageEl.innerHTML = `<img src="../assets/economy/Economy_Cowoncy.png" style="width:14px;vertical-align:middle;"> Đặt ${this.chipSize} vào ${label}`;
     },
 
     async spin() {
         if (Roulette.spinning) return;
-        if (Roulette.bets.length === 0 && !window.MP_Roulette?.isMultiplayer) {
+        if (Roulette.bets.length === 0) {
             this.messageEl.textContent = '⚠️ Chưa đặt cược!';
             return;
         }
 
-        // Multiplayer intervention
-        if (window.MP_Roulette && window.MP_Roulette.isMultiplayer) {
-            if (!MP_Roulette.isHost) {
-                this.messageEl.textContent = 'Chỉ chủ phòng mới được quay!';
-                return;
-            }
-            // Host generates result and sends to Firebase
-            const idx = Math.floor(Math.random() * ROULETTE_NUMBERS.length);
-            const number = ROULETTE_NUMBERS[idx];
-            MP_Roulette.broadcastSpin(number, idx);
-            return; // Exit normal flow, wait for Firebase callback
-        }
-
-        // Offline flow
         const { number, index } = Roulette.spin();
         await this.executeSpin(number, index);
     },
@@ -257,16 +240,14 @@ const RouletteUI = {
     async executeSpin(number, index) {
         if (Roulette.spinning) return;
         
-        // In multiplayer, players might have 0 bets, that's fine, they just watch.
         const totalBet = Roulette.totalBets();
         if (totalBet > 0) {
-            Account.deductChips(totalBet);
+            await Account.deductChips(totalBet);
         }
 
         Roulette.spinning = true;
         this.messageEl.textContent = '🎡 Quay...';
 
-        // Animate wheel
         const degreesPerSlot = 360 / ROULETTE_NUMBERS.length;
         const targetDeg = 360 * 5 - (index * degreesPerSlot); 
 
@@ -275,41 +256,30 @@ const RouletteUI = {
 
         await this.delay(4200);
 
-        // Update Roulette outcome manually for multiplayer sync
         Roulette.result = number;
-        if (window.MP_Roulette && window.MP_Roulette.isMultiplayer) {
-            Roulette.history.unshift(number);
-            if (Roulette.history.length > 20) Roulette.history.pop();
-        }
-
-        // Calculate winnings
         const win = Roulette.calculateWinnings();
         if (win > 0) {
-            Account.addChips(win);
+            await Account.addChips(win);
         }
 
         const color = number === 0 ? '🟢' : isRed(number) ? '🔴' : '⚫';
-        if (totalBet > 0) {
-            if (win > 0) {
-                this.messageEl.textContent = `${color} Số ${number}! Thắng +${win.toLocaleString()} chip! 🎉`;
-            } else {
-                this.messageEl.textContent = `${color} Số ${number}! Thua ${totalBet.toLocaleString()} chip 😞`;
-            }
+        if (win > 0) {
+            this.messageEl.textContent = `${color} Số ${number}! Thắng +${win.toLocaleString()} chip! 🎉`;
         } else {
-            this.messageEl.textContent = `${color} Số ${number}!`;
+            this.messageEl.textContent = `${color} Số ${number}! Thua ${totalBet.toLocaleString()} chip 😞`;
         }
 
-        // Update history
         this.renderHistory();
         this.updateChips();
 
         Roulette.clearBets();
         Roulette.spinning = false;
 
-        // Reset wheel for next spin
         setTimeout(() => {
-            this.wheelEl.style.transition = 'none';
-            this.wheelEl.style.transform = 'rotate(0deg)';
+            if (this.wheelEl) {
+                this.wheelEl.style.transition = 'none';
+                this.wheelEl.style.transform = 'rotate(0deg)';
+            }
         }, 500);
     },
 
@@ -321,6 +291,7 @@ const RouletteUI = {
     },
 
     renderHistory() {
+        if (!this.historyEl) return;
         this.historyEl.innerHTML = '';
         Roulette.history.forEach(n => {
             const el = document.createElement('span');
@@ -334,6 +305,6 @@ const RouletteUI = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    Account.loadData();
+    Account.loadData && Account.loadData();
     RouletteUI.init();
 });

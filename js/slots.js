@@ -136,7 +136,7 @@ const slotsGame = {
     setupReels() {
     },
 
-    spin() {
+    async spin() {
         if (this.isSpinning) return;
         if (Account.chips < this.bet) {
             this.showMessage("Vui lòng nạp thêm tiền!", "error");
@@ -144,7 +144,7 @@ const slotsGame = {
             return;
         }
 
-        Account.deductChips(this.bet);
+        await Account.deductChips(this.bet);
         this.updateDisplay();
         this.isSpinning = true;
         this.elements.btnSpin.disabled = true;
@@ -197,7 +197,7 @@ const slotsGame = {
         }
     },
 
-    checkResult() {
+    async checkResult() {
         this.isSpinning = false;
         this.elements.btnSpin.disabled = false;
 
@@ -219,7 +219,7 @@ const slotsGame = {
 
         if (winMultiplier > 0) {
             const winAmount = this.bet * winMultiplier;
-            Account.addChips(winAmount);
+            await Account.addChips(winAmount);
             this.updateDisplay();
             
             this.elements.wrapper.classList.add('play-win');

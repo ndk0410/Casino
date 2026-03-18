@@ -134,13 +134,13 @@ const XiDach = {
         this.dealerPlay();
     },
 
-    doubleDown() {
+    async doubleDown() {
         if (this.phase !== 'playing' || this.playerHand.length !== 2) return;
         if (Account.chips < this.bet) {
             xidachUI.showMessage('Không đủ chip để nhân đôi!');
             return;
         }
-        Account.deductChips(this.bet);
+        await Account.deductChips(this.bet);
         this.bet *= 2;
         this.playerHand.push(this.drawCard());
         xidachUI.render();
@@ -199,31 +199,31 @@ const XiDach = {
         xidachUI.render();
     },
 
-    resolveResult() {
+    async resolveResult() {
         if (this.result === 'win' || this.result === 'blackjack' || this.result === 'ngulinh') {
-            Account.addChips(Math.floor(this.bet * (1 + this.resultBonus)));
+            await Account.addChips(Math.floor(this.bet * (1 + this.resultBonus)));
         } else if (this.result === 'push') {
-            Account.addChips(this.bet); // Return bet
+            await Account.addChips(this.bet); // Return bet
         }
         // lose: bet already deducted
         xidachUI.updateChipDisplay();
     },
 
-    placeBet(amount) {
+    async placeBet(amount) {
         if (this.phase !== 'bet') return;
         if (Account.chips < amount) {
             xidachUI.showMessage('Không đủ chip!');
             return;
         }
         this.bet += amount;
-        Account.deductChips(amount);
+        await Account.deductChips(amount);
         xidachUI.updateBetDisplay();
         xidachUI.updateChipDisplay();
     },
 
-    clearBet() {
+    async clearBet() {
         if (this.phase !== 'bet') return;
-        Account.addChips(this.bet);
+        await Account.addChips(this.bet);
         this.bet = 0;
         xidachUI.updateBetDisplay();
         xidachUI.updateChipDisplay();
