@@ -173,6 +173,7 @@ const Poker = {
         this.currentBet = this.bigBlind;
 
         this.phase = 'preflop';
+        audioManager.shuffle();
         this.currentPlayerIdx = (bbIdx + 1) % 4;
     },
 
@@ -252,7 +253,7 @@ const Poker = {
             this.postBet(this.currentPlayerIdx, toCall + raiseAmount);
             this.currentBet = p.bet;
         } else if (action === 'check') {
-            // do nothing
+            audioManager.pass();
         }
     },
 
@@ -498,8 +499,10 @@ const PokerUI = {
                 this.setMessage(`${p.name} raise +${decision.amount}`);
             } else if (decision.action === 'call') {
                 this.setMessage(`${p.name} call`);
+                audioManager.cardPlay();
             } else {
                 this.setMessage(`${p.name} check`);
+                audioManager.pass();
             }
 
             Poker.currentPlayerIdx = Poker.nextActivePlayer(Poker.currentPlayerIdx);
@@ -517,6 +520,13 @@ const PokerUI = {
     async humanAction(action) {
         const oldChips = Poker.players[0].chips;
         const raiseAmt = parseInt(this.raiseInput?.value) || Poker.bigBlind;
+        if (action === 'fold') {
+            audioManager.pass();
+        } else if (action === 'check') {
+            audioManager.pass();
+        } else {
+            audioManager.cardPlay();
+        }
         Poker.playerAction(action, raiseAmt);
 
         if (action === 'fold') Poker.players[0].folded = true;
@@ -548,8 +558,11 @@ const PokerUI = {
         const isPlayerWinner = winners.some(w => w.idx === 0);
         if (isPlayerWinner) {
             await Account.addChips(share);
+            audioManager.win();
             // Final sync for the hand
             Poker.players[0].chips = Account.chips;
+        } else {
+            audioManager.lose();
         }
 
         const winnerNames = winners.map(w => {

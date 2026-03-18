@@ -72,6 +72,7 @@ class UI {
 
     bindEvents() {
         this.btnPlay.addEventListener('click', () => {
+            audioManager.ensureContext();
             if (this.btnPlay.disabled) return;
             this.btnPlay.disabled = true; // Debounce immediately
             const success = game.playSelectedCards();
@@ -81,6 +82,7 @@ class UI {
         });
         
         this.btnPass.addEventListener('click', () => {
+            audioManager.ensureContext();
             if (this.btnPass.disabled) return;
             this.btnPass.disabled = true; // Debounce immediately
             const success = game.humanPass();
@@ -88,7 +90,10 @@ class UI {
                 setTimeout(() => this.updateButtons(), 300);
             }
         });
-        this.btnHint.addEventListener('click', () => game.autoSelectHint());
+        this.btnHint.addEventListener('click', () => {
+            audioManager.ensureContext();
+            game.autoSelectHint();
+        });
 
         // Emoji listeners
         if (this.btnEmoji) {

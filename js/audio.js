@@ -7,6 +7,19 @@ class AudioManager {
         this.ctx = null;
         this.enabled = true;
         this.initialized = false;
+        this.setupAutoInit();
+    }
+
+    setupAutoInit() {
+        const init = () => {
+            this.ensureContext();
+            document.removeEventListener('click', init);
+            document.removeEventListener('touchstart', init);
+            document.removeEventListener('keydown', init);
+        };
+        document.addEventListener('click', init);
+        document.addEventListener('touchstart', init);
+        document.addEventListener('keydown', init);
     }
 
     init() {

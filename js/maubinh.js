@@ -220,6 +220,7 @@ const MauBinhUI = {
             this.messageEl.textContent = '🎴 Đang chia bài...';
             
             this.updateChips();
+            audioManager.shuffle();
             MauBinh.deal();
 
             this.front = [];
@@ -290,8 +291,10 @@ const MauBinhUI = {
         const idx = this.selected.findIndex(c => c.id === card.id);
         if (idx >= 0) {
             this.selected.splice(idx, 1);
+            audioManager.cardDeselect();
         } else {
             this.selected.push(card);
+            audioManager.cardSelect();
         }
         this.renderHand();
     },
@@ -310,6 +313,7 @@ const MauBinhUI = {
             }
         }
         this.selected = [];
+        audioManager.cardPlay();
         this.renderHand();
         this.renderChis();
     },
@@ -318,6 +322,7 @@ const MauBinhUI = {
         const target = chi === 'front' ? this.front : chi === 'middle' ? this.middle : this.back;
         const idx = target.findIndex(c => c.id === card.id);
         if (idx >= 0) target.splice(idx, 1);
+        audioManager.cardDeselect();
         this.renderHand();
         this.renderChis();
     },
@@ -361,10 +366,13 @@ const MauBinhUI = {
 
         if (chipWin > 0) {
             this.messageEl.textContent = `🎉 Thắng! +${chipWin.toLocaleString()} chip (${totalScore > 0 ? '+' : ''}${totalScore} chi)`;
+            audioManager.win();
         } else if (chipWin < 0) {
             this.messageEl.textContent = `😞 Thua! ${Math.abs(chipWin).toLocaleString()} chip (${totalScore} chi)`;
+            audioManager.lose();
         } else {
             this.messageEl.textContent = '🤝 Hòa!';
+            audioManager.pass();
         }
 
         // Show results

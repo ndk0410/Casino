@@ -227,6 +227,7 @@ const RouletteUI = {
             return;
         }
         Roulette.addBet(type, value, this.chipSize);
+        audioManager.cardSelect();
         this.updateChips();
     },
 
@@ -249,6 +250,7 @@ const RouletteUI = {
             await Account.deductChips(totalBet);
         }
 
+        audioManager.shuffle();
         Roulette.spinning = true;
         this.messageEl.textContent = '🎡 Quay...';
 
@@ -264,6 +266,9 @@ const RouletteUI = {
         const win = Roulette.calculateWinnings();
         if (win > 0) {
             await Account.addChips(win);
+            audioManager.win();
+        } else {
+            audioManager.lose();
         }
 
         const color = number === 0 ? '🟢' : isRed(number) ? '🔴' : '⚫';

@@ -201,6 +201,9 @@ const BaLaUI = {
         this.ppInput = document.getElementById('bl-pp-input');
         this.anteMaxBtn = document.getElementById('bl-ante-max');
         this.ppMaxBtn = document.getElementById('bl-pp-max');
+        this.playerLabel = document.getElementById('bl-player-name');
+        this.dealerLabel = document.getElementById('bl-dealer-name');
+        this.chipsDisplay = document.getElementById('bl-chips');
 
         if (this.anteMaxBtn) {
             this.anteMaxBtn.addEventListener('click', () => {
@@ -270,6 +273,7 @@ const BaLaUI = {
             this.actionPanel.style.display = 'flex';
             this.resultPanel.style.display = 'none';
             this.messageEl.textContent = '🃏 Đang chơi...';
+            audioManager.shuffle();
             this.renderHands(false); // hide dealer
             this.updateChips();
         } catch (e) {
@@ -288,6 +292,13 @@ const BaLaUI = {
         const credit = BaLa.play();
         if (credit > 0) {
             await Account.addChips(credit);
+            if (BaLa.result === 'win' || BaLa.result === 'dealer-no-qualify') {
+                audioManager.win();
+            } else {
+                audioManager.pass(); // Push
+            }
+        } else {
+            audioManager.lose();
         }
         
         this.actionPanel.style.display = 'none';
@@ -307,6 +318,7 @@ const BaLaUI = {
     },
 
     async doFold() {
+        audioManager.lose();
         const credit = BaLa.fold();
         if (credit > 0) {
             await Account.addChips(credit);
