@@ -262,12 +262,21 @@ const BaLaUI = {
             return;
         }
 
-        await Account.deductChips(ante + pp);
-        BaLa.deal(ante, pp);
-        this.betPanel.style.display = 'none';
-        this.actionPanel.style.display = 'flex';
-        this.renderHands(false); // dealer face down
-        this.messageEl.textContent = BaLa.message;
+        try {
+            await Account.deductChips(ante + pp);
+            BaLa.deal(ante, pp);
+            
+            this.betPanel.style.display = 'none';
+            this.actionPanel.style.display = 'flex';
+            this.resultPanel.style.display = 'none';
+            this.messageEl.textContent = '🃏 Đang chơi...';
+            this.renderHands(false); // hide dealer
+            this.updateChips();
+        } catch (e) {
+            console.error(e);
+            this.messageEl.textContent = '❌ Lỗi hệ thống. Vui lòng thử lại!';
+            this.betPanel.style.display = 'flex';
+        }
     },
 
     async doPlay() {

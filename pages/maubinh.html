@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/maubinh.css">
+    <link rel="stylesheet" href="../css/betting.css">
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -28,12 +29,15 @@
         <div class="mb-message" id="mb-message"><img src="../assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:14px; vertical-align:middle;"> Đặt cược và bắt đầu!</div>
 
         <!-- Bet Panel -->
-        <div class="mb-panel" id="mb-bet-panel">
-            <div class="mb-bet-inputs">
-                <input type="number" id="mb-bet-input" value="100" min="10" step="10">
-                <button id="mb-max-btn" class="mb-btn-small">MAX</button>
+        <div id="mb-bet-panel" class="premium-bet-panel">
+            <div class="premium-bet-group">
+                <label class="premium-label">💰 SỐ TIỀN CƯỢC:</label>
+                <div class="premium-input-wrap">
+                    <input type="number" id="mb-bet-input" class="premium-input" value="100" min="10" step="10">
+                    <button id="mb-max-btn" class="premium-btn-max">MAX</button>
+                </div>
             </div>
-            <button class="mb-btn mb-btn-primary" onclick="MauBinhUI.startGame()">BẮT ĐẦU</button>
+            <button class="premium-btn-primary" onclick="MauBinhUI.startGame()">🀄 BẮT ĐẦU CHƠI</button>
         </div>
 
         <!-- Chi rows -->

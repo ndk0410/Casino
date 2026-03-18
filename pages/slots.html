@@ -12,6 +12,7 @@
     <link rel="icon" href="../assets/icon-512.png">
     <link rel="apple-touch-icon" href="../assets/icon-512.png">
     <link rel="stylesheet" href="../css/slots.css">
+    <link rel="stylesheet" href="../css/betting.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎰</text></svg>">
 </head>
 <body>
@@ -59,27 +60,26 @@
         </div>
 
         <!-- Controls -->
-        <div class="controls-panel">
-            <div class="info-group">
+        <div class="premium-bet-panel">
+            <div class="info-group" style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <div class="info-box">
-                    <span class="info-label">Tài khoản</span>
-                    <span class="info-value text-gold" id="chips-display">1,000</span>
+                    <span class="premium-label">Tài khoản</span>
+                    <span class="info-value" id="chips-display" style="color:#fff; font-weight:900;">1,000</span>
                 </div>
                 <div class="info-box">
-                    <span class="info-label">Cược (Mỗi vòng)</span>
-                    <span class="info-value text-accent" id="bet-display">50</span>
+                    <span class="premium-label">Cược vòng</span>
+                    <span class="info-value" id="bet-display" style="color:#f1c40f; font-weight:900;">50</span>
                 </div>
             </div>
 
-            <div class="bet-controls">
-                <button class="btn-bet" onclick="slotsGame.changeBet(-50)">-50</button>
-                <button class="btn-bet" onclick="slotsGame.changeBet(50)">+50</button>
-                <button class="btn-bet btn-max" onclick="slotsGame.setMaxBet()">MAX</button>
+            <div class="bet-controls" style="display:flex; gap:10px; margin-bottom:10px;">
+                <button class="premium-btn-max" style="flex:1; padding:10px;" onclick="slotsGame.changeBet(-50)">-50</button>
+                <button class="premium-btn-max" style="flex:1; padding:10px;" onclick="slotsGame.changeBet(50)">+50</button>
+                <button class="premium-btn-max" style="flex:1; padding:10px; background:linear-gradient(135deg, #f1c40f, #e67e22);" onclick="slotsGame.setMaxBet()">MAX</button>
             </div>
 
-            <button class="btn-spin" id="btn-spin" onclick="slotsGame.spin()">
-                <div class="spin-text">QUAY</div>
-                <div class="spin-subtext">ENTER</div>
+            <button class="premium-btn-primary" id="btn-spin" onclick="slotsGame.spin()" style="width:100%;">
+                🎰 QUAY NGÀY
             </button>
         </div>
         

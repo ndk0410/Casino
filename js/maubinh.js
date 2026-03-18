@@ -198,7 +198,7 @@ const MauBinhUI = {
         this.chipsEl.textContent = Account.chips.toLocaleString();
     },
 
-    startGame() {
+    async startGame() {
         let bet = parseInt(this.betInput.value) || 100;
         
         // Enforce 250k limit
@@ -212,21 +212,32 @@ const MauBinhUI = {
             this.messageEl.textContent = '⚠️ Không đủ chip!';
             return;
         }
-        MauBinh.bet = bet;
-        MauBinh.deal();
 
-        this.front = [];
-        this.middle = [];
-        this.back = [];
-        this.selected = [];
+        try {
+            MauBinh.bet = bet;
+            await Account.deductChips(bet);
+            this.betPanel.style.display = 'none';
+            this.messageEl.textContent = '🎴 Đang chia bài...';
+            
+            this.updateChips();
+            MauBinh.deal();
 
-        this.betPanel.style.display = 'none';
-        this.arrangePanel.style.display = 'flex';
-        this.resultPanel.style.display = 'none';
+            this.front = [];
+            this.middle = [];
+            this.back = [];
+            this.selected = [];
 
-        this.messageEl.textContent = '🃏 Xếp bài: Chọn bài từ tay → đặt vào chi (Front 3, Middle 5, Back 5)';
-        this.renderHand();
-        this.renderChis();
+            this.arrangePanel.style.display = 'flex';
+            this.resultPanel.style.display = 'none';
+
+            this.messageEl.textContent = '🃏 Xếp bài: Chọn bài từ tay → đặt vào chi (Front 3, Middle 5, Back 5)';
+            this.renderHand();
+            this.renderChis();
+        } catch (e) {
+            console.error(e);
+            this.messageEl.textContent = '❌ Lỗi hệ thống. Vui lòng thử lại!';
+            this.betPanel.style.display = 'block';
+        }
     },
 
     renderHand() {

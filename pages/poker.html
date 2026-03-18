@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/poker.css">
+    <link rel="stylesheet" href="../css/betting.css">
 </head>
 <body>
     <div class="pk-topbar">
@@ -68,9 +69,11 @@
             <button class="pk-btn pk-btn-primary" id="pk-call-btn" onclick="PokerUI.humanAction('call')">📞 Call</button>
             <button class="pk-btn pk-btn-secondary" id="pk-check-btn" onclick="PokerUI.humanAction('check')" style="display:none;">✋ Check</button>
             <div class="pk-raise-group">
-                <div class="pk-bet-wrap">
-                <input type="number" id="pk-raise-input" value="50" min="50" step="50">
-                <button id="pk-max-btn" class="pk-btn-small">MAX</button>
+            <div class="premium-bet-group" style="flex-grow: 1;">
+                <div class="premium-input-wrap" style="background: rgba(0,0,0,0.3); border-radius: 8px;">
+                    <input type="number" id="pk-raise-input" class="premium-input" value="50" min="50" step="50" style="padding: 5px; font-size: 14px;">
+                    <button id="pk-max-btn" class="premium-btn-max">MAX</button>
+                </div>
             </div>
             <button id="pk-raise-btn" class="pk-btn pk-btn-raise" onclick="PokerUI.humanAction('raise')">⏫ Raise</button>
             </div>

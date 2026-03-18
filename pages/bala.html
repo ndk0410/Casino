@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/bala.css">
+    <link rel="stylesheet" href="../css/betting.css">
 </head>
 <body>
     <!-- Top Bar -->
@@ -41,22 +42,22 @@
         <div class="bl-message" id="bl-message"><img src="../assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:14px; vertical-align:middle;"> Đặt cược để bắt đầu!</div>
 
         <!-- Bet Panel -->
-        <div class="bl-bet-controls">
-            <div class="bl-bet-group">
-                <label>ANTE (Cược Ngoài):</label>
-                <div class="bl-input-wrap">
-                    <input type="number" id="bl-ante-input" value="100" min="10" step="10">
-                    <button class="bl-max-btn" id="bl-ante-max">MAX</button>
+        <div id="bl-bet-panel" class="premium-bet-panel">
+            <div class="premium-bet-group">
+                <label class="premium-label">🃏 ANTE (Cược Ngoài):</label>
+                <div class="premium-input-wrap">
+                    <input type="number" id="bl-ante-input" class="premium-input" value="100" min="10" step="10">
+                    <button class="premium-btn-max" id="bl-ante-max">MAX</button>
                 </div>
             </div>
-            <div class="bl-bet-group">
-                <label>PAIR PLUS (Cược Đôi):</label>
-                <div class="bl-input-wrap">
-                    <input type="number" id="bl-pp-input" value="0" min="0" step="10">
-                    <button class="bl-max-btn" id="bl-pp-max">MAX</button>
+            <div class="premium-bet-group">
+                <label class="premium-label">✨ PAIR PLUS (Cược Đôi):</label>
+                <div class="premium-input-wrap">
+                    <input type="number" id="bl-pp-input" class="premium-input" value="0" min="0" step="10">
+                    <button class="premium-btn-max" id="bl-pp-max">MAX</button>
                 </div>
             </div>
-            <button class="bl-btn bl-btn-primary" onclick="BaLaUI.doDeal()">🃏 CHIA BÀI</button>
+            <button class="premium-btn-primary" onclick="BaLaUI.doDeal()">🃏 CHIA BÀI NGAY</button>
         </div>
 
         <!-- Action Panel -->

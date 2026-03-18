@@ -211,12 +211,28 @@ const XiDach = {
 
     async placeBet(amount) {
         if (this.phase !== 'bet') return;
-        if (Account.chips < amount) {
+        
+        let numericAmount = 0;
+        if (amount === 'max') {
+            numericAmount = Math.min(Account.chips, 250000 - this.bet);
+        } else {
+            numericAmount = parseInt(amount);
+        }
+
+        if (isNaN(numericAmount) || numericAmount <= 0) return;
+
+        if (this.bet + numericAmount > 250000) {
+            xidachUI.showMessage('⚠️ Cược tối đa mỗi ván là 250,000!');
+            return;
+        }
+
+        if (Account.chips < numericAmount) {
             xidachUI.showMessage('Không đủ chip!');
             return;
         }
-        this.bet += amount;
-        await Account.deductChips(amount);
+        
+        this.bet += numericAmount;
+        await Account.deductChips(numericAmount);
         xidachUI.updateBetDisplay();
         xidachUI.updateChipDisplay();
     },

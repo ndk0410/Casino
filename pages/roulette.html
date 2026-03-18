@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/roulette.css">
+    <link rel="stylesheet" href="../css/betting.css">
 </head>
 <body>
     <div class="rl-topbar">
@@ -30,12 +31,12 @@
         <div class="rl-message" id="rl-message">🎡 Chọn chip, đặt cược lên bảng, rồi QUAY!</div>
 
         <!-- Chip selector -->
-        <div class="rl-chips-selector">
-            <button class="rl-chip-btn rl-chip-10 active" data-value="10">10</button>
-            <button class="rl-chip-btn rl-chip-25" data-value="25">25</button>
-            <button class="rl-chip-btn rl-chip-50" data-value="50">50</button>
-            <button class="rl-chip-btn rl-chip-100" data-value="100">100</button>
-            <button class="rl-chip-btn rl-chip-500" data-value="500">500</button>
+        <div class="rl-chips-selector premium-chips-container">
+            <div class="premium-chip chip-10 active" data-value="10">10</div>
+            <div class="premium-chip chip-25" data-value="25">25</div>
+            <div class="premium-chip chip-50" data-value="50">50</div>
+            <div class="premium-chip chip-100" data-value="100">100</div>
+            <div class="premium-chip chip-500" data-value="500">500</div>
         </div>
 
         <div class="rl-bet-info">Tổng cược: <span id="rl-total-bet">0</span></div>

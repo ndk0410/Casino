@@ -110,15 +110,12 @@ const RouletteUI = {
         this.chipsEl = document.getElementById('rl-chips');
         this.historyEl = document.getElementById('rl-history');
         this.totalBetEl = document.getElementById('rl-total-bet');
-        this.chipBtns = document.querySelectorAll('.rl-chip-btn');
-
-        this.buildWheel();
-
+        this.chipBtns = document.querySelectorAll('.premium-chip');
         this.chipBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                this.chipSize = parseInt(btn.dataset.value);
                 this.chipBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                this.chipSize = parseInt(btn.dataset.value);
             });
         });
 
