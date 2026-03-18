@@ -24,8 +24,9 @@ class Game {
         this.myIndex = 0; // Local player identity
     }
 
-    newGame() {
+    newGame(betAmount = 100) {
         if (this.isMultiplayer) return; // Managed by mp-tienlen.js
+        this.bet = betAmount;
         this.hands = this.deck.deal(4);
         this.currentPlayer = findFirstPlayer(this.hands);
         this.lastPlayedCards = null;
@@ -136,12 +137,12 @@ class Game {
             this.gameOver = true;
             this.winner = playerIndex;
             
-            // Calculate chip difference (10 chips per card remaining)
+            // Winner gets this.bet from each loser
             if (playerIndex === 0) {
-                // Human won, AI loses chips = number of their remaining cards * 10
+                // Human won
                 let totalWon = 0;
                 for (let i = 1; i < 4; i++) {
-                    const aiLoss = this.hands[i].length * 10;
+                    const aiLoss = this.bet;
                     this.aiChips[i] -= aiLoss;
                     totalWon += aiLoss;
                 }
@@ -155,7 +156,7 @@ class Game {
                 // AI won
                 let totalAIWon = 0;
                 // Human loses
-                const humanLoss = this.hands[0].length * 10;
+                const humanLoss = this.bet;
                 if (humanLoss > 0) {
                     await Account.deductChips(humanLoss);
                     totalAIWon += humanLoss;
@@ -166,7 +167,7 @@ class Game {
                 // Other AIs lose
                 for (let i = 1; i < 4; i++) {
                     if (i !== playerIndex) {
-                        const aiLoss = this.hands[i].length * 10;
+                        const aiLoss = this.bet;
                         this.aiChips[i] -= aiLoss;
                         totalAIWon += aiLoss;
                     }

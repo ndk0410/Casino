@@ -40,11 +40,26 @@ const Socket_TienLen = {
             roomData = state;
             this.setupSittingOrder();
             
-            // Check if game is not started, show Start button for host
-            if (state.gameState === 'LOBBY' && playersOrder[myPlayerIndex]?.isHost) {
+            // Handle betting phase UI
+            if (state.gameState === 'BETTING') {
+                this.hideStartButton();
+                // Show betting overlay if I haven't bet yet
+                if (!state.engineState.bets[socket.id]) {
+                    ui.showBettingOverlay();
+                } else {
+                    // Show "Waiting" message or similar via UI
+                    ui.btnStartGame.disabled = true;
+                    ui.btnStartGame.textContent = '⌛ ĐANG ĐỢI...';
+                }
+            } else if (state.gameState === 'PLAYING') {
+                ui.hideBettingOverlay();
+                this.hideStartButton();
+            } else if (state.gameState === 'LOBBY' && playersOrder[myPlayerIndex]?.isHost) {
                 this.showStartButton();
+                ui.hideBettingOverlay();
             } else {
                 this.hideStartButton();
+                ui.hideBettingOverlay();
             }
         });
 
@@ -239,6 +254,10 @@ const Socket_TienLen = {
 
     sendEmoji(emoji) {
         if(socket) socket.emit('chat_reaction', emoji);
+    },
+
+    placeBet(amount) {
+        socket.emit('game_action', { action: 'place_bet', amount: amount });
     }
 };
 

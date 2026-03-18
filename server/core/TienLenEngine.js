@@ -18,6 +18,13 @@ class TienLenEngine {
         this.mustPlay3Spade = true;
         this.winner = null;
         this.gameOver = false;
+        this.bets = {}; // playerId -> amount
+    }
+
+    setBet(playerId, amount) {
+        // Enforce 250k cap
+        const capped = Math.max(100, Math.min(250000, amount));
+        this.bets[playerId] = capped;
     }
 
     start() {
@@ -213,7 +220,8 @@ class TienLenEngine {
             mustPlay3Spade: this.mustPlay3Spade,
             handsCount: handsCount, // map player ID -> count
             gameOver: this.gameOver,
-            winner: this.winner
+            winner: this.winner,
+            bets: this.bets
             // NOTE: the server must privately emit actual hands to individuals outside this generic state push
         };
     }

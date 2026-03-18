@@ -52,12 +52,22 @@ class GameRoom {
 
     calculateChips(winnerId) {
         const changes = {};
+        const winAmount = this.engine.bets[winnerId] || 100;
+        
         for (const p of this.players) {
             if (p.isBot) continue;
             if (p.id === winnerId) {
-                changes[p.id] = 500;
+                // Winner gets the sum of all other players' bets (simplified)
+                // Actually closer to: winner gets 1x bet from each person who lost
+                let totalGained = 0;
+                this.players.forEach(other => {
+                    if (other.id !== winnerId) {
+                        totalGained += (this.engine.bets[other.id] || 100);
+                    }
+                });
+                changes[p.id] = totalGained;
             } else {
-                changes[p.id] = -100;
+                changes[p.id] = -(this.engine.bets[p.id] || 100);
             }
         }
         return changes;
@@ -67,20 +77,44 @@ class GameRoom {
         if (payload.action === 'start_game') {
             const player = this.players.find(p => p.id === socketId);
             if (player && player.isHost) {
-                this.gameState = 'PLAYING';
+                this.gameState = 'BETTING';
                 
-                // Initialize engine
+                // Initialize engine but don't deal cards yet
                 this.engine = new TienLenEngine(this.players, (event, data) => {
                     io.to(this.id).emit(event, data);
                 });
-                this.engine.start();
 
-                // Notify room that game state moved from LOBBY to PLAYING
+                // Notify room that game state moved to BETTING
                 io.to(this.id).emit('room_state_update', this.getState());
+            }
+        } else if (payload.action === 'place_bet') {
+            if (this.gameState === 'BETTING') {
+                this.engine.setBet(socketId, payload.amount);
+                
+                // Check if all human players have bet
+                const humans = this.players.filter(p => !p.isBot);
+                const allBet = humans.every(p => this.engine.bets[p.id] !== undefined);
+                
+                if (allBet) {
+                    // Automatically set bets for bots
+                    for (const p of this.players) {
+                        if (p.isBot && this.engine.bets[p.id] === undefined) {
+                            this.engine.setBet(p.id, 100);
+                        }
+                    }
 
-                // Privately emit initial hands to each player socket
-                for (const p of this.players) {
-                    io.to(p.id).emit('private_hand', this.engine.hands[p.id]);
+                    this.gameState = 'PLAYING';
+                    this.engine.start(); // This deals cards and broadcasts game_state_update
+                    
+                    io.to(this.id).emit('room_state_update', this.getState());
+                    
+                    // Privately emit initial hands
+                    for (const p of this.players) {
+                        io.to(p.id).emit('private_hand', this.engine.hands[p.id]);
+                    }
+                } else {
+                    // Update room state so others see who bet
+                    io.to(this.id).emit('room_state_update', this.getState());
                 }
             }
         } else if (this.engine && this.gameState === 'PLAYING') {

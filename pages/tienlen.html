@@ -13,6 +13,7 @@
     <link rel="apple-touch-icon" href="../assets/icon-512.png">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/orientation.css">
+    <link rel="stylesheet" href="../css/betting.css">
     <script src="../js/orientation.js" defer></script>
     
     <!-- Socket.IO for MP -->
@@ -82,6 +83,28 @@
                 <button id="btn-hint" class="btn btn-secondary" title="Gợi ý (H)">💡 Gợi ý</button>
                 <button id="btn-sound" class="btn btn-icon" title="Âm thanh">🔊</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Betting Overlay -->
+    <div id="betting-overlay" class="premium-bet-overlay">
+        <div class="premium-bet-card">
+            <h2>💰 ĐẶT CƯỢC</h2>
+            <p>Chọn mức cược để bắt đầu ván bài</p>
+            
+            <div class="bet-input-wrapper">
+                <input type="number" id="bet-input" class="premium-input" value="100" min="100" max="250000">
+                <button id="btn-max-bet" class="premium-max-btn">MAX</button>
+            </div>
+
+            <div class="quick-bets">
+                <button class="premium-chip" data-value="100">100</button>
+                <button class="premium-chip" data-value="1000">1K</button>
+                <button class="premium-chip" data-value="10000">10K</button>
+                <button class="premium-chip" data-value="250000">250K</button>
+            </div>
+
+            <button id="btn-start-game" class="premium-start-btn">BẮT ĐẦU</button>
         </div>
     </div>
 

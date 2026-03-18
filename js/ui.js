@@ -10,6 +10,7 @@ class UI {
     init() {
         this.cacheElements();
         this.bindEvents();
+        this.showBettingOverlay();
     }
 
     cacheElements() {
@@ -68,6 +69,13 @@ class UI {
             document.getElementById('score-2'),
             document.getElementById('score-3')
         ];
+
+        // Betting elements
+        this.bettingOverlay = document.getElementById('betting-overlay');
+        this.betInput = document.getElementById('bet-input');
+        this.btnMaxBet = document.getElementById('btn-max-bet');
+        this.quickBetBtns = document.querySelectorAll('.quick-bets .premium-chip');
+        this.btnStartGame = document.getElementById('btn-start-game');
     }
 
     bindEvents() {
@@ -136,6 +144,49 @@ class UI {
             this.showMessage('Ván mới bắt đầu!');
             if (game.currentPlayer !== 0) {
                 setTimeout(() => game.executeAITurn(), 1000);
+            }
+        });
+
+        // Betting Events
+        if (this.btnMaxBet) {
+            this.btnMaxBet.addEventListener('click', () => {
+                const max = Math.min(Account.chips, 250000);
+                this.betInput.value = max;
+                audioManager.cardSelect();
+            });
+        }
+
+        this.quickBetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = parseInt(btn.dataset.value);
+                this.betInput.value = val;
+                audioManager.cardSelect();
+            });
+        });
+
+        this.btnStartGame.addEventListener('click', () => {
+            const bet = parseInt(this.betInput.value) || 100;
+            if (bet > Account.chips) {
+                this.showMessage('⚠️ Không đủ chip!');
+                return;
+            }
+            if (bet > 250000) {
+                this.showMessage('⚠️ Cược tối đa 250,000!');
+                return;
+            }
+
+            audioManager.ensureContext();
+            audioManager.cardSlam();
+
+            if (game.isMultiplayer) {
+                if (window.MP_TienLen) {
+                    window.MP_TienLen.placeBet(bet);
+                    this.btnStartGame.disabled = true;
+                    this.btnStartGame.textContent = '⌛ ĐANG ĐỢI...';
+                }
+            } else {
+                game.newGame(bet);
+                this.hideBettingOverlay();
             }
         });
 
@@ -494,6 +545,20 @@ class UI {
         this.messageTimeout = setTimeout(() => {
             this.messageEl.classList.remove('show');
         }, 2500);
+    }
+
+    showBettingOverlay() {
+        if (this.bettingOverlay) {
+            this.bettingOverlay.style.display = 'flex';
+            this.btnStartGame.disabled = false;
+            this.btnStartGame.textContent = 'BẮT ĐẦU';
+        }
+    }
+
+    hideBettingOverlay() {
+        if (this.bettingOverlay) {
+            this.bettingOverlay.style.display = 'none';
+        }
     }
 
     showHint() {
