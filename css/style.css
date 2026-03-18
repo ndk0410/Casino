@@ -808,7 +808,7 @@ body {
 @media (max-width: 480px) {
     .game-container {
         grid-template-columns: 60px 1fr 60px;
-        grid-template-rows: 85px 1fr 200px;
+        grid-template-rows: 80px 1fr 210px;
     }
 
     :root {
@@ -888,7 +888,7 @@ body {
     .game-container {
         grid-template-columns: 90px 1fr 90px;
         /* wider side columns to show dealer cards */
-        grid-template-rows: 65px 1fr 175px;
+        grid-template-rows: 60px 1fr 180px;
     }
 
     :root {
@@ -1083,6 +1083,8 @@ body {
     width: 18px;
     height: 18px;
     object-fit: contain;
+    background: transparent !important;
+    border: none !important;
     filter: drop-shadow(0 0 2px rgba(255,215,0,0.3));
 }
 
