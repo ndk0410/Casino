@@ -69,7 +69,7 @@ body {
         "west  center east "
         "south south  south";
     grid-template-columns: 110px 1fr 110px;
-    grid-template-rows: 110px 1fr 180px; /* Reduced from 130px/230px */
+    grid-template-rows: 100px 1fr 200px;
     gap: 0;
 }
 
@@ -219,8 +219,8 @@ body {
 
 #south-area {
     grid-area: south;
-    flex-direction: column;
-    padding-bottom: 10px;
+    overflow: visible;
+    padding-bottom: 5px;
     overflow: visible;
     /* let selected cards rise above the south row */
     z-index: 5;
@@ -249,7 +249,7 @@ body {
     bottom: auto !important;
     left: auto !important;
     right: auto !important;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     align-self: center;
 }
 
@@ -426,8 +426,8 @@ body {
 .controls {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-top: 15px;
+    gap: 8px;
+    margin-top: 5px;
     z-index: 10;
 }
 
@@ -755,8 +755,8 @@ body {
 /* ---- Responsive ---- */
 @media (max-width: 900px), (max-height: 500px) {
     .game-container {
-        grid-template-columns: 90px 1fr 90px;
-        grid-template-rows: 100px 1fr 160px;
+        grid-template-columns: 80px 1fr 80px;
+        grid-template-rows: 80px 1fr 180px;
     }
 
     :root {
