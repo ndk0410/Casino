@@ -418,9 +418,9 @@ body {
 /* ---- Controls ---- */
 .controls {
     display: flex;
+    align-items: center;
     gap: 12px;
     margin-top: 15px;
-    margin-bottom: 15px;
     z-index: 10;
 }
 
@@ -1047,6 +1047,7 @@ body {
     #player-hand {
         min-height: 55px;
     }
+}
 
 /* ---- Turn Timer & UI Effects ---- */
 .turn-timer {
@@ -1189,13 +1190,8 @@ body {
     transform: scale(1.1);
 }
 
-/* Make south-area relative so emoji floats properly */
 #south-area, #north-area, #east-area, #west-area {
     position: relative;
-}
-    .player-card {
-        margin: 0 -9px;
-    }
 }
 
 /* ============================================================
