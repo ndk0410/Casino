@@ -187,8 +187,7 @@ const Socket_TienLen = {
 
     handleStateUpdate(state) {
         if (!state) return;
-
-        // Sync core game variables
+        game.gameOver = false; // Ensure game is active when state arrives
         const currentIdx = playersOrder.findIndex(p => p.id === state.currentPlayerId);
         game.currentPlayer = currentIdx !== -1 ? currentIdx : 0;
         

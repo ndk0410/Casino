@@ -480,7 +480,7 @@ class UI {
     }
 
     showMessage(text) {
-        this.messageEl.textContent = text;
+        this.messageEl.innerHTML = text;
         this.messageEl.classList.add('show');
 
         if (this.messageTimeout) clearTimeout(this.messageTimeout);
