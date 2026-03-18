@@ -136,6 +136,7 @@ class UI {
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
+            audioManager.ensureContext();
             if (game.gameOver) return;
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -253,6 +254,7 @@ class UI {
                 });
 
                 cardEl.addEventListener('click', () => {
+                    audioManager.ensureContext();
                     game.toggleCardSelection(card);
                     const nowSelected = game.selectedCards.some(c => c.id === card.id);
                     cardEl.classList.toggle('selected', nowSelected);

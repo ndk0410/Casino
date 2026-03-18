@@ -219,12 +219,13 @@ body {
 
 #south-area {
     grid-area: south;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 20px;
     overflow: visible;
-    padding-bottom: 5px;
-    overflow: visible;
-    /* let selected cards rise above the south row */
     z-index: 5;
-    /* ensure south area is above center */
 }
 
 #player-hand {
@@ -245,12 +246,8 @@ body {
 /* South area label, shown above the hand */
 .south-label {
     position: relative !important;
-    top: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-    right: auto !important;
-    margin-bottom: 4px;
-    align-self: center;
+    margin-bottom: 10px;
+    order: -1; /* Name on TOP */
 }
 
 /* ---- Center Area (Play Area) ---- */
@@ -426,9 +423,11 @@ body {
 .controls {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    margin-top: 5px;
+    margin-top: 10px;
     z-index: 10;
+    width: 100%;
 }
 
 .btn {
