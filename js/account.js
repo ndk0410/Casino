@@ -252,6 +252,26 @@ const Account = {
         }
     },
 
+    async adminDeductChips(targetUID, amount) {
+        if (!this.isAdmin) return { success: false, msg: "Bạn không có quyền admin!" };
+        amount = parseInt(amount);
+        if (isNaN(amount) || amount <= 0) return { success: false, msg: "Số chip không hợp lệ!" };
+
+        try {
+            const targetRef = db.ref('users/' + targetUID + '/chips');
+            const snap = await targetRef.get();
+            if (!snap.exists()) return { success: false, msg: "Không tìm thấy user với UID: " + targetUID };
+
+            const current = Number(snap.val()) || 0;
+            const updated = Math.max(0, current - amount);
+            await targetRef.set(updated);
+
+            return { success: true, msg: `Đã trừ ${amount.toLocaleString()} từ ${targetUID}. Số dư mới: ${updated.toLocaleString()}` };
+        } catch(e) {
+            return { success: false, msg: e.message };
+        }
+    },
+
     async adminGetAllUsers() {
         if (!this.isAdmin || !window.db) return [];
         try {

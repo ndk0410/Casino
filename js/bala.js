@@ -129,29 +129,11 @@ const BaLa = {
     },
 
     fold() {
-        // Player loses ante + pair plus
+        // Player loses ante + play + pair plus on fold
         this.phase = 'result';
         this.result = 'fold';
-        let loss = this.anteBet;
-
-        // Pair Plus is independent — still pay out if winning hand
-        let pairPlusResult = 0;
-        if (this.pairPlusBet > 0) {
-            const playerEval = evaluateThreeCardHand(this.playerHand);
-            const ppPayout = getPairPlusPayout(playerEval);
-            if (ppPayout > 0) {
-                pairPlusResult = this.pairPlusBet * ppPayout;
-            } else {
-                pairPlusResult = -this.pairPlusBet;
-            }
-        }
-
-        const netLoss = -loss + pairPlusResult;
-        this.message = `😔 Bạn bỏ bài. Mất ${loss.toLocaleString()} ante.`;
-        if (pairPlusResult > 0) {
-            this.message += ` Nhưng Pair Plus thắng +${pairPlusResult.toLocaleString()}!`;
-        }
-        return netLoss;
+        this.message = `😔 Bạn bỏ bài. Mất toàn bộ cược.`;
+        return 0; // Return nothing
     },
 
     play() {
@@ -161,56 +143,48 @@ const BaLa = {
         const dealerQualifies = dealerEval.handRank >= BA_LA_HANDS.PAIR ||
             (dealerEval.kickers[0] >= 12); // Q-high or better
 
-        let totalWin = 0;
+        let totalCredit = 0; // The total chips to return to the account
 
-        // Pair Plus (independent)
-        let pairPlusResult = 0;
+        // 1. Pair Plus (Paid regardless of Dealer hand)
         if (this.pairPlusBet > 0) {
             const ppPayout = getPairPlusPayout(playerEval);
-            if (ppPayout > 0) {
-                pairPlusResult = this.pairPlusBet * ppPayout;
-            } else {
-                pairPlusResult = -this.pairPlusBet;
+            if (ppPayout >= 0) {
+                // Win: Return Bet + Profit
+                totalCredit += this.pairPlusBet + (this.pairPlusBet * ppPayout);
             }
-            totalWin += pairPlusResult;
         }
 
+        // 2. Ante & Play
         if (!dealerQualifies) {
-            // Dealer doesn't qualify — ante pays 1:1, play bet push
-            totalWin += this.anteBet;
+            // Dealer doesn't qualify: Ante pays 1:1, Play pushes (returns)
+            totalCredit += (this.anteBet * 2) + this.anteBet; // (Ante + Ante Win) + Play
             this.result = 'dealer-no-qualify';
-            this.message = `🤷 Dealer không đủ điều kiện (cần Q trở lên). Ante thắng +${this.anteBet.toLocaleString()}!`;
+            this.message = `🤷 Máy không đủ bài (cần Q trở lên). Thắng Ante + Trả lại Play!`;
         } else {
             const cmp = compareHands(playerEval, dealerEval);
             if (cmp > 0) {
-                // Player wins
+                // Player wins: Ante & Play pay 1:1
                 const anteBonus = getAnteBonus(playerEval);
-                totalWin += this.anteBet + this.anteBet; // ante + play both pay 1:1
+                totalCredit += (this.anteBet * 2) + (this.anteBet * 2); // (Ante+Win) + (Play+Win)
                 if (anteBonus > 0) {
-                    totalWin += this.anteBet * anteBonus;
+                    totalCredit += this.anteBet * anteBonus; // Add bonus
                 }
                 this.result = 'win';
                 const handName = getHandName(playerEval);
-                this.message = `🎉 Bạn thắng! ${handName}! +${totalWin.toLocaleString()} chip`;
+                this.message = `🎉 Bạn thắng! ${handName}!`;
             } else if (cmp < 0) {
                 // Dealer wins
-                totalWin -= this.anteBet + this.anteBet; // lose ante + play
                 this.result = 'lose';
-                this.message = `😞 Dealer thắng! Mất ${(this.anteBet * 2).toLocaleString()} chip.`;
+                this.message = `😞 Máy thắng! Bạn mất cược.`;
             } else {
-                // Push
+                // Push: Return both original bets
+                totalCredit += this.anteBet + this.anteBet;
                 this.result = 'push';
                 this.message = '🤝 Hòa! Trả lại cược.';
             }
         }
 
-        if (pairPlusResult > 0) {
-            this.message += ` (Pair Plus: +${pairPlusResult.toLocaleString()})`;
-        } else if (pairPlusResult < 0 && this.pairPlusBet > 0) {
-            this.message += ` (Pair Plus: -${this.pairPlusBet.toLocaleString()})`;
-        }
-
-        return totalWin;
+        return totalCredit;
     }
 };
 
@@ -225,9 +199,22 @@ const BaLaUI = {
         this.resultPanel = document.getElementById('bl-result-panel');
         this.anteInput = document.getElementById('bl-ante-input');
         this.ppInput = document.getElementById('bl-pp-input');
-        this.chipsDisplay = document.getElementById('bl-chips');
-        this.playerLabel = document.getElementById('bl-player-label');
-        this.dealerLabel = document.getElementById('bl-dealer-label');
+        this.anteMaxBtn = document.getElementById('bl-ante-max');
+        this.ppMaxBtn = document.getElementById('bl-pp-max');
+
+        if (this.anteMaxBtn) {
+            this.anteMaxBtn.addEventListener('click', () => {
+                const max = Math.min(Account.chips, 250000);
+                this.anteInput.value = max;
+            });
+        }
+        if (this.ppMaxBtn) {
+            this.ppMaxBtn.addEventListener('click', () => {
+                const currentAnte = parseInt(this.anteInput.value) || 0;
+                const maxPP = Math.min(Account.chips - currentAnte, 250000 - currentAnte);
+                this.ppInput.value = Math.max(0, maxPP);
+            });
+        }
 
         this.updateChips();
         this.showBetPanel();
@@ -248,12 +235,23 @@ const BaLaUI = {
         this.playerArea.innerHTML = '';
         this.dealerArea.innerHTML = '';
         this.playerLabel.textContent = 'BẠN';
-        this.dealerLabel.textContent = 'DEALER';
+        this.dealerLabel.textContent = 'MÁY';
     },
 
     async doDeal() {
-        const ante = parseInt(this.anteInput.value) || 50;
-        const pp = parseInt(this.ppInput.value) || 0;
+        let ante = parseInt(this.anteInput.value) || 50;
+        let pp = parseInt(this.ppInput.value) || 0;
+
+        // Enforce 250k limit
+        if (ante + pp > 250000) {
+            this.messageEl.textContent = '⚠️ Tổng cược tối đa mỗi ván là 250,000!';
+            // Scaling down proportionally if over limit
+            const ratio = 250000 / (ante + pp);
+            ante = Math.floor(ante * ratio);
+            pp = Math.floor(pp * ratio);
+            this.anteInput.value = ante;
+            this.ppInput.value = pp;
+        }
 
         if (ante < 10) {
             this.messageEl.textContent = '⚠️ Ante tối thiểu 10 chip!';
@@ -274,42 +272,43 @@ const BaLaUI = {
 
     async doPlay() {
         if (BaLa.anteBet > Account.chips) {
-            this.messageEl.textContent = '⚠️ Không đủ chip để Play (cần thêm ante)!';
+            this.messageEl.textContent = '⚠️ Không đủ chip để Đánh (Play)!';
             return;
         }
         await Account.deductChips(BaLa.anteBet);
-        const win = BaLa.play();
-        if (win > 0) await Account.addChips(win);
-        else if (win < 0) {
-            // we already deducted the bets, so if win is negative, it represents full loss?
-            // Actually BaLa.play returns net. 
-            // If Dealer wins, totalWin -= 2*ante. But we already deducted ante (deal) + ante (play).
-            // So we don't need to deduct more.
-            // Let's check BaLa.play logic: 
-            // cmp < 0: totalWin -= 2*this.anteBet.
-            // This is messy. Let's simplify:
-            // addChips(win) if win > 0.
+        const credit = BaLa.play();
+        if (credit > 0) {
+            await Account.addChips(credit);
         }
+        
         this.actionPanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';
         this.renderHands(true); // reveal dealer
         this.messageEl.textContent = BaLa.message;
+        if (credit > 0) {
+            this.messageEl.textContent += ` Nhận lại: ${credit.toLocaleString()} chip.`;
+        }
         this.updateChips();
 
         // Show hand names
         const pEval = evaluateThreeCardHand(BaLa.playerHand);
         const dEval = evaluateThreeCardHand(BaLa.dealerHand);
         this.playerLabel.textContent = `BẠN - ${getHandName(pEval)}`;
-        this.dealerLabel.textContent = `DEALER - ${getHandName(dEval)}`;
+        this.dealerLabel.textContent = `MÁY - ${getHandName(dEval)}`;
     },
 
     async doFold() {
-        const win = BaLa.fold();
-        if (win > 0) await Account.addChips(win);
+        const credit = BaLa.fold();
+        if (credit > 0) {
+            await Account.addChips(credit);
+        }
         this.actionPanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';
         this.renderHands(true);
         this.messageEl.textContent = BaLa.message;
+        if (credit > 0) {
+            this.messageEl.textContent += ` Nhận lại: ${credit.toLocaleString()} chip.`;
+        }
         this.updateChips();
     },
 

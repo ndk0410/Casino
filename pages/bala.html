@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Ba Lá - Three Card Poker 🃏</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" href="../assets/icon-512.png">
+    <link rel="apple-touch-icon" href="../assets/icon-512.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/bala.css">
@@ -35,14 +41,20 @@
         <div class="bl-message" id="bl-message"><img src="../assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:14px; vertical-align:middle;"> Đặt cược để bắt đầu!</div>
 
         <!-- Bet Panel -->
-        <div class="bl-panel" id="bl-bet-panel">
+        <div class="bl-bet-controls">
             <div class="bl-bet-group">
-                <label>Ante</label>
-                <input type="number" id="bl-ante-input" value="50" min="10" step="10">
+                <label>ANTE (Cược Ngoài):</label>
+                <div class="bl-input-wrap">
+                    <input type="number" id="bl-ante-input" value="100" min="10" step="10">
+                    <button class="bl-max-btn" id="bl-ante-max">MAX</button>
+                </div>
             </div>
             <div class="bl-bet-group">
-                <label>Pair Plus</label>
-                <input type="number" id="bl-pp-input" value="0" min="0" step="10">
+                <label>PAIR PLUS (Cược Đôi):</label>
+                <div class="bl-input-wrap">
+                    <input type="number" id="bl-pp-input" value="0" min="0" step="10">
+                    <button class="bl-max-btn" id="bl-pp-max">MAX</button>
+                </div>
             </div>
             <button class="bl-btn bl-btn-primary" onclick="BaLaUI.doDeal()">🃏 CHIA BÀI</button>
         </div>

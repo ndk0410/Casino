@@ -4,15 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Coca Casino">
-    <title>Coca's Casino 🃏</title>
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Casino O-W-O 🃏</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
+    <link rel="icon" href="assets/icon-512.png">
+    <link rel="apple-touch-icon" href="assets/icon-512.png">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             min-height: 100vh;
+            background: #0a0518;
             background: radial-gradient(ellipse at 30% 20%, #1a0a3d 0%, #0a0518 50%, #000 100%);
             font-family: 'Roboto', sans-serif;
             font-weight: 700;
@@ -20,8 +26,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            justify-content: flex-start; /* Better for mobile scroll */
+            overflow-x: hidden;
+            overflow-y: auto; /* Enable scroll */
+            padding: 40px 0;
             position: relative;
         }
 
@@ -101,18 +109,25 @@
         
         /* ==== ACCOUNT SYSTEM UI ==== */
         .user-panel {
-            position: absolute;
+            position: sticky; /* Keep it at top when scrolling if parent is flex-start */
             top: 20px;
-            right: 30px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            background: rgba(0,0,0,0.5);
-            padding: 8px 20px;
+            gap: 12px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 16px;
             border-radius: 30px;
-            border: 1px solid rgba(255,215,0,0.3);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,215,0,0.4);
+            backdrop-filter: blur(15px);
             z-index: 100;
+        }
+
+        @media (max-width: 600px) {
+            .user-panel {
+                transform: scale(0.9);
+                top: 10px;
+            }
         }
 
         .user-info { display: flex; flex-direction: column; align-items: flex-end; }
@@ -257,6 +272,36 @@
             cursor: pointer;
             backdrop-filter: blur(12px);
             position: relative;
+        }
+
+        @media (max-width: 600px) {
+            .game-card {
+                width: 160px;
+                border-radius: 16px;
+            }
+            .card-banner {
+                height: 100px;
+            }
+            .banner-emoji {
+                font-size: 44px;
+            }
+            .card-body h2 {
+                font-size: 18px;
+            }
+            .card-body p {
+                font-size: 11px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .header {
+                margin-bottom: 24px;
+            }
+            .games-grid {
+                gap: 16px;
+            }
         }
 
         .game-card::before {
@@ -591,6 +636,7 @@
             <input type="text" id="admin-uid" class="admin-input" placeholder="Nhập UID người nhận">
             <input type="number" id="admin-amount" class="admin-input" placeholder="Số chip cần nạp" min="1">
             <button class="admin-btn" onclick="adminAddChips()"><img src="assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:14px; margin-right:4px;"> NẠP CHIP</button>
+            <button class="admin-btn" onclick="adminDeductChips()" style="background: linear-gradient(135deg, #e74c3c, #c0392b); margin-top: 8px;">➖ TRỪ CHIP</button>
             <div id="admin-result" class="admin-result"></div>
         </div>
 
@@ -856,6 +902,21 @@
             resultEl.className = 'admin-result' + (res.success ? '' : ' error');
             if (res.success) updateAccountUI();
         }
+
+        async function adminDeductChips() {
+            const uid = document.getElementById('admin-uid').value.trim();
+            const amount = document.getElementById('admin-amount').value;
+            const resultEl = document.getElementById('admin-result');
+
+            if (!uid) { alert("Vui lòng nhập UID!"); return; }
+            if (confirm(`Bạn có chắc muốn TRỪ ${amount} chip từ người dùng ${uid}?`)) {
+                const res = await Account.adminDeductChips(uid, amount);
+                resultEl.style.display = 'block';
+                resultEl.textContent = res.msg;
+                resultEl.className = 'admin-result' + (res.success ? '' : ' error');
+                if (res.success) updateAccountUI();
+            }
+        }
         async function adminLoadUsers() {
             const users = await Account.adminGetAllUsers();
             const listEl = document.getElementById('admin-user-list');
@@ -887,6 +948,14 @@
             el.style.width = (40 + Math.random() * 40) + 'px';
             el.style.height = el.offsetWidth * 1.4 + 'px';
             bgCards.appendChild(el);
+        }
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered', reg))
+                    .catch(err => console.log('SW Failed', err));
+            });
         }
     </script>
 </body>

@@ -178,11 +178,19 @@ const Poker = {
 
     postBet(idx, amount) {
         const p = this.players[idx];
+        
+        // Enforce 250k limit per hand for player 0
+        if (idx === 0) {
+            const availableInLimit = 250000 - p.totalBet;
+            amount = Math.min(amount, availableInLimit);
+        }
+
         const actual = Math.min(amount, p.chips);
         p.chips -= actual;
         p.bet += actual;
         p.totalBet += actual;
         this.pot += actual;
+        return actual;
     },
 
     nextActivePlayer(from) {
@@ -321,8 +329,19 @@ const PokerUI = {
         this.actionsEl = document.getElementById('pk-actions');
         this.startBtn = document.getElementById('pk-start-btn');
         this.raiseInput = document.getElementById('pk-raise-input');
+        this.maxBtn = document.getElementById('pk-max-btn');
 
-        // Player slots
+        if (this.maxBtn) {
+            this.maxBtn.addEventListener('click', () => {
+                const p = Poker.players[0];
+                const currentCall = Poker.currentBet - p.bet;
+                const remainingInLimit = 250000 - p.totalBet - currentCall;
+                const maxPossible = Math.min(p.chips - currentCall, Math.max(0, remainingInLimit));
+                this.raiseInput.value = maxPossible;
+            });
+        }
+
+        this.updateChips();lots
         this.slots = [
             document.getElementById('pk-slot-0'),
             document.getElementById('pk-slot-1'),
@@ -353,7 +372,11 @@ const PokerUI = {
         const oldChips = Account.chips;
         Poker.startHand();
         const deducted = oldChips - Poker.players[0].chips;
-        if (deducted > 0) await Account.deductChips(deducted);
+        if (deducted > 0) {
+            await Account.deductChips(deducted);
+            // Re-sync local chips to avoid drift
+            Poker.players[0].chips = Account.chips;
+        }
         
         this.startBtn.style.display = 'none';
         this.render();
@@ -499,7 +522,11 @@ const PokerUI = {
         if (action === 'fold') Poker.players[0].folded = true;
 
         const deducted = oldChips - Poker.players[0].chips;
-        if (deducted > 0) await Account.deductChips(deducted);
+        if (deducted > 0) {
+            await Account.deductChips(deducted);
+            // Sync again
+            Poker.players[0].chips = Account.chips;
+        }
 
         this.hideActions();
         Poker.currentPlayerIdx = Poker.nextActivePlayer(Poker.currentPlayerIdx);
@@ -521,6 +548,8 @@ const PokerUI = {
         const isPlayerWinner = winners.some(w => w.idx === 0);
         if (isPlayerWinner) {
             await Account.addChips(share);
+            // Final sync for the hand
+            Poker.players[0].chips = Account.chips;
         }
 
         const winnerNames = winners.map(w => {

@@ -218,7 +218,14 @@ const RouletteUI = {
 
     placeBet(type, value) {
         if (Roulette.spinning) return;
-        if (this.chipSize > Account.chips - Roulette.totalBets()) {
+        
+        const totalNow = Roulette.totalBets();
+        if (totalNow + this.chipSize > 250000) {
+            this.messageEl.textContent = '⚠️ Tổng cược tối đa mỗi ván là 250,000!';
+            return;
+        }
+
+        if (this.chipSize > Account.chips - totalNow) {
             this.messageEl.textContent = '⚠️ Không đủ chip!';
             return;
         }

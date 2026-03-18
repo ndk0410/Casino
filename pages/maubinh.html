@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Mậu Binh - Chinese Poker 🀄</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" href="../assets/icon-512.png">
+    <link rel="apple-touch-icon" href="../assets/icon-512.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/maubinh.css">
@@ -23,8 +29,11 @@
 
         <!-- Bet Panel -->
         <div class="mb-panel" id="mb-bet-panel">
-            <input type="number" id="mb-bet-input" value="100" min="10" step="10">
-            <button class="mb-btn mb-btn-primary" onclick="MauBinhUI.startGame()">🀄 BẮT ĐẦU</button>
+            <div class="mb-bet-inputs">
+                <input type="number" id="mb-bet-input" value="100" min="10" step="10">
+                <button id="mb-max-btn" class="mb-btn-small">MAX</button>
+            </div>
+            <button class="mb-btn mb-btn-primary" onclick="MauBinhUI.startGame()">BẮT ĐẦU</button>
         </div>
 
         <!-- Chi rows -->

@@ -276,7 +276,7 @@ const xidachUI = {
         // Chip buttons
         document.querySelectorAll('.chip-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const amount = parseInt(btn.dataset.amount);
+                const amount = btn.dataset.amount; // Keep as string for 'max'
                 XiDach.placeBet(amount);
                 audioManager.cardSelect();
             });

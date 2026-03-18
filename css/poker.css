@@ -249,4 +249,15 @@ body {
     .pk-card { width: 40px; height: 56px; }
     .pk-mini-card { width: 28px; height: 39px; }
     .pk-table { gap: 4px; }
+    .pk-game { padding: 4px; }
+    .pk-actions { padding: 4px; gap: 4px; }
+    .pk-btn { padding: 6px 10px; font-size: 10px; }
+}
+
+@media (max-height: 400px) {
+    .pk-card { width: 34px; height: 48px; }
+    .pk-mini-card { width: 24px; height: 34px; }
+    .pk-pot { font-size: 12px; padding: 2px 10px; }
+    .pk-message { font-size: 11px; padding: 4px 12px; }
+    .pk-topbar { padding: 4px 12px; }
 }

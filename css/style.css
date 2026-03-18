@@ -69,8 +69,15 @@ body {
         "west  center east "
         "south south  south";
     grid-template-columns: 110px 1fr 110px;
-    grid-template-rows: 130px 1fr 230px;
+    grid-template-rows: 110px 1fr 180px; /* Reduced from 130px/230px */
     gap: 0;
+}
+
+@media (max-height: 450px) {
+    .game-container {
+        grid-template-rows: 80px 1fr 140px;
+        grid-template-columns: 80px 1fr 80px;
+    }
 }
 
 /* ---- Table Felt Pattern ---- */
@@ -746,19 +753,19 @@ body {
 }
 
 /* ---- Responsive ---- */
-@media (max-width: 900px) {
+@media (max-width: 900px), (max-height: 500px) {
     .game-container {
         grid-template-columns: 90px 1fr 90px;
-        grid-template-rows: 120px 1fr 180px;
+        grid-template-rows: 100px 1fr 160px;
     }
 
     :root {
-        --card-width: 65px;
-        --card-height: 91px;
-        --card-width-sm: 40px;
-        --card-height-sm: 56px;
-        --card-width-play: 75px;
-        --card-height-play: 105px;
+        --card-width: 60px;
+        --card-height: 84px;
+        --card-width-sm: 35px;
+        --card-height-sm: 49px;
+        --card-width-play: 65px;
+        --card-height-play: 91px;
     }
 }
 

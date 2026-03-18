@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Poker - Texas Hold'em ♠</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" href="../assets/icon-512.png">
+    <link rel="apple-touch-icon" href="../assets/icon-512.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/poker.css">
@@ -62,8 +68,11 @@
             <button class="pk-btn pk-btn-primary" id="pk-call-btn" onclick="PokerUI.humanAction('call')">📞 Call</button>
             <button class="pk-btn pk-btn-secondary" id="pk-check-btn" onclick="PokerUI.humanAction('check')" style="display:none;">✋ Check</button>
             <div class="pk-raise-group">
-                <input type="number" id="pk-raise-input" value="100" min="50" step="50">
-                <button class="pk-btn pk-btn-success" onclick="PokerUI.humanAction('raise')">⬆ Raise</button>
+                <div class="pk-bet-wrap">
+                <input type="number" id="pk-raise-input" value="50" min="50" step="50">
+                <button id="pk-max-btn" class="pk-btn-small">MAX</button>
+            </div>
+            <button id="pk-raise-btn" class="pk-btn pk-btn-raise" onclick="PokerUI.humanAction('raise')">⏫ Raise</button>
             </div>
         </div>
 

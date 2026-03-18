@@ -182,6 +182,14 @@ const MauBinhUI = {
         this.resultPanel = document.getElementById('mb-result-panel');
         this.resultDetail = document.getElementById('mb-result-detail');
         this.betInput = document.getElementById('mb-bet-input');
+        this.maxBtn = document.getElementById('mb-max-btn');
+
+        if (this.maxBtn) {
+            this.maxBtn.addEventListener('click', () => {
+                const maxPossible = Math.min(Account.chips, 250000);
+                this.betInput.value = maxPossible;
+            });
+        }
 
         this.updateChips();
     },
@@ -191,7 +199,15 @@ const MauBinhUI = {
     },
 
     startGame() {
-        const bet = parseInt(this.betInput.value) || 100;
+        let bet = parseInt(this.betInput.value) || 100;
+        
+        // Enforce 250k limit
+        if (bet > 250000) {
+            bet = 250000;
+            this.betInput.value = 250000;
+            this.messageEl.textContent = '⚠️ Cược tối đa mỗi ván là 250,000!';
+        }
+
         if (bet > Account.chips) {
             this.messageEl.textContent = '⚠️ Không đủ chip!';
             return;
@@ -306,7 +322,7 @@ const MauBinhUI = {
         this.messageEl.textContent = '🤖 Đã tự động xếp bài! Nhấn XÁC NHẬN để so bài.';
     },
 
-    confirm() {
+    async confirm() {
         if (this.front.length !== 3 || this.middle.length !== 5 || this.back.length !== 5) {
             this.messageEl.textContent = '⚠️ Chưa xếp đủ bài! Front=3, Middle=5, Back=5';
             return;
@@ -322,8 +338,12 @@ const MauBinhUI = {
         const totalScore = MauBinh.calculateScores();
         const chipWin = totalScore * MauBinh.bet;
 
-        if (chipWin > 0) Account.addChips(chipWin);
-        else if (chipWin < 0) Account.deductChips(-chipWin);
+        // Transaction handles account update and internal chips update
+        if (chipWin > 0) {
+            await Account.addChips(chipWin);
+        } else if (chipWin < 0) {
+            await Account.deductChips(-chipWin);
+        }
 
         this.arrangePanel.style.display = 'none';
         this.resultPanel.style.display = 'flex';
@@ -331,7 +351,7 @@ const MauBinhUI = {
         if (chipWin > 0) {
             this.messageEl.textContent = `🎉 Thắng! +${chipWin.toLocaleString()} chip (${totalScore > 0 ? '+' : ''}${totalScore} chi)`;
         } else if (chipWin < 0) {
-            this.messageEl.textContent = `😞 Thua! ${chipWin.toLocaleString()} chip (${totalScore} chi)`;
+            this.messageEl.textContent = `😞 Thua! ${Math.abs(chipWin).toLocaleString()} chip (${totalScore} chi)`;
         } else {
             this.messageEl.textContent = '🤝 Hòa!';
         }
