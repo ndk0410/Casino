@@ -369,7 +369,7 @@ const PokerUI = {
         }
 
         // Pot
-        this.potEl.textContent = `💰 Pot: ${Poker.pot.toLocaleString()}`;
+        this.potEl.innerHTML = `<img src="../assets/economy/Economy_Cowoncy.png" style="width:16px;vertical-align:middle;"> Pot: ${Poker.pot.toLocaleString()}`;
 
         // Player slots
         Poker.players.forEach((p, i) => {

@@ -367,7 +367,7 @@ const MauBinhUI = {
         this.frontEl.innerHTML = '';
         this.middleEl.innerHTML = '';
         this.backEl.innerHTML = '';
-        this.messageEl.textContent = '💰 Đặt cược và bắt đầu!';
+        this.messageEl.innerHTML = '<img src="../assets/economy/Economy_Cowoncy.png" style="width:14px;vertical-align:middle;"> Đặt cược và bắt đầu!';
     }
 };
 

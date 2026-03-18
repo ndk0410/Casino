@@ -97,7 +97,7 @@ const Socket_TienLen = {
         socket.on('chip_update', (changes) => {
             const myChange = changes[socket.id];
             if (myChange !== undefined) {
-                const msg = myChange > 0 ? `💰 +${myChange} Chip` : `💸 ${myChange} Chip`;
+                const msg = myChange > 0 ? `<img src="../assets/economy/Economy_Cowoncy.png" style="width:16px;vertical-align:middle;"> +${myChange} Chip` : `💸 ${myChange} Chip`;
                 setTimeout(() => ui.showMessage(msg), 4500); 
                 
                 if (typeof Account !== 'undefined' && Account.uid) {

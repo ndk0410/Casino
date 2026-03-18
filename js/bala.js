@@ -244,7 +244,7 @@ const BaLaUI = {
         this.betPanel.style.display = 'flex';
         this.actionPanel.style.display = 'none';
         this.resultPanel.style.display = 'none';
-        this.messageEl.textContent = '💰 Đặt cược để bắt đầu!';
+        this.messageEl.innerHTML = '<img src="../assets/economy/Economy_Cowoncy.png" style="width:14px;vertical-align:middle;"> Đặt cược để bắt đầu!';
         this.playerArea.innerHTML = '';
         this.dealerArea.innerHTML = '';
         this.playerLabel.textContent = 'BẠN';

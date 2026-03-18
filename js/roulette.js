@@ -226,7 +226,7 @@ const RouletteUI = {
         Roulette.addBet(type, value, this.chipSize);
         this.updateChips();
         const label = type === 'straight' ? `Số ${value}` : type.toUpperCase();
-        this.messageEl.textContent = `💰 Đặt ${this.chipSize} vào ${label}`;
+        this.messageEl.innerHTML = `<img src="../assets/economy/Economy_Cowoncy.png" style="width:14px;vertical-align:middle;"> Đặt ${this.chipSize} vào ${label}`;
     },
 
     async spin() {
