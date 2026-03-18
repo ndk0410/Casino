@@ -19,8 +19,9 @@ class Game {
         this.selectedCards = [];   // Human's currently selected cards
         this.turnHistory = [];     // Record of all plays
         this.isAnimating = false;
-        this.aiChips = [0, 1000, 1000, 1000]; // Track AI chips
+        this.aiChips = [0, 1000, 1000, 1000];
         this.isMultiplayer = false;
+        this.myIndex = 0; // Local player identity
     }
 
     newGame() {
@@ -65,7 +66,8 @@ class Game {
 
     // Human attempts to play selected cards
     playSelectedCards() {
-        if (this.currentPlayer !== 0 || this.gameOver || this.isAnimating) return false;
+        const myIdx = this.isMultiplayer ? this.myIndex : 0;
+        if (this.currentPlayer !== myIdx || this.gameOver || this.isAnimating) return false;
         if (this.selectedCards.length === 0) return false;
 
         const sorted = sortCards(this.selectedCards);
@@ -225,13 +227,10 @@ class Game {
         this.advanceTurn();
     }
 
+    // Human passes turn
     humanPass() {
-        if (this.currentPlayer !== 0 || this.gameOver || this.isAnimating) return;
-        if (this.isNewRound) {
-            ui.showMessage('Bạn phải đánh bài khi bắt đầu lượt mới!');
-            audioManager.invalidMove();
-            return;
-        }
+        const myIdx = this.isMultiplayer ? this.myIndex : 0;
+        if (this.currentPlayer !== myIdx || this.gameOver || this.isAnimating || this.isNewRound) return false;
         if (this.isMultiplayer) {
             window.MP_TienLen.passTurn();
             return;

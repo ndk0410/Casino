@@ -9,9 +9,8 @@
     <link rel="stylesheet" href="../css/orientation.css">
     <script src="../js/orientation.js" defer></script>
     
-    <!-- Firebase SDKs for MP -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <!-- Socket.IO for MP -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
 </head>
 <body>
@@ -28,15 +27,15 @@
     <!-- Game Table -->
     <div class="game-container">
 
-        <!-- North (AI 2) -->
+        <!-- North -->
         <div id="north-area" class="player-area">
-            <div class="player-label">🤖 Dealer 2 <span class="card-count" id="north-count">13</span></div>
+            <div class="player-label" id="north-name">🤖 Đang đợi...</div>
             <div id="north-hand"></div>
         </div>
 
-        <!-- West (AI 1) -->
+        <!-- West -->
         <div id="west-area" class="player-area">
-            <div class="player-label">🤖 Dealer 1 <span class="card-count" id="west-count">13</span></div>
+            <div class="player-label" id="west-name">🤖 Đang đợi...</div>
             <div id="west-hand"></div>
         </div>
 
@@ -44,42 +43,37 @@
         <div id="center-area">
             <!-- Turn Indicator inside the center field -->
             <div id="turn-indicator" class="turn-indicator">🃏 Đang chia bài...</div>
+            <div id="turn-timer" class="turn-timer"><div id="turn-timer-bar"></div></div>
 
             <!-- Message toast -->
             <div id="message"></div>
 
-            <!-- Scoreboard -->
-            <div class="scoreboard">
-                <h3>💰 Chip</h3>
-                <div class="score-row"><span>Bạn</span><span class="score-value" id="score-0">1,000</span></div>
-                <div class="score-row"><span>Dealer 1</span><span class="score-value" id="score-1">1,000</span></div>
-                <div class="score-row"><span>Dealer 2</span><span class="score-value" id="score-2">1,000</span></div>
-                <div class="score-row"><span>Dealer 3</span><span class="score-value" id="score-3">1,000</span></div>
-            </div>
+            <!-- Message toast -->
+            <div id="message"></div>
 
             <div id="play-area">
                 <div id="play-area-cards"></div>
             </div>
         </div>
 
-        <!-- East (AI 3) -->
+        <!-- East -->
         <div id="east-area" class="player-area">
-            <div class="player-label">🤖 Dealer 3 <span class="card-count" id="east-count">13</span></div>
+            <div class="player-label" id="east-name">🤖 Đang đợi...</div>
             <div id="east-hand"></div>
         </div>
 
         <!-- South (Human Player) -->
         <div id="south-area" class="player-area">
-            <!-- Label above hand, not below buttons -->
-            <div class="player-label south-label" id="player-name">
-                🙋 Bạn <span class="card-count" id="player-count">13</span>
-            </div>
+            <div class="player-label south-label" id="player-name">🙋 Bạn</div>
             <div id="player-hand"></div>
             <div class="controls">
+                <div class="player-chips-container btn btn-secondary">
+                    <img src="../assets/economy/Economy_Cowoncy.png" alt="Chips" class="economy-icon">
+                    <span id="account-chips-val" class="player-chips-val">0</span>
+                </div>
                 <button id="btn-play" class="btn btn-play" title="Đánh bài (Enter)">🃏 Đánh</button>
                 <button id="btn-pass" class="btn btn-pass" title="Bỏ lượt (Esc)">⏭ Bỏ lượt</button>
                 <button id="btn-hint" class="btn btn-secondary" title="Gợi ý (H)">💡 Gợi ý</button>
-                <button id="btn-new-game" class="btn btn-secondary" title="Ván mới">🔄 Ván mới</button>
                 <button id="btn-sound" class="btn btn-icon" title="Âm thanh">🔊</button>
             </div>
         </div>
@@ -93,6 +87,16 @@
         </div>
     </div>
 
+    <!-- Emoji Reactions -->
+    <button id="btn-emoji" title="Gửi cảm xúc">🤫</button>
+    <div id="emoji-tray" class="emoji-tray" style="display: none;">
+        <span>😂</span>
+        <span>💪</span>
+        <span>🧐</span>
+        <span>🔥</span>
+        <span>🤡</span>
+    </div>
+
     <!-- Scripts (order matters) -->
     <script src="../js/card.js"></script>
     <script src="../js/rules.js"></script>
@@ -100,8 +104,7 @@
     <script src="../js/audio.js"></script>
     <script src="../js/account.js"></script>
     <script src="../js/ui.js"></script>
-    <script src="../js/firebase-config.js"></script>
-    <script src="../js/mp-tienlen.js"></script>
+    <script src="../js/socket-tienlen.js"></script>
     <script src="../js/game.js"></script>
 
 </body>

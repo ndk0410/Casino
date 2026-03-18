@@ -69,7 +69,7 @@ body {
         "west  center east "
         "south south  south";
     grid-template-columns: 110px 1fr 110px;
-    grid-template-rows: 130px 1fr 200px;
+    grid-template-rows: 130px 1fr 230px;
     gap: 0;
 }
 
@@ -242,7 +242,7 @@ body {
     bottom: auto !important;
     left: auto !important;
     right: auto !important;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
     align-self: center;
 }
 
@@ -340,12 +340,12 @@ body {
 }
 
 .player-card.selected {
-    /* Lift up and go BEHIND unselected cards so neighbors remain tappable */
+    /* Lift up and bring to front so it can be clicked again to unselect */
     transform: translateY(calc(var(--translate-y, 0px) - 14px)) rotate(var(--rotation, 0deg));
     box-shadow: 0 4px 16px rgba(78, 205, 196, 0.5);
     border-bottom: 3px solid var(--accent);
     border-radius: 8px;
-    z-index: -1 !important;
+    z-index: 150 !important;
 }
 
 .player-card.selected:hover {
@@ -418,8 +418,9 @@ body {
 /* ---- Controls ---- */
 .controls {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     z-index: 10;
 }
 
@@ -1047,6 +1048,151 @@ body {
         min-height: 55px;
     }
 
+/* ---- Turn Timer & UI Effects ---- */
+.turn-timer {
+    width: 200px;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    margin: 10px auto;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#turn-timer-bar {
+    height: 100%;
+    width: 100%;
+    background: #4ECDC4;
+}
+
+.player-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 6px 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: default;
+    box-shadow: none;
+}
+
+.economy-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 2px rgba(255,215,0,0.3));
+}
+
+.player-chips-val {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.1em;
+    font-family: 'Outfit', sans-serif;
+}
+
+.player-chips {
+    color: #ffd700;
+    font-weight: bold;
+    margin-left: 8px;
+    font-size: 0.85em;
+    background: rgba(0,0,0,0.3);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.card.player-card.interactive {
+    cursor: pointer;
+}
+
+.card.player-card.disabled {
+    filter: brightness(0.7) grayscale(0.3);
+    cursor: default;
+    pointer-events: none;
+}
+.btn.valid-glow {
+    box-shadow: 0 0 15px 5px rgba(78, 205, 196, 0.6) !important;
+    animation: pulseGlow 1.5s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 15px 5px rgba(78, 205, 196, 0.4); transform: scale(1); }
+    50% { box-shadow: 0 0 25px 8px rgba(78, 205, 196, 0.8); transform: scale(1.05); }
+    100% { box-shadow: 0 0 15px 5px rgba(78, 205, 196, 0.4); transform: scale(1); }
+}
+
+.drag-over {
+    border: 3px dashed rgba(78, 205, 196, 0.8) !important;
+    background: rgba(78, 205, 196, 0.15) !important;
+    border-radius: 12px;
+}
+
+.floating-emoji {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    font-size: 60px;
+    pointer-events: none;
+    animation: floatUp 2s forwards;
+    z-index: 500;
+}
+
+@keyframes floatUp {
+    0% { transform: translate(50%, -50%) scale(0.5); opacity: 0; }
+    20% { transform: translate(50%, -100%) scale(1.2); opacity: 1; }
+    80% { transform: translate(50%, -250%) scale(1); opacity: 1; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    100% { transform: translate(50%, -300%) scale(0.8); opacity: 0; }
+}
+
+.emoji-tray {
+    position: absolute;
+    bottom: 90px;
+    right: 30px;
+    background: rgba(0,0,0,0.8);
+    border-radius: 30px;
+    padding: 10px 15px;
+    display: flex;
+    gap: 15px;
+    z-index: 600;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.emoji-tray span {
+    font-size: 32px;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.emoji-tray span:hover {
+    transform: scale(1.4);
+}
+
+#btn-emoji {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 599;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+
+#btn-emoji:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* Make south-area relative so emoji floats properly */
+#south-area, #north-area, #east-area, #west-area {
+    position: relative;
+}
     .player-card {
         margin: 0 -9px;
     }

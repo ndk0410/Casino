@@ -15,15 +15,42 @@ class UI {
     cacheElements() {
         this.playArea = document.getElementById('play-area');
         this.playAreaCards = document.getElementById('play-area-cards');
+        
+        // Drag over play area
+        this.playArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            this.playArea.classList.add('drag-over');
+        });
+        
+        this.playArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            this.playArea.classList.remove('drag-over');
+        });
+        
+        this.playArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            this.playArea.classList.remove('drag-over');
+            const action = e.dataTransfer.getData('text/plain');
+            if (action === 'play_cards') {
+                if (!this.btnPlay.disabled) {
+                    this.btnPlay.click();
+                }
+            }
+        });
+
         this.playerHand = document.getElementById('player-hand');
         this.westHand = document.getElementById('west-hand');
         this.northHand = document.getElementById('north-hand');
         this.eastHand = document.getElementById('east-hand');
+        
+        // Emoji elements
+        this.btnEmoji = document.getElementById('btn-emoji');
+        this.emojiTray = document.getElementById('emoji-tray');
+
         this.messageEl = document.getElementById('message');
         this.turnIndicator = document.getElementById('turn-indicator');
         this.btnPlay = document.getElementById('btn-play');
         this.btnPass = document.getElementById('btn-pass');
-        this.btnNewGame = document.getElementById('btn-new-game');
         this.btnHint = document.getElementById('btn-hint');
         this.btnSound = document.getElementById('btn-sound');
         this.gameOverOverlay = document.getElementById('game-over-overlay');
@@ -44,19 +71,54 @@ class UI {
     }
 
     bindEvents() {
-        this.btnPlay.addEventListener('click', () => game.playSelectedCards());
-        this.btnPass.addEventListener('click', () => game.humanPass());
-        this.btnNewGame.addEventListener('click', () => {
-            game.newGame();
-            this.hideGameOver();
-            this.render();
-            this.showMessage('Ván mới bắt đầu!');
-            // If AI goes first
-            if (game.currentPlayer !== 0) {
-                setTimeout(() => game.executeAITurn(), 1000);
+        this.btnPlay.addEventListener('click', () => {
+            if (this.btnPlay.disabled) return;
+            this.btnPlay.disabled = true; // Debounce immediately
+            const success = game.playSelectedCards();
+            if (!success) {
+                setTimeout(() => this.updateButtons(), 300); // Reset if invalid local move
             }
         });
-        this.btnHint.addEventListener('click', () => this.showHint());
+        
+        this.btnPass.addEventListener('click', () => {
+            if (this.btnPass.disabled) return;
+            this.btnPass.disabled = true; // Debounce immediately
+            const success = game.humanPass();
+            if (!success) {
+                setTimeout(() => this.updateButtons(), 300);
+            }
+        });
+        this.btnHint.addEventListener('click', () => game.autoSelectHint());
+
+        // Emoji listeners
+        if (this.btnEmoji) {
+            this.btnEmoji.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const display = this.emojiTray.style.display;
+                this.emojiTray.style.display = display === 'none' ? 'flex' : 'none';
+            });
+        }
+
+        if (this.emojiTray) {
+            this.emojiTray.querySelectorAll('span').forEach(span => {
+                span.addEventListener('click', () => {
+                    const emoji = span.textContent;
+                    if (window.MP_TienLen) {
+                        window.MP_TienLen.sendEmoji(emoji);
+                    } else {
+                        // Solo mode local feedback
+                        this.showEmoji(0, emoji);
+                    }
+                    this.emojiTray.style.display = 'none';
+                });
+            });
+        }
+
+        // Close objects when clicking out
+        document.addEventListener('click', () => {
+            if (this.emojiTray) this.emojiTray.style.display = 'none';
+        });
+
         this.btnSound.addEventListener('click', () => {
             const enabled = audioManager.toggle();
             this.btnSound.textContent = enabled ? '🔊' : '🔇';
@@ -79,11 +141,20 @@ class UI {
                 e.preventDefault();
                 game.playSelectedCards();
             } else if (e.key === 'Escape' || e.key === 'p') {
-                game.humanPass();
+                this.handlePassAndClear();
             } else if (e.key === 'h') {
                 this.showHint();
             }
         });
+    }
+
+    handlePassAndClear() {
+        const success = game.humanPass();
+        if (success !== false) {
+             game.selectedCards = [];
+             this.renderPlayerHand();
+             this.updateButtons();
+        }
     }
 
     render() {
@@ -167,6 +238,20 @@ class UI {
 
             if (isMyTurn && !game.isAnimating) {
                 cardEl.classList.add('interactive');
+                
+                // Drag & Drop feature
+                cardEl.draggable = true;
+                cardEl.addEventListener('dragstart', (e) => {
+                    // Auto-select the dragged card if not selected
+                    if (!game.selectedCards.some(c => c.id === card.id)) {
+                        game.toggleCardSelection(card);
+                        cardEl.classList.add('selected');
+                        this.updateButtons();
+                    }
+                    e.dataTransfer.setData('text/plain', 'play_cards');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
                 cardEl.addEventListener('click', () => {
                     game.toggleCardSelection(card);
                     const nowSelected = game.selectedCards.some(c => c.id === card.id);
@@ -275,34 +360,85 @@ class UI {
             ? current === (window.MP_TienLen?.getMyPlayerIndex() ?? 0)
             : current === 0;
 
+        const myIdx = game.isMultiplayer ? (window.MP_TienLen?.getMyPlayerIndex() ?? 0) : 0;
+        const positionMap = ['south', 'west', 'north', 'east'];
+
         if (game.gameOver) {
             this.turnIndicator.textContent = `🏆 ${names[game.winner] ?? 'Ai đó'} thắng!`;
-            this.turnIndicator.className = 'turn-indicator winner';
+            this.turnIndicator.classList.add('winner');
+            this.stopTurnTimer();
         } else if (game.isAnimating) {
-            this.turnIndicator.textContent = `⏳ ${names[current] ?? 'Dealer'} đang suy nghĩ...`;
-            this.turnIndicator.className = 'turn-indicator thinking';
-        } else if (isMyTurn) {
+            this.turnIndicator.textContent = `⏳ ${names[current] ?? 'Máy'} đang suy nghĩ...`;
+            this.turnIndicator.classList.add('thinking');
+            this.stopTurnTimer();
+        } else if (current === myIdx) {
+            this.turnIndicator.classList.add('my-turn');
             this.turnIndicator.textContent = '🃏 Lượt của bạn!';
-            this.turnIndicator.className = 'turn-indicator your-turn';
+            this.startTurnTimer();
         } else {
-            this.turnIndicator.textContent = `🂴 Lượt của ${names[current] ?? 'Dealer'}`;
-            this.turnIndicator.className = 'turn-indicator ai-turn';
+            this.turnIndicator.classList.add('ai-turn');
+            this.turnIndicator.textContent = `🂴 Lượt của ${names[current] ?? 'Máy'}`;
+            this.startTurnTimer();
         }
 
         // Highlight active player position
         document.querySelectorAll('.player-area').forEach(el => el.classList.remove('active-player'));
-        const myIdx = game.isMultiplayer ? (window.MP_TienLen?.getMyPlayerIndex() ?? 0) : 0;
-        const positionMap = ['south', 'west', 'north', 'east'];
-        // Relative seat of the current player from my perspective
         const numPlayers = game.isMultiplayer ? (window.MP_TienLen ? playersOrder?.length ?? 4 : 4) : 4;
         const relativeSeat = (current - myIdx + numPlayers) % numPlayers;
         const activeEl = document.getElementById(`${positionMap[relativeSeat]}-area`);
         if (activeEl) activeEl.classList.add('active-player');
     }
 
+    startTurnTimer() {
+        const bar = document.getElementById('turn-timer-bar');
+        if (!bar) return;
+        bar.style.transition = 'none';
+        bar.style.width = '100%';
+        bar.style.backgroundColor = '#4ECDC4';
+        
+        // Trigger reflow
+        void bar.offsetWidth;
+        
+        bar.style.transition = 'width 15s linear, background-color 15s linear';
+        bar.style.width = '0%';
+        bar.style.backgroundColor = '#ff6b6b';
+    }
+
+    stopTurnTimer() {
+        const bar = document.getElementById('turn-timer-bar');
+        if (bar) {
+            bar.style.transition = 'none';
+            bar.style.width = '0%';
+        }
+    }
+
     updateButtons() {
-        const isHumanTurn = game.currentPlayer === 0 && !game.gameOver && !game.isAnimating;
-        this.btnPlay.disabled = !isHumanTurn || game.selectedCards.length === 0;
+        const myIdx = game.isMultiplayer ? game.myIndex : 0;
+        const isHumanTurn = game.currentPlayer === myIdx && !game.gameOver && !game.isAnimating;
+        
+        let isValidMove = false;
+        if (isHumanTurn && game.selectedCards.length > 0) {
+            const sorted = sortCards(game.selectedCards);
+            let has3SCheck = true;
+            if (game.mustPlay3Spade) {
+                has3SCheck = sorted.some(c => c.rank === '3' && c.suit === 's');
+            }
+            if (has3SCheck && typeof canBeatMove === 'function') {
+                const result = canBeatMove(sorted, game.lastPlayedCards, game.isNewRound);
+                isValidMove = result.valid;
+            } else if (has3SCheck) {
+                isValidMove = true; // Fallback if canBeatMove not available
+            }
+        }
+
+        this.btnPlay.disabled = !isHumanTurn || !isValidMove;
+        
+        if (isValidMove) {
+            this.btnPlay.classList.add('valid-glow');
+        } else {
+            this.btnPlay.classList.remove('valid-glow');
+        }
+
         this.btnPass.disabled = !isHumanTurn || game.isNewRound;
         this.btnHint.disabled = !isHumanTurn;
     }
@@ -323,16 +459,18 @@ class UI {
     }
 
     updateScores() {
-        // Player 0 = human, uses Account.chips
-        if (this.scoreEls[0]) {
-            this.scoreEls[0].textContent = Account.chips.toLocaleString();
-        }
-        // Players 1-3 = AI, uses game.aiChips
-        for (let i = 1; i < 4; i++) {
-            if (this.scoreEls[i]) {
-                this.scoreEls[i].textContent = game.aiChips[i].toLocaleString();
+        const myIdx = game.isMultiplayer ? game.myIndex : 0;
+        // Bots in corner labels
+        for (let i = 0; i < 4; i++) {
+            if (i === myIdx) continue;
+            const span = document.getElementById(`score-${i}`);
+            if (span) {
+                const val = game.aiChips[i] || 1000;
+                span.textContent = val.toLocaleString();
             }
         }
+        // Self in controls
+        this.updateChipDisplay();
     }
 
     updateChipDisplay() {
@@ -364,9 +502,30 @@ class UI {
         }
     }
 
+    showEmoji(playerIdx, emojiChars) {
+        const myIdx = typeof window.MP_TienLen !== 'undefined' ? window.MP_TienLen.getMyPlayerIndex() : 0;
+        const numPlayers = typeof window.MP_TienLen !== 'undefined' && typeof playersOrder !== 'undefined' ? playersOrder.length : 4;
+        const relativeSeat = (playerIdx - myIdx + numPlayers) % numPlayers;
+        const positionMap = ['south', 'west', 'north', 'east'];
+        const areaId = `${positionMap[relativeSeat]}-area`;
+        
+        const areaEl = document.getElementById(areaId);
+        if(!areaEl) return;
+        
+        const emojiEl = document.createElement('div');
+        emojiEl.className = 'floating-emoji';
+        emojiEl.textContent = emojiChars;
+        areaEl.appendChild(emojiEl);
+        
+        setTimeout(() => emojiEl.remove(), 2000);
+    }
+
     showGameOver(winner) {
-        const isWin = winner === 0;
+        const myIdx = game.isMultiplayer ? game.myIndex : 0;
+        const isWin = (winner === myIdx);
         this.gameOverOverlay.classList.add('show');
+        this.stopTurnTimer();
+
         this.gameOverMessage.innerHTML = isWin
             ? `<span class="win-text">🎉 Bạn đã THẮNG! 🎉</span>`
             : `<span class="lose-text">😞 ${game.playerNames[winner]} thắng rồi!</span>`;
@@ -403,22 +562,4 @@ document.addEventListener('DOMContentLoaded', () => {
     ui.chipValueEl = document.getElementById('account-chips-val');
     ui.init();
     ui.updateChipDisplay();
-    
-    // Skip auto-start if multiplayer
-    if (new URLSearchParams(window.location.search).get('room')) return;
-
-    // Auto-start first game
-    setTimeout(() => {
-        game.newGame();
-        ui.render();
-        ui.showMessage('Ván mới! Hãy đánh bài đi!');
-
-        // If AI starts first
-        if (game.currentPlayer !== 0) {
-            ui.showMessage(`${game.playerNames[game.currentPlayer]} có 3♠, đi trước!`);
-            setTimeout(() => game.executeAITurn(), 1500);
-        } else {
-            ui.showMessage('Bạn có 3♠, hãy đi trước!');
-        }
-    }, 500); // 500ms delay ensures DOM layout is stable before rendering cards
 });
