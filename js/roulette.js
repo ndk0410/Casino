@@ -119,8 +119,10 @@ const RouletteUI = {
             });
         });
 
+        this.buildWheel();
         this.buildBoard();
         this.updateChips();
+        this.renderHistory();
     },
 
     updateChips() {
@@ -314,6 +316,6 @@ const RouletteUI = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    Account.loadData && Account.loadData();
+    Account.init && Account.init();
     RouletteUI.init();
 });

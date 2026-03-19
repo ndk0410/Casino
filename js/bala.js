@@ -266,7 +266,11 @@ const BaLaUI = {
         }
 
         try {
-            await Account.deductChips(ante + pp);
+            const success = await Account.deductChips(ante + pp);
+            if (!success) {
+                this.messageEl.textContent = '⚠️ Không đủ chip!';
+                return;
+            }
             BaLa.deal(ante, pp);
             
             this.betPanel.style.display = 'none';
@@ -277,7 +281,7 @@ const BaLaUI = {
             this.renderHands(false); // hide dealer
             this.updateChips();
         } catch (e) {
-            console.error(e);
+            console.error("Deduct chips failed:", e);
             this.messageEl.textContent = '❌ Lỗi hệ thống. Vui lòng thử lại!';
             this.betPanel.style.display = 'flex';
         }
@@ -363,6 +367,6 @@ const BaLaUI = {
 
 // Init when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    Account.loadData && Account.loadData();
+    Account.init && Account.init();
     BaLaUI.init();
 });

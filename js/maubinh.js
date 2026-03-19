@@ -215,7 +215,12 @@ const MauBinhUI = {
 
         try {
             MauBinh.bet = bet;
-            await Account.deductChips(bet);
+            const success = await Account.deductChips(bet);
+            if (!success) {
+                this.messageEl.textContent = '⚠️ Không đủ chip!';
+                return;
+            }
+            
             this.betPanel.style.display = 'none';
             this.messageEl.textContent = '🎴 Đang chia bài...';
             
@@ -235,7 +240,7 @@ const MauBinhUI = {
             this.renderHand();
             this.renderChis();
         } catch (e) {
-            console.error(e);
+            console.error("Mau Binh start failed:", e);
             this.messageEl.textContent = '❌ Lỗi hệ thống. Vui lòng thử lại!';
             this.betPanel.style.display = 'block';
         }
@@ -411,6 +416,6 @@ const MauBinhUI = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    Account.loadData();
+    Account.init && Account.init();
     MauBinhUI.init();
 });
