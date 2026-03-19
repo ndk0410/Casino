@@ -17,7 +17,7 @@ const Socket_TienLen = {
         }
 
         console.log("Socket mode active. Room:", roomId);
-        game.isMultiplayer = true;
+        game.isMultiplayer = !isSolo;
 
         if (typeof io === 'undefined') {
             console.error("Socket.io not loaded!");

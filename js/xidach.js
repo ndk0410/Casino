@@ -290,7 +290,7 @@ const xidachUI = {
         this.btnClearBet.addEventListener('click', () => XiDach.clearBet());
 
         // Chip buttons
-        document.querySelectorAll('.chip-btn').forEach(btn => {
+        document.querySelectorAll('.premium-chip').forEach(btn => {
             btn.addEventListener('click', () => {
                 const amount = btn.dataset.amount; // Keep as string for 'max'
                 XiDach.placeBet(amount);

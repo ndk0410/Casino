@@ -11,6 +11,13 @@ class UI {
         this.cacheElements();
         this.bindEvents();
         this.showBettingOverlay();
+        
+        // Refresh overlay when account data arrives
+        window.addEventListener('accountUpdated', () => {
+            if (this.bettingOverlay && this.bettingOverlay.style.display !== 'none') {
+                this.showBettingOverlay();
+            }
+        });
     }
 
     cacheElements() {
@@ -552,6 +559,15 @@ class UI {
             this.bettingOverlay.style.display = 'flex';
             this.btnStartGame.disabled = false;
             this.btnStartGame.textContent = 'BẮT ĐẦU';
+            
+            // Sync with current chips
+            if (this.betInput) {
+                const max = Math.min(Account.chips, 250000);
+                this.betInput.max = max;
+                if (parseInt(this.betInput.value) > max) {
+                    this.betInput.value = max;
+                }
+            }
         }
     }
 
