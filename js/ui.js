@@ -194,6 +194,12 @@ class UI {
             } else {
                 game.newGame(bet);
                 this.hideBettingOverlay();
+                this.render(); // Ensure UI reflects the new game state
+                
+                // If it's not the human's turn (Index 0), let the AI start
+                if (game.currentPlayer !== 0) {
+                    setTimeout(() => game.executeAITurn(), 1500);
+                }
             }
         });
 
