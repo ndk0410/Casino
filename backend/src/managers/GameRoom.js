@@ -1,4 +1,4 @@
-const TienLenEngine = require('../core/TienLenEngine');
+const TienLenEngine = require('../engine/TienLenEngine');
 
 class GameRoom {
     constructor(id, hostId, hostName) {
