@@ -1,11 +1,63 @@
 /* Premium Betting Styles - Casino V2 */
+:root {
+    --shell-bg: radial-gradient(circle at top, rgba(255, 180, 80, 0.08), transparent 28%),
+        radial-gradient(circle at bottom, rgba(0, 210, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #130a25, #07030f 72%);
+    --shell-border: rgba(255, 255, 255, 0.12);
+    --shell-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+body {
+    background-image: var(--shell-bg);
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.02) 50%, transparent 100%);
+    opacity: 0.35;
+    mix-blend-mode: screen;
+}
+
+body:not(.app-ready) {
+    opacity: 0;
+}
+
+body.app-ready {
+    opacity: 1;
+    transition: opacity 0.35s ease;
+}
+
+body.app-page-leaving {
+    opacity: 0.92;
+    transform: scale(0.998);
+    transition: opacity 0.2s ease;
+}
+
+[data-shell-card] {
+    opacity: 0;
+    transform: translateY(22px) scale(0.985);
+    animation: shellReveal 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+    animation-delay: var(--shell-delay, 0ms);
+}
+
+@keyframes shellReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .premium-bet-panel {
     background: rgba(10, 10, 20, 0.7);
     backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--shell-border);
     border-radius: 20px;
     padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+    box-shadow: var(--shell-shadow), inset 0 0 20px rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -65,7 +117,11 @@
     font-weight: 900;
     font-size: 12px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.premium-btn-max:hover {
+    filter: brightness(1.08);
 }
 
 .premium-btn-max:active {
@@ -123,6 +179,7 @@
 .premium-chip:hover {
     transform: scale(1.1) rotate(15deg);
     border-color: #fff;
+    box-shadow: 0 10px 24px rgba(255, 255, 255, 0.18);
 }
 
 .chip-50 { background: #3498db; }
@@ -155,6 +212,20 @@
     max-width: 450px;
     width: 90%;
     animation: slideUp 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-bet-card::after,
+.premium-bet-panel::after {
+    content: '';
+    position: absolute;
+    inset: -30% auto auto -10%;
+    width: 55%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: rotate(-12deg);
+    opacity: 0.55;
 }
 
 .premium-bet-card h2 {
@@ -240,9 +311,24 @@
     background: rgba(231, 76, 60, 0.1);
     color: #e74c3c;
     border-color: rgba(231, 76, 60, 0.3);
+    transform: translateY(-1px);
 }
 
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.app-ready,
+    body.app-page-leaving,
+    [data-shell-card],
+    .premium-bet-card,
+    .premium-btn-primary,
+    .premium-chip,
+    .premium-back-btn {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
 }

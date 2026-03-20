@@ -7,6 +7,7 @@ class AudioManager {
         this.ctx = null;
         this.enabled = true;
         this.initialized = false;
+        this.masterVolume = 1;
         this.setupAutoInit();
     }
 
@@ -50,7 +51,7 @@ class AudioManager {
         osc.type = type;
         osc.frequency.setValueAtTime(frequency, this.ctx.currentTime);
 
-        gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+        gain.gain.setValueAtTime(volume * this.masterVolume, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
 
         osc.connect(gain);
@@ -75,7 +76,7 @@ class AudioManager {
         source.buffer = buffer;
 
         const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+        gain.gain.setValueAtTime(volume * this.masterVolume, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
 
         const filter = this.ctx.createBiquadFilter();
@@ -116,6 +117,10 @@ class AudioManager {
         setTimeout(() => this.playTone(200, 0.15, 'sine', 0.04), 100);
     }
 
+    passTurn() {
+        this.pass();
+    }
+
     invalidMove() {
         this.playTone(200, 0.2, 'square', 0.1);
         setTimeout(() => this.playTone(150, 0.25, 'square', 0.08), 150);
@@ -149,6 +154,10 @@ class AudioManager {
     toggle() {
         this.enabled = !this.enabled;
         return this.enabled;
+    }
+
+    error() {
+        this.invalidMove();
     }
 }
 

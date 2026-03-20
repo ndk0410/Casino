@@ -1,5 +1,6 @@
 // ============================================================
-// account.js - Global User Account & Currency System (Firebase Synced)
+// account.js - Local-first account and chip system
+// Works on static hosting like Vercel, with Firebase as optional sync.
 // ============================================================
 
 const Account = {
@@ -12,18 +13,29 @@ const Account = {
     DEFAULT_START_CHIPS: 1000,
     ADMIN_USERNAME: 'admin',
     ADMIN_PASSWORD: 'admin123',
+    mode: 'local',
+    syncStarted: false,
+    syncRetries: 0,
+    MAX_SYNC_RETRIES: 6,
 
     async init() {
         this.loadLocalSession();
+        this.detectMode();
         if (this.uid) {
             this.startSync();
         }
+        this.notifyUpdate();
+    },
+
+    detectMode() {
+        this.mode = window.db ? 'firebase' : 'local';
+        document.documentElement.dataset.accountMode = this.mode;
     },
 
     loadLocalSession() {
         this.username = localStorage.getItem('coca_username');
         this.uid = localStorage.getItem('coca_uid');
-        this.chips = Number(localStorage.getItem('coca_chips')) || 0;
+        this.chips = Number(localStorage.getItem('coca_chips')) || this.DEFAULT_START_CHIPS;
         this.lastDailyReward = Number(localStorage.getItem('coca_lastDaily')) || 0;
         this.isAdmin = this.username === this.ADMIN_USERNAME;
     },
@@ -35,27 +47,64 @@ const Account = {
         if (this.uid) localStorage.setItem('coca_uid', this.uid);
         else localStorage.removeItem('coca_uid');
 
-        localStorage.setItem('coca_chips', this.chips);
-        localStorage.setItem('coca_lastDaily', this.lastDailyReward);
+        localStorage.setItem('coca_chips', String(this.chips));
+        localStorage.setItem('coca_lastDaily', String(this.lastDailyReward));
+    },
+
+    loadLocalUsers() {
+        try {
+            return JSON.parse(localStorage.getItem('coca_users') || '{}');
+        } catch {
+            return {};
+        }
+    },
+
+    saveLocalUsers(users) {
+        localStorage.setItem('coca_users', JSON.stringify(users));
+    },
+
+    createLocalUser(name, password) {
+        return {
+            username: name,
+            password,
+            chips: this.DEFAULT_START_CHIPS,
+            lastDaily: 0,
+            role: name.toLowerCase() === this.ADMIN_USERNAME ? 'admin' : 'user',
+            uid: 'U' + Math.random().toString(36).slice(2, 9).toUpperCase(),
+            createdAt: Date.now(),
+        };
     },
 
     startSync() {
-        if (!this.uid || !window.db) {
-            // If DB not ready yet, retry in 500ms
-            if (!window.db) setTimeout(() => this.startSync(), 500);
+        if (!this.uid || this.syncStarted) return;
+
+        if (!window.db) {
+            if (this.syncRetries < this.MAX_SYNC_RETRIES) {
+                this.syncRetries += 1;
+                setTimeout(() => this.startSync(), 600);
+            } else {
+                this.mode = 'local';
+                this.notifyUpdate();
+            }
             return;
         }
 
+        this.mode = 'firebase';
+        this.syncStarted = true;
         const userRef = db.ref('users/' + this.uid);
+
         userRef.on('value', (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                this.chips = Number(data.chips) || 0;
-                this.lastDailyReward = Number(data.lastDaily) || 0;
-                this.isAdmin = data.role === 'admin' || this.username === this.ADMIN_USERNAME;
-                this.saveLocalSession();
-                this.notifyUpdate();
-            }
+            if (!data) return;
+            this.chips = Number(data.chips) || 0;
+            this.lastDailyReward = Number(data.lastDaily) || 0;
+            this.isAdmin = data.role === 'admin' || this.username === this.ADMIN_USERNAME;
+            this.saveLocalSession();
+            this.notifyUpdate();
+        }, () => {
+            this.mode = 'local';
+            this.syncStarted = false;
+            this.notifyUpdate();
         });
     },
 
@@ -63,156 +112,171 @@ const Account = {
         if (this.uid && window.db) {
             db.ref('users/' + this.uid).off();
         }
+        this.syncStarted = false;
     },
 
     notifyUpdate() {
-        window.dispatchEvent(new CustomEvent('accountUpdated', { 
-            detail: { chips: this.chips, username: this.username, uid: this.uid } 
+        window.dispatchEvent(new CustomEvent('accountUpdated', {
+            detail: {
+                chips: this.chips,
+                username: this.username,
+                uid: this.uid,
+                mode: this.mode,
+            }
         }));
-        
-        // Update any generic chip displays
+
         const chipDisplays = document.querySelectorAll('#chips-display, #display-chips, #bl-chips, #pk-chips, #mb-chips, #rl-chips, #account-chips-val');
-        chipDisplays.forEach(el => {
+        chipDisplays.forEach((el) => {
             el.textContent = this.chips.toLocaleString();
         });
     },
 
     async register(name, password) {
-        if (!name || name.trim() === '' || !password || password.trim() === '') {
-            return { success: false, msg: "Vui lòng nhập đầy đủ thông tin!" };
+        if (!name || !name.trim() || !password || !password.trim()) {
+            return { success: false, msg: 'Vui long nhap day du thong tin!' };
         }
+
         const cleanName = name.trim();
-        if (cleanName.toLowerCase() === this.ADMIN_USERNAME) {
-            return { success: false, msg: "Tên đăng nhập không hợp lệ!" };
+        const normalized = cleanName.toLowerCase();
+
+        const localUsers = this.loadLocalUsers();
+        if (Object.values(localUsers).some((user) => user.username.toLowerCase() === normalized)) {
+            return { success: false, msg: 'Ten dang nhap da ton tai!' };
         }
 
-        if (!window.db) return { success: false, msg: "Dịch vụ hiện không khả dụng!" };
+        const userData = this.createLocalUser(cleanName, password);
+        localUsers[userData.uid] = userData;
+        this.saveLocalUsers(localUsers);
 
-        try {
-            // Check if username exists
-            const nameRef = db.ref('usernames/' + cleanName.toLowerCase());
-            const nameSnap = await nameRef.get();
-            if (nameSnap.exists()) {
-                return { success: false, msg: "Tên đăng nhập đã tồn tại!" };
+        if (window.db) {
+            try {
+                await db.ref('users/' + userData.uid).set(userData);
+                await db.ref('usernames/' + normalized).set(userData.uid);
+                this.mode = 'firebase';
+            } catch {
+                this.mode = 'local';
             }
-
-            // Create new UID
-            const newUID = 'U' + Math.random().toString(36).substr(2, 7).toUpperCase();
-            
-            const userData = {
-                username: cleanName,
-                password: password,
-                chips: this.DEFAULT_START_CHIPS,
-                lastDaily: 0,
-                role: 'user',
-                uid: newUID,
-                createdAt: Date.now()
-            };
-
-            await db.ref('users/' + newUID).set(userData);
-            await nameRef.set(newUID);
-
-            return { success: true, uid: newUID };
-        } catch (e) {
-            console.error(e);
-            return { success: false, msg: "Lỗi đăng ký: " + e.message };
         }
+
+        return { success: true, uid: userData.uid };
     },
 
     async login(name, password) {
-        if (!name || name.trim() === '') return { success: false, msg: "Vui lòng nhập tên đăng nhập!" };
-        const cleanName = name.trim();
-
-        if (!window.db) return { success: false, msg: "Dịch vụ hiện không khả dụng!" };
-
-        try {
-            const nameRef = db.ref('usernames/' + cleanName.toLowerCase());
-            const nameSnap = await nameRef.get();
-            
-            let foundUID = null;
-            let userData = null;
-
-            if (nameSnap.exists()) {
-                foundUID = nameSnap.val();
-                const userSnap = await db.ref('users/' + foundUID).get();
-                userData = userSnap.val();
-            } else {
-                // MIGRATION CHECK: If not in Firebase, check local legacy storage
-                const legacyUsers = JSON.parse(localStorage.getItem('coca_users') || '{}');
-                const legacyUser = legacyUsers[cleanName];
-                
-                if (legacyUser && legacyUser.password === password) {
-                    console.log("Migrating legacy user to Firebase:", cleanName);
-                    // Use their existing UID if they have one, or generate a new one
-                    const newUID = legacyUser.uid || ('U' + Math.random().toString(36).substr(2, 7).toUpperCase());
-                    
-                    userData = {
-                        username: cleanName,
-                        password: password,
-                        chips: Number(legacyUser.chips) || this.DEFAULT_START_CHIPS,
-                        lastDaily: Number(legacyUser.lastDaily) || 0,
-                        role: legacyUser.role || 'user',
-                        uid: newUID,
-                        createdAt: Date.now()
-                    };
-
-                    await db.ref('users/' + newUID).set(userData);
-                    await nameRef.set(newUID);
-                    foundUID = newUID;
-
-                    // Clear legacy local storage for this user specifically or just leave it
-                } else {
-                    return { success: false, msg: "Tài khoản không tồn tại!" };
-                }
-            }
-
-            if (!userData || userData.password !== password) {
-                return { success: false, msg: "Sai mật khẩu!" };
-            }
-
-            this.stopSync(); // Stop any old syncs
-
-            this.username = userData.username;
-            this.uid = foundUID;
-            this.chips = Number(userData.chips);
-            this.lastDailyReward = Number(userData.lastDaily) || 0;
-            this.isAdmin = userData.role === 'admin' || this.username === this.ADMIN_USERNAME;
-
-            this.saveLocalSession();
-            this.startSync();
-            this.notifyUpdate();
-
-            return { success: true };
-        } catch (e) {
-            console.error(e);
-            return { success: false, msg: "Lỗi đăng nhập: " + e.message };
+        if (!name || !name.trim()) {
+            return { success: false, msg: 'Vui long nhap ten dang nhap!' };
         }
+
+        const cleanName = name.trim();
+        const normalized = cleanName.toLowerCase();
+        let userData = null;
+        let foundUID = null;
+
+        if (window.db) {
+            try {
+                const nameSnap = await db.ref('usernames/' + normalized).get();
+                if (nameSnap.exists()) {
+                    foundUID = nameSnap.val();
+                    const userSnap = await db.ref('users/' + foundUID).get();
+                    userData = userSnap.val();
+                    this.mode = 'firebase';
+                }
+            } catch {
+                this.mode = 'local';
+            }
+        }
+
+        if (!userData) {
+            const localUsers = this.loadLocalUsers();
+            const localEntry = Object.values(localUsers).find(
+                (user) => user.username.toLowerCase() === normalized
+            );
+            if (!localEntry) {
+                return { success: false, msg: 'Tai khoan khong ton tai!' };
+            }
+            userData = localEntry;
+            foundUID = localEntry.uid;
+            this.mode = 'local';
+        }
+
+        if (userData.password !== password) {
+            return { success: false, msg: 'Sai mat khau!' };
+        }
+
+        this.stopSync();
+        this.username = userData.username;
+        this.uid = foundUID;
+        this.chips = Number(userData.chips) || this.DEFAULT_START_CHIPS;
+        this.lastDailyReward = Number(userData.lastDaily) || 0;
+        this.isAdmin = userData.role === 'admin' || this.username === this.ADMIN_USERNAME;
+
+        this.saveLocalSession();
+        this.startSync();
+        this.notifyUpdate();
+
+        return { success: true };
     },
 
     logout() {
         this.stopSync();
         this.username = null;
         this.uid = null;
-        this.chips = 0;
+        this.chips = this.DEFAULT_START_CHIPS;
         this.isAdmin = false;
+        this.lastDailyReward = 0;
         this.saveLocalSession();
         this.notifyUpdate();
     },
 
+    async persistLocalState() {
+        if (!this.uid) return;
+        const users = this.loadLocalUsers();
+        const existing = users[this.uid];
+        if (existing) {
+            existing.chips = this.chips;
+            existing.lastDaily = this.lastDailyReward;
+            users[this.uid] = existing;
+            this.saveLocalUsers(users);
+        }
+        this.saveLocalSession();
+    },
+
     async addChips(amount) {
-        if (!this.uid || !window.db) return;
-        const newTotal = this.chips + parseInt(amount);
-        await db.ref('users/' + this.uid + '/chips').set(newTotal);
+        const value = parseInt(amount, 10);
+        if (!this.uid || Number.isNaN(value) || value <= 0) return false;
+
+        this.chips += value;
+        await this.persistLocalState();
+
+        if (window.db && this.mode === 'firebase') {
+            try {
+                await db.ref('users/' + this.uid + '/chips').set(this.chips);
+            } catch {
+                this.mode = 'local';
+            }
+        }
+
+        this.notifyUpdate();
+        return true;
     },
 
     async deductChips(amount) {
-        if (!this.uid || !window.db) return false;
-        if (this.chips >= amount) {
-            const newTotal = this.chips - parseInt(amount);
-            await db.ref('users/' + this.uid + '/chips').set(newTotal);
-            return true;
+        const value = parseInt(amount, 10);
+        if (!this.uid || Number.isNaN(value) || value <= 0) return false;
+        if (this.chips < value) return false;
+
+        this.chips -= value;
+        await this.persistLocalState();
+
+        if (window.db && this.mode === 'firebase') {
+            try {
+                await db.ref('users/' + this.uid + '/chips').set(this.chips);
+            } catch {
+                this.mode = 'local';
+            }
         }
-        return false;
+
+        this.notifyUpdate();
+        return true;
     },
 
     canClaimDaily() {
@@ -223,71 +287,87 @@ const Account = {
     },
 
     async claimDaily() {
-        if (this.canClaimDaily() && this.uid) {
-            await this.addChips(this.DAILY_AMOUNT);
-            await db.ref('users/' + this.uid + '/lastDaily').set(Date.now());
-            return true;
+        if (!this.uid || !this.canClaimDaily()) return false;
+        this.lastDailyReward = Date.now();
+        await this.addChips(this.DAILY_AMOUNT);
+        await this.persistLocalState();
+
+        if (window.db && this.mode === 'firebase') {
+            try {
+                await db.ref('users/' + this.uid + '/lastDaily').set(this.lastDailyReward);
+            } catch {
+                this.mode = 'local';
+            }
         }
-        return false;
+
+        this.notifyUpdate();
+        return true;
     },
 
-    // ---- Admin Functions (Firebase) ----
     async adminAddChips(targetUID, amount) {
-        if (!this.isAdmin) return { success: false, msg: "Bạn không có quyền admin!" };
-        amount = parseInt(amount);
-        if (isNaN(amount) || amount <= 0) return { success: false, msg: "Số chip không hợp lệ!" };
+        if (!this.isAdmin) return { success: false, msg: 'Ban khong co quyen admin!' };
+        const value = parseInt(amount, 10);
+        if (Number.isNaN(value) || value <= 0) return { success: false, msg: 'So chip khong hop le!' };
 
-        try {
-            const targetRef = db.ref('users/' + targetUID + '/chips');
-            const snap = await targetRef.get();
-            if (!snap.exists()) return { success: false, msg: "Không tìm thấy user với UID: " + targetUID };
+        const users = this.loadLocalUsers();
+        if (!users[targetUID]) return { success: false, msg: 'Khong tim thay user voi UID: ' + targetUID };
 
-            const current = Number(snap.val()) || 0;
-            const updated = current + amount;
-            await targetRef.set(updated);
+        users[targetUID].chips = Number(users[targetUID].chips || 0) + value;
+        this.saveLocalUsers(users);
 
-            return { success: true, msg: `Đã nạp ${amount.toLocaleString()} cho ${targetUID}. Số dư mới: ${updated.toLocaleString()}` };
-        } catch(e) {
-            return { success: false, msg: e.message };
+        if (window.db && this.mode === 'firebase') {
+            try {
+                await db.ref('users/' + targetUID + '/chips').set(users[targetUID].chips);
+            } catch {
+                this.mode = 'local';
+            }
         }
+
+        if (targetUID === this.uid) {
+            this.chips = users[targetUID].chips;
+            this.notifyUpdate();
+        }
+
+        return { success: true, msg: `Da nap ${value.toLocaleString()} cho ${targetUID}. So du moi: ${users[targetUID].chips.toLocaleString()}` };
     },
 
     async adminDeductChips(targetUID, amount) {
-        if (!this.isAdmin) return { success: false, msg: "Bạn không có quyền admin!" };
-        amount = parseInt(amount);
-        if (isNaN(amount) || amount <= 0) return { success: false, msg: "Số chip không hợp lệ!" };
+        if (!this.isAdmin) return { success: false, msg: 'Ban khong co quyen admin!' };
+        const value = parseInt(amount, 10);
+        if (Number.isNaN(value) || value <= 0) return { success: false, msg: 'So chip khong hop le!' };
 
-        try {
-            const targetRef = db.ref('users/' + targetUID + '/chips');
-            const snap = await targetRef.get();
-            if (!snap.exists()) return { success: false, msg: "Không tìm thấy user với UID: " + targetUID };
+        const users = this.loadLocalUsers();
+        if (!users[targetUID]) return { success: false, msg: 'Khong tim thay user voi UID: ' + targetUID };
 
-            const current = Number(snap.val()) || 0;
-            const updated = Math.max(0, current - amount);
-            await targetRef.set(updated);
+        users[targetUID].chips = Math.max(0, Number(users[targetUID].chips || 0) - value);
+        this.saveLocalUsers(users);
 
-            return { success: true, msg: `Đã trừ ${amount.toLocaleString()} từ ${targetUID}. Số dư mới: ${updated.toLocaleString()}` };
-        } catch(e) {
-            return { success: false, msg: e.message };
+        if (window.db && this.mode === 'firebase') {
+            try {
+                await db.ref('users/' + targetUID + '/chips').set(users[targetUID].chips);
+            } catch {
+                this.mode = 'local';
+            }
         }
+
+        if (targetUID === this.uid) {
+            this.chips = users[targetUID].chips;
+            this.notifyUpdate();
+        }
+
+        return { success: true, msg: `Da tru ${value.toLocaleString()} tu ${targetUID}. So du moi: ${users[targetUID].chips.toLocaleString()}` };
     },
 
     async adminGetAllUsers() {
-        if (!this.isAdmin || !window.db) return [];
-        try {
-            const snap = await db.ref('users').get();
-            const data = snap.val() || {};
-            return Object.values(data).map(u => ({
-                username: u.username,
-                uid: u.uid || 'N/A',
-                chips: Number(u.chips),
-                role: u.role || 'user'
-            }));
-        } catch(e) {
-            return [];
-        }
+        if (!this.isAdmin) return [];
+        const users = this.loadLocalUsers();
+        return Object.values(users).map((user) => ({
+            username: user.username,
+            uid: user.uid || 'N/A',
+            chips: Number(user.chips || 0),
+            role: user.role || 'user',
+        }));
     }
 };
 
-// Auto-initialize when file loads
 Account.init();
