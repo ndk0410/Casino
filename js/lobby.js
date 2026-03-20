@@ -1,7 +1,14 @@
 // lobby.js - Socket-first lobby flow for online Tien Len
 
 if (!Account.username) {
-    window.location.href = '../index.html';
+    window.location.href = window.location.protocol === 'file:' ? '../index.html' : '../';
+}
+
+function buildGamePath(basePath) {
+    if (window.location.protocol === 'file:') {
+        return `${basePath}.html`;
+    }
+    return basePath;
 }
 
 function switchTab(tab) {
@@ -21,7 +28,7 @@ function switchTab(tab) {
 function createRoom() {
     const gameType = document.getElementById('create-game-type').value;
     const roomId = Math.random().toString(36).slice(2, 8).toUpperCase();
-    window.location.href = `${gameType}.html?room=${roomId}&host=true`;
+    window.location.href = `${buildGamePath(gameType)}?room=${roomId}&host=true`;
 }
 
 function joinRoom() {
@@ -31,7 +38,7 @@ function joinRoom() {
         return;
     }
 
-    window.location.href = `tienlen.html?room=${roomId}`;
+    window.location.href = `${buildGamePath('tienlen')}?room=${roomId}`;
 }
 
 document.getElementById('join-room-id')?.addEventListener('input', (event) => {

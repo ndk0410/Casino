@@ -10,7 +10,7 @@
     <title>Casino O-W-O 🃏</title>
     <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="assets/icon-512.png">
     <link rel="apple-touch-icon" href="assets/icon-512.png">
     <style>
@@ -586,8 +586,347 @@
             .login-box h2 { font-size: 24px; }
         }
     </style>
+    <style>
+        body {
+            background:
+                radial-gradient(circle at 18% 16%, rgba(42, 184, 145, 0.18), transparent 24%),
+                radial-gradient(circle at 82% 14%, rgba(255, 196, 103, 0.16), transparent 22%),
+                radial-gradient(circle at 50% 110%, rgba(74, 101, 255, 0.14), transparent 28%),
+                linear-gradient(180deg, #020706 0%, #09110f 40%, #040807 100%);
+            font-family: 'Space Grotesk', sans-serif;
+            padding: 28px 0 54px;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at center, rgba(255,255,255,0.04), transparent 46%),
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 86px);
+            opacity: 0.42;
+            mix-blend-mode: screen;
+        }
+
+        .ambient-stage {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(28px);
+            opacity: 0.45;
+            animation: ambientDrift 15s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 320px;
+            height: 320px;
+            top: 8%;
+            left: -5%;
+            background: rgba(73, 221, 176, 0.18);
+        }
+
+        .orb-2 {
+            width: 380px;
+            height: 380px;
+            right: -6%;
+            top: 12%;
+            background: rgba(255, 198, 94, 0.16);
+            animation-direction: reverse;
+        }
+
+        .orb-3 {
+            width: 360px;
+            height: 360px;
+            left: 32%;
+            bottom: -14%;
+            background: rgba(84, 122, 255, 0.14);
+        }
+
+        @keyframes ambientDrift {
+            0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(18px, -24px, 0) scale(1.08); }
+        }
+
+        .casino-shell {
+            width: min(1240px, calc(100vw - 28px));
+            position: relative;
+            z-index: 5;
+            padding: 24px 22px 38px;
+            border-radius: 34px;
+            background: linear-gradient(180deg, rgba(10, 20, 19, 0.84), rgba(8, 12, 16, 0.68));
+            border: 1px solid rgba(255, 228, 169, 0.12);
+            box-shadow: 0 28px 90px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(18px);
+            margin: 0 auto;
+        }
+
+        .user-panel {
+            position: relative;
+            top: auto;
+            right: auto;
+            margin: 0 auto 26px;
+            background: linear-gradient(180deg, rgba(7,16,14,0.94), rgba(15,26,24,0.76));
+            border-color: rgba(255, 221, 145, 0.2);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.24);
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 960px;
+            width: fit-content;
+        }
+
+        .header {
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        .header::before {
+            content: 'EST. 2026';
+            display: inline-block;
+            margin-bottom: 12px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 225, 151, 0.16);
+            background: rgba(255,255,255,0.03);
+            color: rgba(255, 228, 167, 0.76);
+            font-size: 11px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .header h1 {
+            display: inline-block;
+            width: fit-content;
+            margin: 0 auto;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(60px, 8vw, 102px);
+            line-height: 0.95;
+            letter-spacing: 0.02em;
+            color: #f4cb68;
+            background: linear-gradient(135deg, #fff7d2 0%, #f4cb68 34%, #ff9d59 68%, #fff0c1 100%);
+            background-size: 180% 180%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            letter-spacing: 0.46em;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .suit-icons {
+            margin-top: 14px;
+            letter-spacing: 14px;
+            color: rgba(255, 227, 154, 0.66);
+            text-align: center;
+        }
+
+        .hero-panel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 auto 30px;
+            max-width: 880px;
+        }
+
+        .hero-chip {
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.82);
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            width: 100%;
+            gap: 22px;
+            padding: 0;
+            align-items: stretch;
+        }
+
+        .game-card {
+            width: auto;
+            min-height: 320px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            border-radius: 24px;
+            box-shadow: 0 18px 32px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.05);
+            transform-style: preserve-3d;
+            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, border-color 0.3s ease;
+        }
+
+        .card-body {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .game-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 24%, transparent 75%, rgba(255,255,255,0.08));
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .game-card:hover {
+            transform: translateY(-12px) rotateX(6deg) rotateY(-3deg) scale(1.02);
+        }
+
+        .card-banner {
+            height: 156px;
+        }
+
+        .card-banner::before {
+            content: '';
+            position: absolute;
+            inset: auto -18% -30% -18%;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 62%);
+            opacity: 0.5;
+        }
+
+        .banner-emoji {
+            font-size: 68px;
+            transform: translateZ(22px);
+        }
+
+        .card-body {
+            padding: 20px 18px 18px;
+            gap: 8px;
+        }
+
+        .card-body h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .card-tag {
+            border-radius: 999px;
+            padding: 5px 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .play-btn {
+            margin-top: auto;
+            min-height: 46px;
+            border-radius: 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.05em;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.22);
+            transition: transform 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 30px rgba(0,0,0,0.28);
+        }
+
+        .login-box {
+            background: linear-gradient(180deg, rgba(9,20,18,0.96), rgba(13,19,30,0.94));
+            border: 1px solid rgba(255, 221, 141, 0.24);
+            border-radius: 28px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.48);
+        }
+
+        .login-box h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 46px;
+            letter-spacing: 0.02em;
+        }
+
+        .auth-form input {
+            border-radius: 18px;
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.08);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .footer {
+            position: relative;
+            margin-top: 28px;
+            bottom: auto;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .casino-shell {
+                width: min(100vw - 18px, 1240px);
+                padding: 18px 14px 30px;
+                border-radius: 28px;
+            }
+
+            .games-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px 0 34px;
+            }
+
+            .casino-shell {
+                width: calc(100vw - 14px);
+                border-radius: 22px;
+                padding: 16px 12px 26px;
+            }
+
+            .user-panel {
+                width: 100%;
+                margin-bottom: 18px;
+                flex-wrap: wrap;
+                justify-content: center;
+                border-radius: 18px;
+            }
+
+            .hero-panel {
+                gap: 8px;
+            }
+
+            .hero-chip {
+                width: 100%;
+                text-align: center;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 54px;
+            }
+
+            .header p {
+                letter-spacing: 0.26em;
+            }
+        }
+    </style>
 </head>
-<body>    <!-- Login Modal -->
+<body>
+    <div class="ambient-stage" aria-hidden="true">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+    <!-- Login Modal -->
     <div id="login-modal" class="login-overlay">
         <div class="login-box">
             <h2>Coca Casino</h2>
@@ -614,6 +953,7 @@
         </div>
     </div>
 
+    <div class="casino-shell">
     <!-- User Panel -->
     <div class="user-panel" id="user-panel" style="display: none;">
         <button id="btn-daily" class="btn-daily" onclick="claimDaily()">🎁 NHẬN QUÀ</button>
@@ -624,7 +964,7 @@
         </div>
         <button id="btn-admin-toggle" class="btn-admin-toggle" onclick="toggleAdminPanel()">⚙ ADMIN</button>
         <button class="btn-logout" onclick="Account.logout()">Thoát</button>
-        <a href="pages/lobby.html" class="btn-online" style="text-decoration:none; background:linear-gradient(135deg, #00d2ff, #3a7bd5); border:none; color:#fff; padding:10px 20px; border-radius:12px; font-weight:800; font-size:12px; margin-left:10px; box-shadow:0 4px 15px rgba(0,210,255,0.3);">🌐 CHƠI ONLINE</a>
+        <a href="pages/lobby" class="btn-online" style="text-decoration:none; background:linear-gradient(135deg, #00d2ff, #3a7bd5); border:none; color:#fff; padding:10px 20px; border-radius:12px; font-weight:800; font-size:12px; margin-left:10px; box-shadow:0 4px 15px rgba(0,210,255,0.3);">🌐 CHƠI ONLINE</a>
     </div>
 
     <!-- Admin Panel -->
@@ -633,7 +973,7 @@
 
         <div class="admin-section">
             <label>NẠP CHIP CHO USER</label>
-            <input type="text" id="admin-uid" class="admin-input" placeholder="Nhập UID người nhận">
+            <input type="text" id="admin-uid" class="admin-input" placeholder="Nhập UID hoặc tên đăng nhập">
             <input type="number" id="admin-amount" class="admin-input" placeholder="Số chip cần nạp" min="1">
             <button class="admin-btn" onclick="adminAddChips()"><img src="assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:14px; margin-right:4px;"> NẠP CHIP</button>
             <button class="admin-btn" onclick="adminDeductChips()" style="background: linear-gradient(135deg, #e74c3c, #c0392b); margin-top: 8px;">➖ TRỪ CHIP</button>
@@ -656,11 +996,17 @@
         <div class="suit-icons">♠ ♣ ♦ ♥</div>
     </div>
 
+    <div class="hero-panel">
+        <div class="hero-chip">Ban casino cao cap, motion muot va giao dien dong bo</div>
+        <div class="hero-chip">Tai khoan local-first, vao choi nhanh tren Vercel</div>
+        <div class="hero-chip">Online room + bot fill cho ban choi linh hoat hon</div>
+    </div>
+
     <!-- Cards Grid -->
     <div class="games-grid">
 
         <!-- Tiến Lên -->
-        <a href="pages/tienlen.html" class="game-card card-tienlen">
+        <a href="pages/tienlen" class="game-card card-tienlen">
             <div class="card-banner">
                 <span class="banner-emoji">🃏</span>
             </div>
@@ -675,7 +1021,7 @@
         </a>
 
         <!-- Xì Dách -->
-        <a href="pages/xidach.html" class="game-card card-xidach">
+        <a href="pages/xidach" class="game-card card-xidach">
             <div class="card-banner">
                 <span class="banner-emoji">🎰</span>
             </div>
@@ -692,7 +1038,7 @@
 
 
         <!-- Nổ Hũ (Slots) -->
-        <a href="pages/slots.html" class="game-card card-slots">
+        <a href="pages/slots" class="game-card card-slots">
             <div class="card-banner">
                 <span class="banner-emoji">🎰</span>
             </div>
@@ -707,7 +1053,7 @@
         </a>
 
         <!-- Poker -->
-        <a href="pages/poker.html" class="game-card card-poker">
+        <a href="pages/poker" class="game-card card-poker">
             <div class="card-banner">
                 <span class="banner-emoji">♠</span>
             </div>
@@ -722,7 +1068,7 @@
         </a>
 
         <!-- Mậu Binh -->
-        <a href="pages/maubinh.html" class="game-card card-maubinh">
+        <a href="pages/maubinh" class="game-card card-maubinh">
             <div class="card-banner">
                 <span class="banner-emoji">🀄</span>
             </div>
@@ -737,7 +1083,7 @@
         </a>
 
         <!-- Ba Lá -->
-        <a href="pages/bala.html" class="game-card card-bala">
+        <a href="pages/bala" class="game-card card-bala">
             <div class="card-banner">
                 <span class="banner-emoji">🃏</span>
             </div>
@@ -752,7 +1098,7 @@
         </a>
 
         <!-- Roulette -->
-        <a href="pages/roulette.html" class="game-card card-roulette">
+        <a href="pages/roulette" class="game-card card-roulette">
             <div class="card-banner">
                 <span class="banner-emoji">🎡</span>
             </div>
@@ -770,6 +1116,8 @@
     </div>
 
     <div class="footer">♠ ♣ ♦ ♥ &nbsp;&nbsp;Coca Casino &nbsp;&nbsp;♥ ♦ ♣ ♠</div>
+
+    </div>
 
     <!-- Firebase SDKs (Compat versions) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>

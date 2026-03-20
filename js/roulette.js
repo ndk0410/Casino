@@ -249,7 +249,11 @@ const RouletteUI = {
         
         const totalBet = Roulette.totalBets();
         if (totalBet > 0) {
-            await Account.deductChips(totalBet);
+            const success = await Account.deductChips(totalBet);
+            if (!success) {
+                this.messageEl.textContent = '⚠️ Không đủ chip để quay!';
+                return;
+            }
         }
 
         audioManager.shuffle();

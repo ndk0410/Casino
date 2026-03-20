@@ -242,8 +242,11 @@ const BaLaUI = {
     },
 
     async doDeal() {
-        let ante = parseInt(this.anteInput.value) || 50;
-        let pp = parseInt(this.ppInput.value) || 0;
+        let ante = parseInt(this.anteInput.value, 10);
+        let pp = parseInt(this.ppInput.value, 10);
+
+        if (Number.isNaN(ante)) ante = 0;
+        if (Number.isNaN(pp)) pp = 0;
 
         // Enforce 250k limit
         if (ante + pp > 250000) {
@@ -292,7 +295,11 @@ const BaLaUI = {
             this.messageEl.textContent = '⚠️ Không đủ chip để Đánh (Play)!';
             return;
         }
-        await Account.deductChips(BaLa.anteBet);
+        const success = await Account.deductChips(BaLa.anteBet);
+        if (!success) {
+            this.messageEl.textContent = '⚠️ Không đủ chip để đánh tiếp!';
+            return;
+        }
         const credit = BaLa.play();
         if (credit > 0) {
             await Account.addChips(credit);

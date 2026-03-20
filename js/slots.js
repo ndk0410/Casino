@@ -144,7 +144,12 @@ const slotsGame = {
             return;
         }
 
-        await Account.deductChips(this.bet);
+        const success = await Account.deductChips(this.bet);
+        if (!success) {
+            this.showMessage("Không đủ chip để quay!", "error");
+            this.playSound('error');
+            return;
+        }
         this.updateDisplay();
         this.isSpinning = true;
         this.elements.btnSpin.disabled = true;

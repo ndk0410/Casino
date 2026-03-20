@@ -74,6 +74,7 @@ const XiDach = {
                 this.result = 'push';
                 this.message = '🤝 Cả hai cùng xì dách! Hòa!';
                 this.resultBonus = 1;
+                this.resolveResult();
             } else if (playerBJ) {
                 this.result = 'blackjack';
                 this.message = '🎉 XÌ DÁCH! Bạn thắng 1.5x!';
@@ -140,7 +141,11 @@ const XiDach = {
             xidachUI.showMessage('Không đủ chip để nhân đôi!');
             return;
         }
-        await Account.deductChips(this.bet);
+        const success = await Account.deductChips(this.bet);
+        if (!success) {
+            xidachUI.showMessage('Không đủ chip để nhân đôi!');
+            return;
+        }
         this.bet *= 2;
         this.playerHand.push(this.drawCard());
         xidachUI.render();
@@ -231,8 +236,12 @@ const XiDach = {
             return;
         }
         
+        const success = await Account.deductChips(numericAmount);
+        if (!success) {
+            xidachUI.showMessage('Không thể giữ cược lúc này!');
+            return;
+        }
         this.bet += numericAmount;
-        await Account.deductChips(numericAmount);
         xidachUI.updateBetDisplay();
         xidachUI.updateChipDisplay();
     },

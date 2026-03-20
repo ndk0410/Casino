@@ -35,7 +35,11 @@ const Account = {
     loadLocalSession() {
         this.username = localStorage.getItem('coca_username');
         this.uid = localStorage.getItem('coca_uid');
-        this.chips = Number(localStorage.getItem('coca_chips')) || this.DEFAULT_START_CHIPS;
+        const storedChips = localStorage.getItem('coca_chips');
+        this.chips = storedChips === null ? this.DEFAULT_START_CHIPS : Number(storedChips);
+        if (Number.isNaN(this.chips)) {
+            this.chips = this.DEFAULT_START_CHIPS;
+        }
         this.lastDailyReward = Number(localStorage.getItem('coca_lastDaily')) || 0;
         this.isAdmin = this.username === this.ADMIN_USERNAME;
     },
@@ -61,6 +65,115 @@ const Account = {
 
     saveLocalUsers(users) {
         localStorage.setItem('coca_users', JSON.stringify(users));
+    },
+
+    cacheUserRecord(user) {
+        if (!user || !user.uid) return;
+        const users = this.loadLocalUsers();
+        users[user.uid] = {
+            ...users[user.uid],
+            ...user,
+        };
+        this.saveLocalUsers(users);
+    },
+
+    normalizeRemoteUser(uid, userData = {}) {
+        const normalizedChips = userData.chips === undefined || userData.chips === null
+            ? this.DEFAULT_START_CHIPS
+            : Number(userData.chips);
+        return {
+            uid,
+            username: userData.username || uid,
+            password: userData.password,
+            chips: Number.isNaN(normalizedChips) ? this.DEFAULT_START_CHIPS : normalizedChips,
+            lastDaily: Number(userData.lastDaily) || 0,
+            role: userData.role || 'user',
+            createdAt: userData.createdAt || Date.now(),
+        };
+    },
+
+    async syncUserToCloud(user) {
+        if (!window.db || !user?.uid) return false;
+        const normalized = this.normalizeRemoteUser(user.uid, user);
+        const payload = Object.fromEntries(
+            Object.entries(normalized).filter(([, value]) => value !== undefined)
+        );
+        try {
+            await db.ref('users/' + payload.uid).update(payload);
+            await db.ref('usernames/' + payload.username.toLowerCase()).set(payload.uid);
+            this.cacheUserRecord(payload);
+            this.mode = 'firebase';
+            return true;
+        } catch {
+            this.mode = 'local';
+            return false;
+        }
+    },
+
+    resolveUserKey(targetValue) {
+        const users = this.loadLocalUsers();
+        const raw = String(targetValue || '').trim();
+        if (!raw) {
+            return { users, key: null, user: null };
+        }
+
+        if (users[raw]) {
+            return { users, key: raw, user: users[raw] };
+        }
+
+        const normalized = raw.toLowerCase();
+        const match = Object.entries(users).find(([key, user]) => {
+            return key.toLowerCase() === normalized ||
+                String(user.uid || '').toLowerCase() === normalized ||
+                String(user.username || '').toLowerCase() === normalized;
+        });
+
+        if (!match) {
+            return { users, key: null, user: null };
+        }
+
+        return { users, key: match[0], user: match[1] };
+    },
+
+    async resolveUserRecord(targetValue) {
+        const localResult = this.resolveUserKey(targetValue);
+        if (localResult.key && localResult.user) {
+            return localResult;
+        }
+
+        const raw = String(targetValue || '').trim();
+        if (!raw || !window.db) {
+            return localResult;
+        }
+
+        try {
+            const directSnap = await db.ref('users/' + raw).get();
+            if (directSnap.exists()) {
+                const users = localResult.users;
+                const user = directSnap.val();
+                users[raw] = user;
+                this.saveLocalUsers(users);
+                return { users, key: raw, user };
+            }
+
+            const normalized = raw.toLowerCase();
+            const nameSnap = await db.ref('usernames/' + normalized).get();
+            if (nameSnap.exists()) {
+                const key = nameSnap.val();
+                const userSnap = await db.ref('users/' + key).get();
+                if (userSnap.exists()) {
+                    const users = localResult.users;
+                    const user = userSnap.val();
+                    users[key] = user;
+                    this.saveLocalUsers(users);
+                    return { users, key, user };
+                }
+            }
+        } catch {
+            // Fall back to local-only result.
+        }
+
+        return localResult;
     },
 
     createLocalUser(name, password) {
@@ -96,9 +209,15 @@ const Account = {
         userRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
-            this.chips = Number(data.chips) || 0;
-            this.lastDailyReward = Number(data.lastDaily) || 0;
-            this.isAdmin = data.role === 'admin' || this.username === this.ADMIN_USERNAME;
+            const normalizedUser = this.normalizeRemoteUser(this.uid, {
+                ...data,
+                username: data.username || this.username || this.uid,
+            });
+            this.username = normalizedUser.username;
+            this.chips = normalizedUser.chips;
+            this.lastDailyReward = normalizedUser.lastDaily;
+            this.isAdmin = normalizedUser.role === 'admin' || this.username === this.ADMIN_USERNAME;
+            this.cacheUserRecord(normalizedUser);
             this.saveLocalSession();
             this.notifyUpdate();
         }, () => {
@@ -148,15 +267,7 @@ const Account = {
         localUsers[userData.uid] = userData;
         this.saveLocalUsers(localUsers);
 
-        if (window.db) {
-            try {
-                await db.ref('users/' + userData.uid).set(userData);
-                await db.ref('usernames/' + normalized).set(userData.uid);
-                this.mode = 'firebase';
-            } catch {
-                this.mode = 'local';
-            }
-        }
+        await this.syncUserToCloud(userData);
 
         return { success: true, uid: userData.uid };
     },
@@ -205,11 +316,38 @@ const Account = {
         this.stopSync();
         this.username = userData.username;
         this.uid = foundUID;
-        this.chips = Number(userData.chips) || this.DEFAULT_START_CHIPS;
+        this.chips = userData.chips === undefined || userData.chips === null
+            ? this.DEFAULT_START_CHIPS
+            : Number(userData.chips);
+        if (Number.isNaN(this.chips)) {
+            this.chips = this.DEFAULT_START_CHIPS;
+        }
         this.lastDailyReward = Number(userData.lastDaily) || 0;
         this.isAdmin = userData.role === 'admin' || this.username === this.ADMIN_USERNAME;
 
         this.saveLocalSession();
+        this.cacheUserRecord({
+            uid: this.uid,
+            username: this.username,
+            password: userData.password,
+            chips: this.chips,
+            lastDaily: this.lastDailyReward,
+            role: userData.role || (this.isAdmin ? 'admin' : 'user'),
+            createdAt: userData.createdAt,
+        });
+
+        if (window.db) {
+            await this.syncUserToCloud({
+                uid: this.uid,
+                username: this.username,
+                password: userData.password,
+                chips: this.chips,
+                lastDaily: this.lastDailyReward,
+                role: userData.role || (this.isAdmin ? 'admin' : 'user'),
+                createdAt: userData.createdAt,
+            });
+        }
+
         this.startSync();
         this.notifyUpdate();
 
@@ -230,13 +368,18 @@ const Account = {
     async persistLocalState() {
         if (!this.uid) return;
         const users = this.loadLocalUsers();
-        const existing = users[this.uid];
-        if (existing) {
-            existing.chips = this.chips;
-            existing.lastDaily = this.lastDailyReward;
-            users[this.uid] = existing;
-            this.saveLocalUsers(users);
-        }
+        const existing = users[this.uid] || {};
+        users[this.uid] = {
+            ...existing,
+            uid: this.uid,
+            username: this.username || existing.username || this.uid,
+            password: existing.password,
+            role: existing.role || (this.isAdmin ? 'admin' : 'user'),
+            chips: this.chips,
+            lastDaily: this.lastDailyReward,
+            createdAt: existing.createdAt || Date.now(),
+        };
+        this.saveLocalUsers(users);
         this.saveLocalSession();
     },
 
@@ -247,12 +390,14 @@ const Account = {
         this.chips += value;
         await this.persistLocalState();
 
-        if (window.db && this.mode === 'firebase') {
-            try {
-                await db.ref('users/' + this.uid + '/chips').set(this.chips);
-            } catch {
-                this.mode = 'local';
-            }
+        if (window.db) {
+            await this.syncUserToCloud({
+                uid: this.uid,
+                username: this.username,
+                chips: this.chips,
+                lastDaily: this.lastDailyReward,
+                role: this.isAdmin ? 'admin' : 'user',
+            });
         }
 
         this.notifyUpdate();
@@ -267,12 +412,14 @@ const Account = {
         this.chips -= value;
         await this.persistLocalState();
 
-        if (window.db && this.mode === 'firebase') {
-            try {
-                await db.ref('users/' + this.uid + '/chips').set(this.chips);
-            } catch {
-                this.mode = 'local';
-            }
+        if (window.db) {
+            await this.syncUserToCloud({
+                uid: this.uid,
+                username: this.username,
+                chips: this.chips,
+                lastDaily: this.lastDailyReward,
+                role: this.isAdmin ? 'admin' : 'user',
+            });
         }
 
         this.notifyUpdate();
@@ -292,12 +439,14 @@ const Account = {
         await this.addChips(this.DAILY_AMOUNT);
         await this.persistLocalState();
 
-        if (window.db && this.mode === 'firebase') {
-            try {
-                await db.ref('users/' + this.uid + '/lastDaily').set(this.lastDailyReward);
-            } catch {
-                this.mode = 'local';
-            }
+        if (window.db) {
+            await this.syncUserToCloud({
+                uid: this.uid,
+                username: this.username,
+                chips: this.chips,
+                lastDaily: this.lastDailyReward,
+                role: this.isAdmin ? 'admin' : 'user',
+            });
         }
 
         this.notifyUpdate();
@@ -309,26 +458,41 @@ const Account = {
         const value = parseInt(amount, 10);
         if (Number.isNaN(value) || value <= 0) return { success: false, msg: 'So chip khong hop le!' };
 
-        const users = this.loadLocalUsers();
-        if (!users[targetUID]) return { success: false, msg: 'Khong tim thay user voi UID: ' + targetUID };
+        const { users, key, user } = await this.resolveUserRecord(targetUID);
+        if (!key || !user) return { success: false, msg: 'Khong tim thay user voi UID/ten: ' + targetUID };
 
-        users[targetUID].chips = Number(users[targetUID].chips || 0) + value;
+        const isCurrentUser = String(key).toLowerCase() === String(this.uid || '').toLowerCase() ||
+            String(user.uid || '').toLowerCase() === String(this.uid || '').toLowerCase() ||
+            String(user.username || '').toLowerCase() === String(this.username || '').toLowerCase();
+
+        users[key].uid = users[key].uid || key;
+        users[key].username = users[key].username || targetUID || key;
+        const baseChips = isCurrentUser ? this.chips : Number(users[key].chips || 0);
+        users[key].chips = baseChips + value;
         this.saveLocalUsers(users);
 
         if (window.db && this.mode === 'firebase') {
             try {
-                await db.ref('users/' + targetUID + '/chips').set(users[targetUID].chips);
+                await db.ref('users/' + key).update({
+                    chips: users[key].chips,
+                    uid: users[key].uid,
+                    username: users[key].username
+                });
             } catch {
                 this.mode = 'local';
             }
         }
 
-        if (targetUID === this.uid) {
-            this.chips = users[targetUID].chips;
+        if (isCurrentUser) {
+            this.uid = users[key].uid || key;
+            this.username = users[key].username || this.username;
+            this.chips = users[key].chips;
+            this.saveLocalSession();
+            await this.persistLocalState();
             this.notifyUpdate();
         }
 
-        return { success: true, msg: `Da nap ${value.toLocaleString()} cho ${targetUID}. So du moi: ${users[targetUID].chips.toLocaleString()}` };
+        return { success: true, msg: `Da nap ${value.toLocaleString()} cho ${users[key].username} (${users[key].uid}). So du moi: ${users[key].chips.toLocaleString()}` };
     },
 
     async adminDeductChips(targetUID, amount) {
@@ -336,26 +500,41 @@ const Account = {
         const value = parseInt(amount, 10);
         if (Number.isNaN(value) || value <= 0) return { success: false, msg: 'So chip khong hop le!' };
 
-        const users = this.loadLocalUsers();
-        if (!users[targetUID]) return { success: false, msg: 'Khong tim thay user voi UID: ' + targetUID };
+        const { users, key, user } = await this.resolveUserRecord(targetUID);
+        if (!key || !user) return { success: false, msg: 'Khong tim thay user voi UID/ten: ' + targetUID };
 
-        users[targetUID].chips = Math.max(0, Number(users[targetUID].chips || 0) - value);
+        const isCurrentUser = String(key).toLowerCase() === String(this.uid || '').toLowerCase() ||
+            String(user.uid || '').toLowerCase() === String(this.uid || '').toLowerCase() ||
+            String(user.username || '').toLowerCase() === String(this.username || '').toLowerCase();
+
+        users[key].uid = users[key].uid || key;
+        users[key].username = users[key].username || targetUID || key;
+        const baseChips = isCurrentUser ? this.chips : Number(users[key].chips || 0);
+        users[key].chips = Math.max(0, baseChips - value);
         this.saveLocalUsers(users);
 
         if (window.db && this.mode === 'firebase') {
             try {
-                await db.ref('users/' + targetUID + '/chips').set(users[targetUID].chips);
+                await db.ref('users/' + key).update({
+                    chips: users[key].chips,
+                    uid: users[key].uid,
+                    username: users[key].username
+                });
             } catch {
                 this.mode = 'local';
             }
         }
 
-        if (targetUID === this.uid) {
-            this.chips = users[targetUID].chips;
+        if (isCurrentUser) {
+            this.uid = users[key].uid || key;
+            this.username = users[key].username || this.username;
+            this.chips = users[key].chips;
+            this.saveLocalSession();
+            await this.persistLocalState();
             this.notifyUpdate();
         }
 
-        return { success: true, msg: `Da tru ${value.toLocaleString()} tu ${targetUID}. So du moi: ${users[targetUID].chips.toLocaleString()}` };
+        return { success: true, msg: `Da tru ${value.toLocaleString()} tu ${users[key].username} (${users[key].uid}). So du moi: ${users[key].chips.toLocaleString()}` };
     },
 
     async adminGetAllUsers() {

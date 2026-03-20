@@ -374,7 +374,13 @@ const PokerUI = {
         Poker.startHand();
         const deducted = oldChips - Poker.players[0].chips;
         if (deducted > 0) {
-            await Account.deductChips(deducted);
+            const success = await Account.deductChips(deducted);
+            if (!success) {
+                Poker.init();
+                this.updateChips();
+                this.setMessage('⚠️ Không thể giữ blind cho ván mới!');
+                return;
+            }
             // Re-sync local chips to avoid drift
             Poker.players[0].chips = Account.chips;
         }
@@ -520,6 +526,14 @@ const PokerUI = {
     async humanAction(action) {
         const oldChips = Poker.players[0].chips;
         const raiseAmt = parseInt(this.raiseInput?.value) || Poker.bigBlind;
+        const snapshot = {
+            pot: Poker.pot,
+            currentBet: Poker.currentBet,
+            folded: Poker.players[0].folded,
+            bet: Poker.players[0].bet,
+            totalBet: Poker.players[0].totalBet,
+            chips: Poker.players[0].chips,
+        };
         if (action === 'fold') {
             audioManager.pass();
         } else if (action === 'check') {
@@ -533,7 +547,19 @@ const PokerUI = {
 
         const deducted = oldChips - Poker.players[0].chips;
         if (deducted > 0) {
-            await Account.deductChips(deducted);
+            const success = await Account.deductChips(deducted);
+            if (!success) {
+                Poker.pot = snapshot.pot;
+                Poker.currentBet = snapshot.currentBet;
+                Poker.players[0].folded = snapshot.folded;
+                Poker.players[0].bet = snapshot.bet;
+                Poker.players[0].totalBet = snapshot.totalBet;
+                Poker.players[0].chips = snapshot.chips;
+                this.setMessage('⚠️ Không thể giữ thêm cược cho hành động này!');
+                this.render();
+                this.showActions();
+                return;
+            }
             // Sync again
             Poker.players[0].chips = Account.chips;
         }

@@ -320,6 +320,11 @@ body.app-page-leaving {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    [data-shell-card] {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
     body.app-ready,
     body.app-page-leaving,
     [data-shell-card],

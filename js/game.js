@@ -23,30 +23,56 @@ class Game {
         this.isMultiplayer = false;
         this.myIndex = 0;
         this.bet = 100;
+        this.humanBetEscrowed = false;
     }
 
     async newGame(betAmount = 100) {
         if (this.isMultiplayer) return;
+        if (betAmount < 100) return false;
+        if (Account.chips < betAmount) {
+            ui.showMessage(`Không đủ chip để vào ván ${betAmount.toLocaleString()}!`);
+            return false;
+        }
 
         this.bet = betAmount;
-        this.hands = this.deck.deal(4);
-        this.currentPlayer = findFirstPlayer(this.hands);
-        this.lastPlayedCards = null;
-        this.lastPlayedBy = -1;
-        this.passCount = 0;
-        this.isNewRound = true;
-        this.gameOver = false;
-        this.winner = -1;
-        this.mustPlay3Spade = true;
-        this.selectedCards = [];
-        this.turnHistory = [];
-        this.isAnimating = true;
+        const escrowed = await Account.deductChips(betAmount);
+        if (!escrowed) {
+            ui.showMessage('Không thể giữ cược cho ván mới.');
+            return false;
+        }
 
-        audioManager.shuffle();
-        ui.hideGameOver();
-        await ui.startRoundPresentation();
-        this.isAnimating = false;
-        ui.render();
+        this.humanBetEscrowed = true;
+
+        try {
+            this.hands = this.deck.deal(4);
+            this.currentPlayer = findFirstPlayer(this.hands);
+            this.lastPlayedCards = null;
+            this.lastPlayedBy = -1;
+            this.passCount = 0;
+            this.isNewRound = true;
+            this.gameOver = false;
+            this.winner = -1;
+            this.mustPlay3Spade = true;
+            this.selectedCards = [];
+            this.turnHistory = [];
+            this.isAnimating = true;
+
+            audioManager.shuffle();
+            ui.hideGameOver();
+            ui.updateChipDisplay();
+            await ui.startRoundPresentation();
+            this.isAnimating = false;
+            ui.render();
+            return true;
+        } catch (error) {
+            this.humanBetEscrowed = false;
+            await Account.addChips(betAmount);
+            this.isAnimating = false;
+            ui.updateChipDisplay();
+            ui.showMessage('Lỗi khởi tạo ván bài. Đã hoàn lại cược.');
+            console.error('Tien Len newGame failed:', error);
+            return false;
+        }
     }
 
     getGameState() {
@@ -133,17 +159,19 @@ class Game {
                     totalWon += this.bet;
                 }
 
-                if (totalWon > 0) {
-                    await Account.addChips(totalWon);
+                if (totalWon > 0 || this.humanBetEscrowed) {
+                    const payout = totalWon + (this.humanBetEscrowed ? this.bet : 0);
+                    await Account.addChips(payout);
                     await ui.animateChipTransfer({ toPlayer: true, amount: totalWon });
                     ui.showMessage(`Ban thang ${totalWon.toLocaleString()} chip!`);
                 }
 
+                this.humanBetEscrowed = false;
                 specialMessage = `Thang! +${totalWon} chip`;
                 audioManager.win();
             } else {
                 let totalAIWon = 0;
-                const humanLoss = this.bet;
+                const humanLoss = this.humanBetEscrowed ? 0 : this.bet;
 
                 if (humanLoss > 0) {
                     await Account.deductChips(humanLoss);
@@ -151,6 +179,11 @@ class Game {
                     totalAIWon += humanLoss;
                     specialMessage = `Thua mat ${humanLoss} chip!`;
                     ui.showMessage(`Ban thua ${humanLoss.toLocaleString()} chip!`);
+                } else {
+                    await ui.animateChipTransfer({ toPlayer: false, amount: this.bet });
+                    totalAIWon += this.bet;
+                    specialMessage = `Thua mat ${this.bet} chip!`;
+                    ui.showMessage(`Ban thua ${this.bet.toLocaleString()} chip!`);
                 }
 
                 for (let i = 1; i < 4; i += 1) {
@@ -161,6 +194,7 @@ class Game {
                 }
 
                 this.aiChips[playerIndex] += totalAIWon;
+                this.humanBetEscrowed = false;
                 audioManager.lose();
             }
 

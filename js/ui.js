@@ -153,7 +153,11 @@ class UI {
         });
 
         this.btnPlayAgain.addEventListener('click', async () => {
-            await game.newGame(game.bet || 100);
+            const started = await game.newGame(game.bet || 100);
+            if (!started) {
+                this.showBettingOverlay();
+                return;
+            }
             this.hideGameOver();
             this.showMessage('Ván mới bắt đầu!');
             if (game.currentPlayer !== 0) {
@@ -165,6 +169,10 @@ class UI {
             this.btnMaxBet.addEventListener('click', () => {
                 const max = Math.min(Account.chips, 250000);
                 this.betInput.value = max;
+                this.btnStartGame.disabled = max < 100;
+                if (max < 100) {
+                    this.showMessage('Bạn cần ít nhất 100 chip để bắt đầu ván.');
+                }
                 audioManager.cardSelect();
             });
         }
@@ -177,7 +185,11 @@ class UI {
         });
 
         this.btnStartGame.addEventListener('click', async () => {
-            const bet = parseInt(this.betInput.value, 10) || 100;
+            const bet = parseInt(this.betInput.value, 10);
+            if (Number.isNaN(bet) || bet < 100) {
+                this.showMessage('Cược tối thiểu là 100 chip!');
+                return;
+            }
             if (bet > Account.chips) {
                 this.showMessage('Không đủ chip!');
                 return;
@@ -199,8 +211,12 @@ class UI {
                 return;
             }
 
-            await game.newGame(bet);
             this.hideBettingOverlay();
+            const started = await game.newGame(bet);
+            if (!started) {
+                this.showBettingOverlay();
+                return;
+            }
 
             if (game.currentPlayer !== 0) {
                 setTimeout(() => game.executeAITurn(), 1000);
@@ -549,11 +565,22 @@ class UI {
     showBettingOverlay() {
         if (!this.bettingOverlay) return;
         this.bettingOverlay.style.display = 'flex';
+        const overlayCard = this.bettingOverlay.querySelector('.premium-bet-card');
+        if (overlayCard) {
+            overlayCard.style.opacity = '1';
+            overlayCard.style.transform = 'translateY(0) scale(1)';
+        }
         this.btnStartGame.disabled = false;
         this.btnStartGame.textContent = 'BẮT ĐẦU';
         if (this.betInput) {
             const max = Math.min(Account.chips, 250000);
             this.betInput.max = max;
+            this.btnStartGame.disabled = max < 100;
+            if (max < 100) {
+                this.betInput.value = 0;
+            } else if (!parseInt(this.betInput.value, 10) || parseInt(this.betInput.value, 10) > max) {
+                this.betInput.value = Math.min(100, max);
+            }
             if (parseInt(this.betInput.value, 10) > max) {
                 this.betInput.value = max;
             }

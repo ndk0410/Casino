@@ -199,7 +199,11 @@ const MauBinhUI = {
     },
 
     async startGame() {
-        let bet = parseInt(this.betInput.value) || 100;
+        let bet = parseInt(this.betInput.value, 10);
+        if (Number.isNaN(bet) || bet < 100) {
+            this.messageEl.textContent = '⚠️ Cược tối thiểu là 100 chip!';
+            return;
+        }
         
         // Enforce 250k limit
         if (bet > 250000) {
@@ -358,12 +362,18 @@ const MauBinhUI = {
         MauBinh.players[0].arrangement = arr;
         const totalScore = MauBinh.calculateScores();
         const chipWin = totalScore * MauBinh.bet;
+        const settlement = chipWin + MauBinh.bet;
 
-        // Transaction handles account update and internal chips update
-        if (chipWin > 0) {
-            await Account.addChips(chipWin);
-        } else if (chipWin < 0) {
-            await Account.deductChips(-chipWin);
+        // The opening bet was already deducted in startGame().
+        // Apply only the delta needed to reach the final net result.
+        if (settlement > 0) {
+            await Account.addChips(settlement);
+        } else if (settlement < 0) {
+            const success = await Account.deductChips(-settlement);
+            if (!success) {
+                this.messageEl.textContent = '⚠️ Không đủ chip để tất toán ván Mậu Binh!';
+                return;
+            }
         }
 
         this.arrangePanel.style.display = 'none';
