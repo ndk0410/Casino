@@ -56,6 +56,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
 }
 
 .game-container {
@@ -223,7 +226,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding-bottom: 20px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
     overflow: visible;
     z-index: 5;
 }
@@ -265,8 +268,9 @@ body {
     background: rgba(0, 0, 0, 0.2);
     border: 2px solid rgba(255, 255, 255, 0.06);
     border-radius: 20px;
-    min-width: 300px;
-    min-height: 180px;
+    width: min(100%, 38rem);
+    min-width: 0;
+    min-height: clamp(7.5rem, 24vh, 11.25rem);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -428,6 +432,7 @@ body {
     margin-top: 10px;
     z-index: 10;
     width: 100%;
+    max-width: min(100%, 26rem);
 }
 
 .btn {
@@ -442,6 +447,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     outline: none;
+    min-width: 0;
 }
 
 .btn:active {
@@ -1884,6 +1890,101 @@ body {
 
     .turn-timer {
         width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        grid-template-columns: minmax(3rem, 15vw) 1fr minmax(3rem, 15vw);
+        grid-template-rows: minmax(4.5rem, 14vh) 1fr minmax(10.5rem, 32vh);
+        padding:
+            max(8px, env(safe-area-inset-top))
+            max(8px, env(safe-area-inset-right))
+            max(8px, env(safe-area-inset-bottom))
+            max(8px, env(safe-area-inset-left));
+    }
+
+    #west-area,
+    #east-area {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    #west-area .player-label,
+    #east-area .player-label {
+        position: static;
+        transform: none;
+        max-width: 100%;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .ai-card-west,
+    .ai-card-east {
+        margin-left: -18px;
+        margin-top: 0;
+    }
+
+    #play-area {
+        width: min(100%, 34rem);
+    }
+
+    #player-hand {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: visible;
+        justify-content: flex-start;
+        padding-inline: 6px;
+    }
+
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        width: min(100%, 22rem);
+    }
+
+    .player-chips-container {
+        grid-column: 1 / -1;
+        justify-content: center;
+        min-width: 0;
+    }
+
+    .btn,
+    .btn-icon {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .back-btn,
+    .room-meta {
+        z-index: 300;
+    }
+}
+
+@media (max-width: 480px), (max-height: 560px) {
+    .flying-card,
+    .chip-fly {
+        display: none !important;
+    }
+
+    #center-area {
+        gap: 8px;
+    }
+
+    .table-hud {
+        width: min(100%, 22rem);
+        gap: 10px;
+    }
+
+    .table-stats {
+        width: 100%;
+        gap: 8px;
+    }
+
+    .table-stat {
+        min-width: 0;
+        flex: 1 1 0;
     }
 }
 

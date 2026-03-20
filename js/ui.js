@@ -625,7 +625,13 @@ class UI {
     async startRoundPresentation() {
         this.render();
         this.updatePotDisplay();
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+            window.matchMedia('(max-width: 768px)').matches ||
+            window.matchMedia('(max-height: 560px)').matches
+        ) {
+            return;
+        }
         await this.animateDealSequence();
         this.render();
     }

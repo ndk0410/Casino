@@ -17,14 +17,9 @@
     font-family: 'Inter', sans-serif;
 }
 
-/* Show only on small screens in portrait mode */
+/* Mobile web should remain playable in portrait. Keep the helper hidden. */
 @media (max-width: 1024px) and (orientation: portrait) {
     #orientation-overlay {
-        display: flex;
-    }
-    
-    /* Hide game content when overlay is shown to prevent interaction */
-    body > *:not(#orientation-overlay) {
         display: none !important;
     }
 }
