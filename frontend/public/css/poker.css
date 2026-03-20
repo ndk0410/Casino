@@ -1,0 +1,263 @@
+/* ============================================================
+   Poker (Texas Hold'em) Styles
+   ============================================================ */
+
+:root {
+    --pk-accent: #3498db;
+    --pk-bg: radial-gradient(ellipse at 50% 40%, #0a1a3d, #050a18 70%, #000);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--pk-bg);
+    font-family: 'Inter', sans-serif;
+    color: #f0f0f0;
+    overflow: hidden;
+}
+
+/* Top bar */
+.pk-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    z-index: 10;
+}
+
+.pk-topbar .back-btn {
+    text-decoration: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    padding: 4px 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+}
+
+.pk-topbar .chips-display {
+    font-weight: 800;
+    color: #FFD700;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+/* Game Layout */
+.pk-game {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 50px);
+    height: calc(100dvh - 50px);
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+}
+
+/* Player slots around table */
+.pk-table {
+    display: grid;
+    grid-template-areas:
+        ". top ."
+        "left center right"
+        ". bottom .";
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    width: 100%;
+    max-width: 700px;
+    flex: 1;
+    gap: 8px;
+    align-items: center;
+}
+
+.pk-slot {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 8px 12px;
+    text-align: center;
+    transition: all 0.3s;
+}
+.pk-slot.active-turn {
+    border-color: var(--pk-accent);
+    box-shadow: 0 0 16px rgba(52,152,219,0.4);
+}
+.pk-slot.folded {
+    opacity: 0.35;
+}
+
+.pk-slot-0 { grid-area: bottom; }
+.pk-slot-1 { grid-area: left; }
+.pk-slot-2 { grid-area: top; }
+.pk-slot-3 { grid-area: right; }
+
+.pk-name {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.7);
+}
+
+.pk-player-chips {
+    font-size: 12px;
+    color: #FFD700;
+    font-family: monospace;
+    font-weight: 700;
+}
+
+.pk-player-bet {
+    font-size: 10px;
+    color: #4ECDC4;
+    font-weight: 600;
+    min-height: 14px;
+}
+
+.pk-player-cards {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.pk-mini-card {
+    width: 40px;
+    height: 56px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.pk-mini-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Center area */
+.pk-center {
+    grid-area: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.pk-pot {
+    font-size: 14px;
+    font-weight: 800;
+    color: #FFD700;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 16px;
+    border-radius: 12px;
+}
+
+.pk-community {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.pk-card {
+    width: 56px;
+    height: 78px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pk-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.pk-card-placeholder {
+    font-size: 20px;
+    color: rgba(255,255,255,0.15);
+    font-weight: 900;
+}
+
+/* Message */
+.pk-message {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 20px;
+    border-radius: 14px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    backdrop-filter: blur(8px);
+}
+
+/* Actions */
+.pk-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px;
+}
+
+.pk-btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.pk-btn-primary { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
+.pk-btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; }
+.pk-btn-success { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; }
+.pk-btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+
+.pk-btn:hover { transform: translateY(-2px); }
+
+.pk-raise-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.pk-raise-group input {
+    width: 70px;
+    padding: 6px 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    font-size: 13px;
+    font-family: monospace;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .pk-card { width: 44px; height: 62px; }
+    .pk-mini-card { width: 32px; height: 45px; }
+    .pk-btn { font-size: 11px; padding: 6px 12px; }
+    .pk-slot { padding: 6px 8px; }
+}
+
+@media (max-height: 500px) {
+    .pk-card { width: 40px; height: 56px; }
+    .pk-mini-card { width: 28px; height: 39px; }
+    .pk-table { gap: 4px; }
+    .pk-game { padding: 4px; }
+    .pk-actions { padding: 4px; gap: 4px; }
+    .pk-btn { padding: 6px 10px; font-size: 10px; }
+}
+
+@media (max-height: 400px) {
+    .pk-card { width: 34px; height: 48px; }
+    .pk-mini-card { width: 24px; height: 34px; }
+    .pk-pot { font-size: 12px; padding: 2px 10px; }
+    .pk-message { font-size: 11px; padding: 4px 12px; }
+    .pk-topbar { padding: 4px 12px; }
+}

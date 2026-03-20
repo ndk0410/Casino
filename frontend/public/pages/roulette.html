@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Roulette 🎡</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" href="../assets/icon-512.png">
+    <link rel="apple-touch-icon" href="../assets/icon-512.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/roulette.css">
+    <link rel="stylesheet" href="../css/betting.css">
+</head>
+<body>
+    <div class="rl-topbar">
+        <a href="../index.html" class="back-btn">← Menu</a>
+        <div class="chips-display"><img src="../assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:16px; vertical-align:middle;"> <span id="rl-chips">0</span></div>
+    </div>
+
+    <div class="rl-game">
+        <!-- Wheel -->
+        <div class="rl-wheel-container">
+            <div class="rl-pointer"></div>
+            <div class="rl-wheel" id="rl-wheel"></div>
+        </div>
+
+        <div class="rl-message" id="rl-message">🎡 Chọn chip, đặt cược lên bảng, rồi QUAY!</div>
+
+        <!-- Chip selector -->
+        <div class="rl-chips-selector premium-chips-container">
+            <div class="premium-chip chip-10 active" data-value="10">10</div>
+            <div class="premium-chip chip-25" data-value="25">25</div>
+            <div class="premium-chip chip-50" data-value="50">50</div>
+            <div class="premium-chip chip-100" data-value="100">100</div>
+            <div class="premium-chip chip-500" data-value="500">500</div>
+        </div>
+
+        <div class="rl-bet-info">Tổng cược: <span id="rl-total-bet">0</span></div>
+
+        <!-- Board -->
+        <div class="rl-board" id="rl-board"></div>
+
+        <!-- Controls -->
+        <div class="rl-controls">
+            <button class="rl-btn rl-btn-spin" id="btn-spin" onclick="RouletteUI.spin()">🎡 QUAY</button>
+            <button class="rl-btn rl-btn-clear" onclick="RouletteUI.clearBets()">🗑️ XÓA CƯỢC</button>
+            <a href="../index.html" class="premium-back-btn" style="margin-top: 10px;">← TRỞ VỀ MENU</a>
+        </div>
+
+        <!-- History -->
+        <div class="rl-history" id="rl-history"></div>
+    </div>
+
+    <!-- Firebase & Logic -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/account.js"></script>
+    <script src="../js/audio.js"></script>
+    <script src="../js/mp-roulette.js"></script>
+    <script src="../js/roulette.js"></script>
+</body>
+</html>

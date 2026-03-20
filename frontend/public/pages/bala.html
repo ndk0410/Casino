@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Ba Lá - Three Card Poker 🃏</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" href="../assets/icon-512.png">
+    <link rel="apple-touch-icon" href="../assets/icon-512.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/bala.css">
+    <link rel="stylesheet" href="../css/betting.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="bl-topbar">
+        <a href="../index.html" class="back-btn">← Menu</a>
+        <div class="chips-display"><img src="../assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:16px; vertical-align:middle;"> <span id="bl-chips">0</span></div>
+    </div>
+
+    <!-- Game Area -->
+    <div class="bl-game">
+        <!-- Dealer Hand -->
+        <div class="bl-hand-area">
+            <div class="bl-hand-label" id="bl-dealer-label">MÁY (CÁI)</div>
+            <div class="bl-cards" id="bl-dealer-hand"></div>
+        </div>
+
+        <div class="bl-vs">VS</div>
+
+        <!-- Player Hand -->
+        <div class="bl-hand-area">
+            <div class="bl-hand-label" id="bl-player-label">BẠN</div>
+            <div class="bl-cards" id="bl-player-hand"></div>
+        </div>
+
+        <!-- Message -->
+        <div class="bl-message" id="bl-message"><img src="../assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:14px; vertical-align:middle;"> Đặt cược để bắt đầu!</div>
+
+        <!-- Bet Panel -->
+        <div id="bl-bet-panel" class="premium-bet-panel">
+            <div class="premium-bet-group">
+                <label class="premium-label">🃏 ANTE (Cược Ngoài):</label>
+                <div class="premium-input-wrap">
+                    <input type="number" id="bl-ante-input" class="premium-input" value="100" min="10" step="10">
+                    <button class="premium-btn-max" id="bl-ante-max">MAX</button>
+                </div>
+            </div>
+            <div class="premium-bet-group">
+                <label class="premium-label">✨ PAIR PLUS (Cược Đôi):</label>
+                <div class="premium-input-wrap">
+                    <input type="number" id="bl-pp-input" class="premium-input" value="0" min="0" step="10">
+                    <button class="premium-btn-max" id="bl-pp-max">MAX</button>
+                </div>
+            </div>
+            <button class="premium-btn-primary" onclick="BaLaUI.doDeal()">🃏 CHIA BÀI NGAY</button>
+            <a href="../index.html" class="premium-back-btn">← TRỞ VỀ MENU</a>
+        </div>
+
+        <!-- Action Panel -->
+        <div class="bl-panel" id="bl-action-panel" style="display:none;">
+            <button class="bl-btn bl-btn-primary" onclick="BaLaUI.doPlay()">✅ ĐÁNH (Play)</button>
+            <button class="bl-btn bl-btn-danger" onclick="BaLaUI.doFold()">❌ BỎ (Fold)</button>
+        </div>
+
+        <!-- Result Panel -->
+        <div class="bl-panel" id="bl-result-panel" style="display:none;">
+            <button class="bl-btn bl-btn-primary" onclick="BaLaUI.newRound()">🔄 VÁN MỚI</button>
+        </div>
+    </div>
+
+    <script src="../js/card.js"></script>
+    <script src="../js/audio.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/account.js"></script>
+    <script src="../js/mp-bala.js"></script>
+    <script src="../js/bala.js"></script>
+</body>
+</html>
