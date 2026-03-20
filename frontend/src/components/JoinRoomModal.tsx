@@ -13,14 +13,19 @@ const JoinRoomModal = () => {
   const { room, setUser } = useGameStore();
 
   const handleJoin = () => {
-    if (!roomId || !name || !socket) return;
-    
-    const userId = `user_${Math.random().toString(36).substr(2, 9)}`;
-    setUser({ id: userId, name, chips: 10000 });
+    const normalizedRoomId =
+      roomId.trim().toUpperCase() ||
+      `ROOM-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+    const normalizedName = name.trim();
+
+    if (!normalizedName || !socket) return;
+
+    const userId = `user_${Math.random().toString(36).slice(2, 11)}`;
+    setUser({ id: userId, name: normalizedName, chips: 10000, isHost });
 
     socket.emit('join_room', {
-      roomId,
-      playerName: name,
+      roomId: normalizedRoomId,
+      playerName: normalizedName,
       isHost,
       isSolo: false
     });
@@ -56,9 +61,9 @@ const JoinRoomModal = () => {
             <input 
               type="text" 
               value={roomId} 
-              onChange={(e) => setRoomId(e.target.value)}
+              onChange={(e) => setRoomId(e.target.value.toUpperCase())}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-yellow-500/50 transition-all"
-              placeholder="Enter room ID..."
+              placeholder="Enter room ID or leave blank to create"
             />
           </div>
 

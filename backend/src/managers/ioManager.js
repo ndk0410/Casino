@@ -18,7 +18,7 @@ module.exports = {
             }
             
             if (!room) {
-                return socket.emit('error', 'Room not found');
+                return socket.emit('error_message', 'Room not found');
             }
 
             const joinResult = room.addPlayer({ id: socket.id, name: playerName, isHost });

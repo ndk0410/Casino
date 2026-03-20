@@ -4,18 +4,22 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const logger = require('./utils/logger');
-const redis = require('./utils/redis');
 const ioManager = require('./managers/ioManager');
 const RoomManager = require('./managers/roomManager');
 
 const app = express();
-app.use(cors());
+const allowedOrigin = process.env.CORS_ORIGIN || '*';
+
+app.use(cors({
+    origin: allowedOrigin === '*' ? true : allowedOrigin,
+    credentials: true
+}));
 app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", 
+        origin: allowedOrigin === '*' ? true : allowedOrigin,
         methods: ["GET", "POST"]
     }
 });
@@ -35,6 +39,6 @@ app.get('/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     logger.info(`[Server] Production-ready casino backend execution started on port ${PORT}`);
 });
