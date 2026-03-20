@@ -28,6 +28,21 @@ const CasinoTable = () => {
     }
   }, [gameState, engineState?.winner, user?.id]);
 
+  // Audio triggers
+  useEffect(() => {
+    const { gameState, engineState } = room;
+    if (gameState === 'PLAYING') audioManager.play('deal');
+    if (engineState?.winner === user?.id) {
+        audioManager.play('win');
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#fbbf24', '#f59e0b', '#ffffff']
+        });
+    }
+  }, [room.gameState, room.engineState?.winner, user?.id]);
+
   const isMyTurn = engineState?.currentPlayerId === user?.id;
 
   // Position players around the oval table
