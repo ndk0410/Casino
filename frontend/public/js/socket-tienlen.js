@@ -19,12 +19,26 @@ const Socket_TienLen = {
         console.log("Socket mode active. Room:", roomId);
         game.isMultiplayer = !isSolo;
 
+        if (isSolo) {
+            console.log("Solo mode active. Playing against AI locally.");
+            return;
+        }
+
         if (typeof io === 'undefined') {
             console.error("Socket.io not loaded!");
             return;
         }
 
-        socket = io('http://localhost:8080');
+        const socketUrl =
+            window.localStorage.getItem('coca_socket_url') ||
+            window.CASINO_SOCKET_URL ||
+            (window.location.hostname === 'localhost'
+                ? 'http://localhost:8080'
+                : window.location.origin);
+
+        socket = io(socketUrl, {
+            transports: ['websocket', 'polling']
+        });
 
         socket.on('connect', () => {
             console.log("Connected to server:", socket.id);
