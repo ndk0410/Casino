@@ -1,5 +1,5 @@
-import CasinoTable from '@/components/CasinoTable';
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-  return <CasinoTable />;
+  redirect('/index.html');
 }
