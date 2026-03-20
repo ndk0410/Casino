@@ -43,4 +43,5 @@ export interface UserAccount {
   id: string;
   name: string;
   chips: number;
+  isHost?: boolean;
 }

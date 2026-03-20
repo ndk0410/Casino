@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '@/providers/SocketProvider';
 import JoinRoomModal from './JoinRoomModal';
 import Card from './Card';
+import { audioManager } from '@/lib/audio';
+import confetti from 'canvas-confetti';
 
 const CasinoTable = () => {
   const { room, user, myHand } = useGameStore();
@@ -11,6 +13,20 @@ const CasinoTable = () => {
   const socket = useSocket();
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
   const [betAmount, setBetAmount] = useState(100);
+
+  // Audio triggers
+  useEffect(() => {
+    if (gameState === 'PLAYING') audioManager.play('deal');
+    if (engineState?.winner === user?.id) {
+        audioManager.play('win');
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#fbbf24', '#f59e0b', '#ffffff']
+        });
+    }
+  }, [gameState, engineState?.winner, user?.id]);
 
   const isMyTurn = engineState?.currentPlayerId === user?.id;
 
@@ -24,6 +40,7 @@ const CasinoTable = () => {
   ];
 
   const handleToggleCard = (id: string) => {
+    audioManager.play('flip');
     setSelectedCardIds(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
@@ -31,6 +48,7 @@ const CasinoTable = () => {
 
   const handleAction = (action: string, payload: any = {}) => {
     if (!socket) return;
+    audioManager.play('click');
     socket.emit('game_action', { action, ...payload });
   };
 
@@ -41,6 +59,7 @@ const CasinoTable = () => {
   };
 
   const handlePlaceBet = () => {
+    audioManager.play('chip');
     handleAction('place_bet', { amount: betAmount });
   };
 
