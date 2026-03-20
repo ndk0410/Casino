@@ -3,20 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sảnh Chờ - Coca Casino</title>
+    <title>Sảnh Online - Coca Casino</title>
     <link rel="stylesheet" href="../css/lobby.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@800&display=swap" rel="stylesheet">
 </head>
+<body>
+    <div class="lobby-bg" aria-hidden="true">
+        <div class="orb orb-a"></div>
+        <div class="orb orb-b"></div>
+        <div class="orb orb-c"></div>
+    </div>
+
     <div class="lobby-container">
-        <!-- Step 1: Selection -->
         <div id="lobby-selection">
             <div class="lobby-header">
+                <div class="eyebrow">ONLINE TABLE</div>
                 <h1>Sảnh Chờ</h1>
-                <p style="color:#888; font-size:14px; margin-top:5px;">Chơi cùng bạn bè</p>
+                <p class="sub-copy">Tạo phòng nhanh, chia sẻ mã và vào bàn Tiến Lên online ổn định hơn.</p>
+            </div>
+
+            <div class="info-strip">
+                <div class="info-pill">Tối thiểu 2 người thật</div>
+                <div class="info-pill">Bot tự lấp bàn tới 4 chỗ</div>
+                <div class="info-pill">Chạy qua Socket.IO</div>
             </div>
 
             <div class="lobby-tabs">
@@ -24,58 +33,30 @@
                 <button class="tab-btn" onclick="switchTab('join')">Vào Phòng</button>
             </div>
 
-            <!-- Create Form -->
             <div id="form-create" class="form-group active">
-                <label style="font-size:12px; color:#b8b7b7;">Chọn trò chơi</label>
+                <label class="field-label">Game online hiện hỗ trợ ổn định</label>
                 <select id="create-game-type">
                     <option value="tienlen">Tiến Lên Miền Nam</option>
-                    <option value="xidach">Xì Dách (Coming Soon)</option>
-                    <option value="roulette">Roulette 🎡</option>
-                    <option value="poker">Poker Texas Hold'em ♠</option>
-                    <option value="maubinh">Mậu Binh 🀄</option>
-                    <option value="bala">Ba Lá 🃏</option>
                 </select>
-                <button class="primary-btn" onclick="createRoom()">TẠO PHÒNG MỚI</button>
+                <button class="primary-btn" onclick="createRoom()">TẠO PHÒNG NGAY</button>
             </div>
 
-            <!-- Join Form -->
             <div id="form-join" class="form-group">
-                <input type="text" id="join-room-id" placeholder="Nhập mã phòng (6 ký tự)" maxlength="6" style="text-transform: uppercase; text-align:center; font-family:monospace; font-size:24px;">
+                <label class="field-label">Nhập mã phòng 6 ký tự</label>
+                <input type="text" id="join-room-id" placeholder="VD: A1B2C3" maxlength="6">
                 <button class="primary-btn" onclick="joinRoom()">VÀO PHÒNG</button>
+            </div>
+
+            <div class="tips-card">
+                <h3>Luồng chơi</h3>
+                <p>Host tạo phòng và vào bàn ngay. Người chơi khác nhập mã rồi vào cùng bàn. Khi host bấm bắt đầu, hệ thống sẽ yêu cầu ít nhất 2 người thật và tự thêm bot nếu còn ghế trống.</p>
             </div>
 
             <a href="../index.html" class="back-to-lobby">← Quay lại Menu</a>
         </div>
-
-        <!-- Step 2: In Room -->
-        <div id="lobby-room-view" class="room-view">
-            <div class="lobby-header">
-                <h1 id="view-game-name">Tiến Lên</h1>
-                <div style="margin-top:10px;">
-                    <span style="font-size:12px; color:#aaa;">Mã phòng:</span>
-                    <div class="room-id-box" id="view-room-id">------</div>
-                </div>
-            </div>
-
-            <div class="player-list" id="view-player-list">
-                <!-- Players will be injected here -->
-            </div>
-
-            <div id="host-controls" style="display:none;">
-                <button class="primary-btn" id="start-btn" onclick="startGame()">BẮT ĐẦU VÁN CHƠI</button>
-                <p style="text-align:center; font-size:12px; color:#888; margin-top:10px;">Cần tối thiểu 2 người để bắt đầu</p>
-            </div>
-            
-            <div id="guest-waiting" style="display:none; text-align:center; color:var(--gold); font-weight:bold;">
-                ĐANG ĐỢI CHỦ PHÒNG BẮT ĐẦU...
-            </div>
-
-            <button class="back-to-lobby" style="background:none; border:none; width:100%; cursor:pointer;" onclick="leaveRoom()">Rời khỏi phòng</button>
-        </div>
     </div>
 
     <script src="../js/account.js"></script>
-    <script src="../js/firebase-config.js"></script>
     <script src="../js/app-shell.js"></script>
     <script src="../js/lobby.js"></script>
 </body>

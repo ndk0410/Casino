@@ -105,6 +105,11 @@ class AudioManager {
         setTimeout(() => this.playTone(440, 0.1, 'triangle', 0.1), 30);
     }
 
+    dealCard() {
+        this.playNoise(0.045, 0.08);
+        setTimeout(() => this.playTone(720, 0.05, 'triangle', 0.06), 12);
+    }
+
     cardSlam() {
         // For tứ quý or strong plays
         this.playNoise(0.15, 0.2);
@@ -131,6 +136,7 @@ class AudioManager {
         notes.forEach((freq, i) => {
             setTimeout(() => this.playTone(freq, 0.3, 'triangle', 0.15), i * 150);
         });
+        setTimeout(() => this.playNoise(0.18, 0.08), 120);
     }
 
     lose() {
@@ -149,6 +155,11 @@ class AudioManager {
     newRound() {
         this.playTone(600, 0.1, 'triangle', 0.08);
         setTimeout(() => this.playTone(800, 0.12, 'triangle', 0.1), 80);
+    }
+
+    chip() {
+        this.playTone(980, 0.04, 'square', 0.04);
+        setTimeout(() => this.playTone(1240, 0.05, 'triangle', 0.05), 16);
     }
 
     toggle() {

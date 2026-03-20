@@ -179,6 +179,12 @@ class TienLenEngine {
         }
     }
 
+    replacePlayerWithBot(playerId, name, difficulty = 'medium') {
+        this.aiBots[playerId] = new AIPlayer(playerId, name, difficulty);
+        this._emitState();
+        this._checkBotTurn();
+    }
+
     _executeBotPlay(botId) {
         if (this.gameOver) return;
         if (this.players[this.currentPlayerIdx].id !== botId) return;

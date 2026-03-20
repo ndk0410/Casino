@@ -5,29 +5,32 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+const corsOrigin = process.env.CORS_ORIGIN || '*';
+
+app.use(cors({ origin: corsOrigin }));
 
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", // allow any origin for local dev
-        methods: ["GET", "POST"]
+        origin: corsOrigin,
+        methods: ['GET', 'POST']
     }
 });
 
 app.get('/', (req, res) => {
-    res.send('Tien Len Miền Nam Authoritative Server is running.');
+    res.send('Tien Len Mien Nam Authoritative Server is running.');
 });
 
-// Import Managers
+app.get('/health', (req, res) => {
+    res.json({ ok: true });
+});
+
 const RoomManager = require('./managers/roomManager');
 const ioManager = require('./managers/ioManager');
 
-// Keep global references if needed
 const roomManager = new RoomManager();
 
 io.on('connection', (socket) => {
-    console.log(`[Socket] Client connected: ${socket.id}`);
     ioManager.handleConnection(io, socket, roomManager);
 });
 
