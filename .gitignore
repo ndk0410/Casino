@@ -5,6 +5,3 @@ node_modules/
 dist/
 build/
 server/node_modules/
-frontend/.next/
-frontend/node_modules/
-backend/node_modules/
