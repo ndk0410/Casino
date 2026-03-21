@@ -1,5 +1,5 @@
 const { Deck, Card, sortCards } = require('./card');
-const { canBeatMove } = require('./rules');
+const { canBeatMove, findAllValidMoves } = require('./rules');
 const AIPlayer = require('./ai');
 
 class TienLenEngine {
@@ -19,6 +19,7 @@ class TienLenEngine {
         this.winner = null;
         this.gameOver = false;
         this.bets = {}; // playerId -> amount
+        this.turnTimeoutId = null;
     }
 
     setBet(playerId, amount) {
@@ -60,6 +61,7 @@ class TienLenEngine {
         this.winner = null;
 
         this._emitState();
+        this._scheduleTurnTimeout();
         this._checkBotTurn();
     }
 
@@ -108,6 +110,7 @@ class TienLenEngine {
         if (this.hands[playerId].length === 0) {
             this.gameOver = true;
             this.winner = playerId;
+            this._clearTurnTimeout();
             this.broadcast('game_over', { winner: playerId });
         } else {
             this._nextTurn();
@@ -136,6 +139,7 @@ class TienLenEngine {
     }
 
     _nextTurn() {
+        this._clearTurnTimeout();
         let nextIdx = this.currentPlayerIdx;
         let found = false;
         
@@ -169,7 +173,39 @@ class TienLenEngine {
             this.passedPlayers.clear();
         }
         
+        this._scheduleTurnTimeout();
         this._checkBotTurn();
+    }
+
+    _scheduleTurnTimeout() {
+        this._clearTurnTimeout();
+        if (this.gameOver || !this.players[this.currentPlayerIdx]) return;
+
+        const currentPlayerId = this.players[this.currentPlayerIdx].id;
+        this.turnTimeoutId = setTimeout(() => {
+            if (this.gameOver) return;
+            if (this.players[this.currentPlayerIdx]?.id !== currentPlayerId) return;
+
+            if (!this.isNewRound) {
+                this.passTurn(currentPlayerId);
+                return;
+            }
+
+            const hand = this.hands[currentPlayerId] || [];
+            const validMoves = findAllValidMoves(hand, this.lastPlayedCards, this.isNewRound);
+            if (!validMoves.length) return;
+
+            validMoves.sort((a, b) => a.cards.length - b.cards.length || a.cards[0].value - b.cards[0].value);
+            const fallbackMove = validMoves[0];
+            this.playCards(currentPlayerId, fallbackMove.cards.map((card) => card.id));
+        }, 15000);
+    }
+
+    _clearTurnTimeout() {
+        if (this.turnTimeoutId) {
+            clearTimeout(this.turnTimeoutId);
+            this.turnTimeoutId = null;
+        }
     }
 
     _checkBotTurn() {

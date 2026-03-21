@@ -6,6 +6,7 @@ class UI {
     constructor() {
         this.messageTimeout = null;
         this.accountListenerBound = false;
+        this.turnTimeoutId = null;
     }
 
     init() {
@@ -480,6 +481,10 @@ class UI {
     startTurnTimer() {
         const bar = document.getElementById('turn-timer-bar');
         if (!bar) return;
+        if (this.turnTimeoutId) {
+            clearTimeout(this.turnTimeoutId);
+            this.turnTimeoutId = null;
+        }
         bar.style.transition = 'none';
         bar.style.width = '100%';
         bar.style.backgroundColor = '#54d8bf';
@@ -487,14 +492,60 @@ class UI {
         bar.style.transition = 'width 15s linear, background-color 15s linear';
         bar.style.width = '0%';
         bar.style.backgroundColor = '#ff7c67';
+        const turnOwner = game.currentPlayer;
+        this.turnTimeoutId = setTimeout(() => {
+            if (game.gameOver || game.isAnimating || game.currentPlayer !== turnOwner) return;
+            this.handleTurnTimeout(turnOwner);
+        }, 15000);
     }
 
     stopTurnTimer() {
+        if (this.turnTimeoutId) {
+            clearTimeout(this.turnTimeoutId);
+            this.turnTimeoutId = null;
+        }
         const bar = document.getElementById('turn-timer-bar');
         if (bar) {
             bar.style.transition = 'none';
             bar.style.width = '0%';
         }
+    }
+
+    handleTurnTimeout(turnOwner) {
+        const myIdx = game.isMultiplayer ? (window.MP_TienLen?.getMyPlayerIndex() ?? 0) : 0;
+        const isMyTurn = turnOwner === myIdx;
+
+        if (!isMyTurn) {
+            this.showMessage(`${game.playerNames[turnOwner] ?? 'Người chơi'} hết giờ, bỏ lượt.`);
+            return;
+        }
+
+        if (!game.isNewRound) {
+            if (game.isMultiplayer) {
+                window.MP_TienLen?.passTurn();
+            } else {
+                game.humanPass();
+            }
+            this.showMessage('Hết giờ, tự động bỏ lượt.');
+            return;
+        }
+
+        const hint = game.getHint();
+        if (!hint?.length) {
+            this.showMessage('Hết giờ nhưng không tìm được bài hợp lệ.');
+            return;
+        }
+
+        game.selectedCards = [...hint];
+        this.renderPlayerHand();
+        this.updateButtons();
+
+        if (game.isMultiplayer) {
+            window.MP_TienLen?.playCards(hint);
+        } else {
+            game.playSelectedCards();
+        }
+        this.showMessage('Hết giờ, tự động đánh bài nhỏ nhất.');
     }
 
     updateButtons() {
