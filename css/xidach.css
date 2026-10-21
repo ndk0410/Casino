@@ -21,6 +21,7 @@
 
 body {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--table-bg);
     font-family: 'Inter', sans-serif;
     color: var(--text);
@@ -28,14 +29,20 @@ body {
     flex-direction: column;
     align-items: center;
     user-select: none;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding:
+        max(44px, env(safe-area-inset-top))
+        max(8px, env(safe-area-inset-right))
+        max(10px, env(safe-area-inset-bottom))
+        max(8px, env(safe-area-inset-left));
 }
 
 /* ---- Back Button ---- */
 .back-btn {
     position: fixed;
-    top: 14px;
-    left: 14px;
+    top: max(8px, env(safe-area-inset-top));
+    left: max(8px, env(safe-area-inset-left));
     background: rgba(0,0,0,0.45);
     border: 1px solid var(--glass-border);
     color: var(--text-dim);
@@ -57,6 +64,7 @@ body {
 .xd-table {
     width: 100vw;
     height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -333,7 +341,11 @@ body {
 
 /* ---- Mobile Large ---- */
 @media (max-width: 768px) {
-    .xd-table { padding: 35px 10px 15px; }
+    .xd-table {
+        height: auto;
+        min-height: 100dvh;
+        padding: 35px 10px max(12px, env(safe-area-inset-bottom));
+    }
     .xd-divider { width: 180px; }
     .xd-center { transform: scale(0.9); }
     .xd-chips-row { padding: 6px 12px; }
@@ -346,7 +358,7 @@ body {
         --card-w: 52px;
         --card-h: 73px;
     }
-    .xd-table { padding: 45px 5px 10px; }
+    .xd-table { padding: 45px 5px max(10px, env(safe-area-inset-bottom)); height: auto; }
     .xd-center { transform: scale(0.85); gap: 4px; }
     .xd-divider { width: 150px; }
     .xd-chip { width: 42px; height: 42px; font-size: 10px; }

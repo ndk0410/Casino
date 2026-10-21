@@ -15,7 +15,8 @@ body {
     background: var(--pk-bg);
     font-family: 'Inter', sans-serif;
     color: #f0f0f0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* Top bar */
@@ -51,9 +52,10 @@ body {
     flex-direction: column;
     height: calc(100vh - 50px);
     height: calc(100dvh - 50px);
+    min-height: calc(100dvh - 50px);
     align-items: center;
     justify-content: space-between;
-    padding: 8px;
+    padding: 8px 8px max(10px, env(safe-area-inset-bottom));
 }
 
 /* Player slots around table */
@@ -239,6 +241,10 @@ body {
 
 /* Responsive */
 @media (max-width: 500px) {
+    .pk-game {
+        height: auto;
+    }
+
     .pk-card { width: 44px; height: 62px; }
     .pk-mini-card { width: 32px; height: 45px; }
     .pk-btn { font-size: 11px; padding: 6px 12px; }
