@@ -976,6 +976,7 @@
             <input type="text" id="admin-uid" class="admin-input" placeholder="Nhập UID hoặc tên đăng nhập">
             <input type="number" id="admin-amount" class="admin-input" placeholder="Số chip cần nạp" min="1">
             <button class="admin-btn" onclick="adminAddChips()"><img src="assets/economy/Economy_Cowoncy.png" class="economy-icon" style="width:14px; margin-right:4px;"> NẠP CHIP</button>
+            <button class="admin-btn" onclick="adminTopUp()" style="background: linear-gradient(135deg, #27ae60, #1e8449); margin-top: 8px;">💰 TỰ NẠP CHIP</button>
             <button class="admin-btn" onclick="adminDeductChips()" style="background: linear-gradient(135deg, #e74c3c, #c0392b); margin-top: 8px;">➖ TRỪ CHIP</button>
             <div id="admin-result" class="admin-result"></div>
         </div>
@@ -1247,6 +1248,16 @@
             if (!uid) { alert("Vui lòng nhập UID!"); return; }
             
             const res = await Account.adminAddChips(uid, amount);
+            resultEl.style.display = 'block';
+            resultEl.textContent = res.msg;
+            resultEl.className = 'admin-result' + (res.success ? '' : ' error');
+            if (res.success) updateAccountUI();
+        }
+
+        async function adminTopUp() {
+            const amount = document.getElementById('admin-amount').value;
+            const resultEl = document.getElementById('admin-result');
+            const res = await Account.adminTopUp(amount);
             resultEl.style.display = 'block';
             resultEl.textContent = res.msg;
             resultEl.className = 'admin-result' + (res.success ? '' : ' error');

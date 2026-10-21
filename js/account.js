@@ -453,6 +453,35 @@ const Account = {
         return true;
     },
 
+    async adminTopUp(amount) {
+        if (!this.isAdmin) return { success: false, msg: 'Ban khong co quyen admin!' };
+        if (!this.uid || !this.username) return { success: false, msg: 'Admin chua dang nhap!' };
+
+        const value = Number(amount);
+        if (!Number.isInteger(value) || value <= 0) {
+            return { success: false, msg: 'So chip khong hop le!' };
+        }
+
+        this.chips += value;
+        await this.persistLocalState();
+
+        if (window.db) {
+            await this.syncUserToCloud({
+                uid: this.uid,
+                username: this.username,
+                chips: this.chips,
+                lastDaily: this.lastDailyReward,
+                role: this.isAdmin ? 'admin' : 'user',
+            });
+        }
+
+        this.notifyUpdate();
+        return {
+            success: true,
+            msg: `Admin da nap ${value.toLocaleString()} chip. So du moi: ${this.chips.toLocaleString()}`
+        };
+    },
+
     async adminAddChips(targetUID, amount) {
         if (!this.isAdmin) return { success: false, msg: 'Ban khong co quyen admin!' };
         const value = parseInt(amount, 10);
