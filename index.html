@@ -1244,9 +1244,9 @@
             const amount = document.getElementById('admin-amount').value;
             const resultEl = document.getElementById('admin-result');
 
-            if (!uid) { alert("Vui lòng nhập UID!"); return; }
-            
-            const res = await Account.adminAddChips(uid, amount);
+            const res = uid
+                ? await Account.adminAddChips(uid, amount)
+                : await Account.adminTopUp(amount);
             resultEl.style.display = 'block';
             resultEl.textContent = res.msg;
             resultEl.className = 'admin-result' + (res.success ? '' : ' error');
