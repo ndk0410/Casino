@@ -865,6 +865,17 @@
             text-align: center;
         }
 
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .casino-shell,
+        .games-grid {
+            overflow: visible;
+        }
+
         @media (max-width: 900px) {
             .casino-shell {
                 width: min(100vw - 18px, 1240px);
@@ -881,15 +892,22 @@
         @media (max-width: 600px) {
             body {
                 padding: 16px 0 34px;
+                min-height: 100%;
+                height: auto;
+                display: block;
             }
 
             .casino-shell {
-                width: calc(100vw - 14px);
+                width: calc(100% - 14px);
                 border-radius: 22px;
-                padding: 16px 12px 26px;
+                padding: 16px 12px 30px;
             }
 
             .user-panel {
+                position: relative;
+                top: auto;
+                right: auto;
+                left: auto;
                 width: 100%;
                 margin-bottom: 18px;
                 flex-wrap: wrap;
@@ -908,6 +926,20 @@
 
             .games-grid {
                 grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .game-card {
+                width: 100%;
+                min-height: 0;
+            }
+
+            .card-body {
+                padding: 16px 14px;
+            }
+
+            .play-btn {
+                min-height: 44px;
             }
 
             .header h1 {
@@ -916,6 +948,41 @@
 
             .header p {
                 letter-spacing: 0.26em;
+            }
+
+            .footer {
+                margin-top: 20px;
+                padding-bottom: max(8px, env(safe-area-inset-bottom));
+            }
+        }
+
+        @media (max-height: 740px) {
+            body {
+                padding: 12px 0 28px;
+            }
+
+            .casino-shell {
+                padding-bottom: 24px;
+            }
+
+            .header {
+                margin-bottom: 18px;
+            }
+
+            .hero-panel {
+                margin-bottom: 20px;
+            }
+
+            .games-grid {
+                gap: 12px;
+            }
+
+            .card-banner {
+                height: 124px;
+            }
+
+            .game-card {
+                min-height: 0;
             }
         }
     </style>
