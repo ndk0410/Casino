@@ -18,7 +18,8 @@ body {
     color: #f0f0f0;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* Top bar */
@@ -58,7 +59,10 @@ body {
     align-items: center;
     justify-content: center;
     gap: 16px;
-    padding: 16px;
+    padding:
+        max(12px, env(safe-area-inset-top))
+        16px
+        max(12px, env(safe-area-inset-bottom));
 }
 
 /* Message */
@@ -201,6 +205,10 @@ body {
 
 /* Responsive */
 @media (max-width: 500px) {
+    .bl-game {
+        justify-content: flex-start;
+    }
+
     .bl-card {
         width: 65px;
         height: 91px;

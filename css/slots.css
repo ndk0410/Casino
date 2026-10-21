@@ -21,20 +21,27 @@
 
 body {
     min-height: 100vh;
+    min-height: 100dvh;
     background: radial-gradient(circle at center, #1a0a2e 0%, var(--bg-dark) 100%);
     font-family: 'Inter', sans-serif;
     color: var(--text);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     user-select: none;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding:
+        max(56px, env(safe-area-inset-top))
+        max(10px, env(safe-area-inset-right))
+        max(16px, env(safe-area-inset-bottom))
+        max(10px, env(safe-area-inset-left));
 }
 
 .back-btn {
     position: fixed;
-    top: 14px;
-    left: 14px;
+    top: max(10px, env(safe-area-inset-top));
+    left: max(10px, env(safe-area-inset-left));
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.2);
     color: rgba(255,255,255,0.6);
@@ -56,7 +63,7 @@ body {
     gap: 20px;
     width: 100%;
     max-width: 800px;
-    padding: 20px;
+    padding: 20px 10px max(20px, env(safe-area-inset-bottom));
 }
 
 /* Header & Jackpot */
@@ -378,8 +385,8 @@ body {
     .machine-wrapper { 
         padding: 15px; 
         border-width: 4px; 
-        transform: scale(0.9);
-        margin: -20px 0;
+        transform: none;
+        margin: 0;
     }
     
     .controls-panel { 
@@ -399,12 +406,13 @@ body {
     
     .btn-spin { width: 90px; height: 90px; }
     .spin-text { font-size: 20px; }
+    .result-display { min-width: 0; width: 100%; }
 }
 
 /* ---- Mobile Small ---- */
 @media (max-width: 480px) {
-    :root { --symbol-size: 70px; }
-    .machine-wrapper { transform: scale(0.8); margin: -40px 0; }
+    :root { --symbol-size: 64px; }
+    .machine-wrapper { transform: none; margin: 0; padding: 10px; }
     .slots-title { font-size: 20px; }
     .jackpot-label { font-size: 10px; }
     .jackpot-amount { font-size: 16px; }
@@ -416,6 +424,10 @@ body {
 
 /* Landscape Mobile — phone turned sideways */
 @media (max-height: 500px) {
+    body {
+        padding-top: max(44px, env(safe-area-inset-top));
+    }
+
     .slots-container {
         flex-direction: row;
         flex-wrap: wrap;
