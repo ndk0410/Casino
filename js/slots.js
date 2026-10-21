@@ -21,7 +21,7 @@ const SYMBOL_SIZE = 100; // Expected height per symbol in px
 const slotsGame = {
     bet: 50,
     minBet: 50,
-    maxBetAmount: 500,
+    maxBetAmount: 250000,
     isSpinning: false,
 
     // Sync with global account
