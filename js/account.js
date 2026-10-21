@@ -11,7 +11,7 @@ const Account = {
     isAdmin: false,
     DAILY_AMOUNT: 500,
     DEFAULT_START_CHIPS: 1000,
-    ADMIN_USERNAME: 'admin',
+    ADMIN_USERNAME: 'admin1',
     ADMIN_PASSWORD: 'admin123',
     mode: 'local',
     syncStarted: false,
