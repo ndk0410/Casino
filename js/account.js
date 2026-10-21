@@ -8,7 +8,7 @@ const Account = {
     uid: null,
     chips: 0,
     lastDailyReward: 0,
-    isAdmin: false,
+    isAdmin: true,
     DAILY_AMOUNT: 500,
     DEFAULT_START_CHIPS: 1000,
     ADMIN_USERNAME: 'admin1',
